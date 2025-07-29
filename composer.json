@@ -1,0 +1,18 @@
+{
+    "name": "alamellama/carapace",
+    "description": "Generic DTO's for PHP",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Alamellama\\Carapace\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nicholas Ciechanowski",
+            "email": "nicholas@ciech.anow.ski"
+        }
+    ],
+    "require": {}
+}
