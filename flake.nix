@@ -19,17 +19,37 @@
         pkgs = import nixpkgs {
           inherit system;
         };
+        phpWithExtensions = pkgs.php83.buildEnv {
+          extensions =
+            { enabled, all }:
+            enabled
+            ++ (with all; [
+              pcov
+            ]);
+          # Optional: Add extra PHP configuration
+          # extraConfig = ''
+          #   xdebug.mode=debug
+          # '';
+        };
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.php83
-            pkgs.php83.packages.composer
+          buildInputs = with pkgs; [
+            phpWithExtensions
+            phpWithExtensions.packages.composer
+            (aspellWithDicts (
+              dicts: with dicts; [
+                en
+                en-computers
+                en-science
+              ]
+            ))
           ];
 
           shellHook = ''
             echo "🐘 PHP $(php -v | head -n1) ready"
             echo "📦 Composer version: $(composer --version)"
+            echo "📝 Aspell Version: $(aspell --version)"
           '';
         };
       }

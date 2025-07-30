@@ -1,0 +1,12 @@
+{
+  "preset": "base",
+  "ignore": {
+    "words": [
+      "php",
+      "dto"
+    ],
+    "paths": [
+      "tests"
+    ]
+  }
+}
