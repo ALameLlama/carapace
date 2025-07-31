@@ -65,7 +65,7 @@ abstract class ImmutableDTO
                         );
                     }
 
-                    return $value instanceof $targetClass ? $value : $targetClass::from($value);
+                    /* return $value instanceof $targetClass ? $value : $targetClass::from($value); */
                 }
             }
 
@@ -112,18 +112,29 @@ abstract class ImmutableDTO
      */
     public function toArray(): array
     {
-        return array_map(function ($value) {
-            // Recursively convert nested DTOs to arrays
-            if ($value instanceof self) {
-                return $value->toArray();
-            }
+        $props = get_object_vars($this);
 
-            return $value;
-        }, get_object_vars($this));
+        return array_map(
+            fn ($value): mixed => $this->recursiveToArray($value),
+            $props
+        );
     }
 
     public function toJson(): string
     {
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
+    }
+
+    private function recursiveToArray(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
+        }
+
+        if ($value instanceof self) {
+            return $value->toArray();
+        }
+
+        return $value;
     }
 }
