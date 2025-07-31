@@ -6,9 +6,6 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
-/**
- * @extends ImmutableDTO<ImmutableDTO>
- */
 final class Nullable extends ImmutableDTO
 {
     public function __construct(

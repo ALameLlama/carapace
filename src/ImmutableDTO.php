@@ -14,8 +14,6 @@ use ReflectionParameter;
  *
  * Provides methods to create instances from arrays, override properties,
  * and convert to arrays or JSON.
- *
- * @template T of ImmutableDTO
  */
 abstract class ImmutableDTO
 {
@@ -27,7 +25,7 @@ abstract class ImmutableDTO
         $reflection = new ReflectionClass(static::class);
         $params = $reflection->getConstructor()?->getParameters() ?? [];
 
-        $args = array_map(function (ReflectionParameter $param) use ($data) {
+        $args = array_map(function (ReflectionParameter $param) use ($data, $reflection) {
             $name = $param->getName();
 
             if (! array_key_exists($name, $data)) {
@@ -44,6 +42,32 @@ abstract class ImmutableDTO
 
             $value = $data[$name];
             $type = $param->getType();
+
+            // Get the matching property (for attributes like #[CastWith])
+            $property = $reflection->hasProperty($name)
+                ? $reflection->getProperty($name)
+                : null;
+
+            // TODO: I feel like this could be more elegant, but it works for now
+            // we can probably switch to using attributes directly in the future
+            if ($property) {
+                $castAttr = $property->getAttributes(Attributes\CastWith::class)[0] ?? null;
+
+                if ($castAttr) {
+                    /** @var Attributes\CastWith $caster */
+                    $caster = $castAttr->newInstance();
+                    $targetClass = $caster->casterClass;
+
+                    if (is_array($value)) {
+                        return array_map(
+                            fn ($item) => $item instanceof $targetClass ? $item : $targetClass::from($item),
+                            $value
+                        );
+                    }
+
+                    return $value instanceof $targetClass ? $value : $targetClass::from($value);
+                }
+            }
 
             // Handle nested DTO hydration
             if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
