@@ -9,6 +9,14 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
+/**
+ * Persistent Immutable Data Transfer Object (DTO) base class.
+ *
+ * Provides methods to create instances from arrays, override properties,
+ * and convert to arrays or JSON.
+ *
+ * @template T of ImmutableDTO
+ */
 abstract class ImmutableDTO
 {
     /**
@@ -52,6 +60,27 @@ abstract class ImmutableDTO
         }, $params);
 
         return $reflection->newInstanceArgs($args);
+    }
+
+    /**
+     * @param  array<mixed,mixed>  $overrides
+     * @param  mixed  $namedOverrides
+     */
+    public function with(array $overrides = [], ...$namedOverrides): static
+    {
+        $combined = array_merge($overrides, $namedOverrides);
+
+        $reflection = new ReflectionClass($this);
+        $params = $reflection->getConstructor()?->getParameters() ?? [];
+
+        $data = [];
+
+        foreach ($params as $param) {
+            $name = $param->getName();
+            $data[$name] = $combined[$name] ?? $this->{$name} ?? null;
+        }
+
+        return static::from($data);
     }
 
     /**

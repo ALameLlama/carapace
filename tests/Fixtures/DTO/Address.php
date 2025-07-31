@@ -6,6 +6,9 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
+/**
+ * @extends ImmutableDTO<ImmutableDTO>
+ */
 final class Address extends ImmutableDTO
 {
     public function __construct(

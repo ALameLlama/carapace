@@ -9,11 +9,9 @@ use Alamellama\Carapace\ImmutableDTO;
 /**
  * @extends ImmutableDTO<ImmutableDTO>
  */
-final class User extends ImmutableDTO
+final class Nullable extends ImmutableDTO
 {
     public function __construct(
-        public string $name,
-        public string $email,
-        public Address $address,
+        public ?string $optional,
     ) {}
 }
