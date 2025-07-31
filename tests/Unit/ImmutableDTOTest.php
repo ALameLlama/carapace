@@ -95,6 +95,25 @@ test('from() casts to DTOs with CastWith attribute', function (): void {
         ->name->toBe('Mike');
 });
 
+test('from() with MapFrom attribute maps correctly', function (): void {
+    $dto = User::from([
+        'name' => 'Nick',
+        'email_address' => 'nick@example.com',
+        'address' => [
+            'street' => '123 Main St',
+            'city' => 'Melbourne',
+            'postcode' => '3000',
+        ],
+    ]);
+
+    expect($dto)
+        ->toBeInstanceOf(User::class)
+        ->name->toBe('Nick')
+        ->email->toBe('nick@example.com')
+        ->address->toBeInstanceOf(Address::class)
+        ->address->street->toBe('123 Main St');
+});
+
 test('with() using named param returns a new instance with overridden values', function (): void {
     $dto = User::from([
         'name' => 'Nick',
