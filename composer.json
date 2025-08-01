@@ -32,14 +32,14 @@
   },
   "scripts": {
     "refactor": "rector",
-    "lint": "pint",
+    "lint": "pint --parallel",
     "fix": [
       "@refactor",
       "@lint"
     ],
     "test:refactor": "rector --dry-run",
     "test:typos": "peck",
-    "test:lint": "pint --test",
+    "test:lint": "pint --parallel --test",
     "test:types": "phpstan analyse --ansi",
     "test:unit": "pest --colors=always --coverage --min=88.9",
     "test": [
