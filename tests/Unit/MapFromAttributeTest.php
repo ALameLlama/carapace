@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Tests\Fixtures\DTO\Address;
-use Tests\Fixtures\DTO\User;
+use Alamellama\Carapace\Attributes\MapFrom;
 
 test('can map attributes from array using MapFrom attribute', function (): void {
-    $dto = User::from([
+    $data = [
         'name' => 'Nick',
         'email_address' => 'nick@example.com',
         'address' => [
@@ -16,12 +15,13 @@ test('can map attributes from array using MapFrom attribute', function (): void 
             'city' => 'Melbourne',
             'postcode' => '3000',
         ],
-    ]);
+    ];
 
-    expect($dto)
-        ->toBeInstanceOf(User::class)
-        ->name->toBe('Nick')
-        ->email->toBe('nick@example.com')
-        ->address->toBeInstanceOf(Address::class)
-        ->address->street->toBe('123 Main St');
+    $attribute = new MapFrom('email_address');
+    $attribute->handle('email', $data);
+
+    expect($data)
+        ->toHaveKey('email')
+        ->and($data['email'])
+        ->toBe('nick@example.com');
 });
