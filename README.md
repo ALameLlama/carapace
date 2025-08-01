@@ -1,0 +1,211 @@
+# Carapace
+
+Carapace is a lightweight PHP library for building immutable, strictly typed Data Transfer Objects (DTOs). It leverages PHP 8+ attributes for casting, property mapping, and serialization, while providing a simple, expressive API.
+
+## ✨ Features
+
+### ✅ Immutable DTOs
+
+- Define immutable data objects by extending the `ImmutableDTO` base class.
+- Properties are initialized via constructor promotion.
+- Enforces strict immutability for data integrity.
+
+### 🎯 Attribute-Driven Mapping
+
+- **`CastWith`**  
+  Automatically casts nested DTOs and collections during hydration.
+- **`MapFrom`**  
+  Maps properties from custom keys in the input array.
+- **`MapTo`**  
+  Controls output keys when serializing the DTO.
+
+### 📦 Serialization
+
+- Convert DTOs to arrays or JSON using built-in methods.
+- Supports deep, recursive serialization of nested DTOs.
+
+---
+
+## 🔧 Installation
+
+```bash
+composer require alamellama/carapace
+```
+
+---
+
+## 🚀 Usage
+
+### Defining a DTO
+
+Extend `ImmutableDTO` and define your properties in the constructor:
+
+```php
+use Alamellama\Carapace\ImmutableDTO;
+
+final class User extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        public string $email,
+    ) {}
+}
+```
+
+### Hydrating a DTO
+
+Use the static `from` method to hydrate the DTO from an array or json:
+
+```php
+$user = User::from([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com',
+]);
+
+// Or from JSON
+
+$user = User::fromJson('{"name": "John Doe", "email": "john.doe@example.com"}');
+```
+
+### Immutably Updating a DTO
+
+Use the `with` method to create a modified copy:
+
+```php
+$updatedUser = $user->with(['name' => 'Jane Doe']);
+```
+
+Or using named arguments:
+
+```php
+$updatedUser = $user->with(name: 'Jane Doe');
+```
+
+> The original instance remains unchanged.
+
+---
+
+## Attribute Usage
+
+### `CastWith`
+
+Automatically cast a property into a specific DTO (or array of DTOs):
+
+```php
+use Alamellama\Carapace\Attributes\CastWith;
+
+final class Account extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        #[CastWith(User::class)]
+        public array $users,
+    ) {}
+}
+```
+
+```php
+$account = Account::from([
+    'name' => 'My, Myself and I',
+    'users' => [
+        ['name' => 'John', 'email' => 'john@example.com'],
+        ['name' => 'Jane', 'email' => 'jane@example.com'],
+    ],
+]);
+```
+
+### `MapFrom`
+
+Map a DTO property from a different input key:
+
+```php
+use Alamellama\Carapace\Attributes\MapFrom;
+
+final class User extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        #[MapFrom('email_address')]
+        public string $email,
+    ) {}
+}
+```
+
+```php
+$user = User::from([
+    'name' => 'John Doe',
+    'email_address' => 'john.doe@example.com',
+]);
+```
+
+### `MapTo`
+
+Customize the output key for serialization:
+
+```php
+use Alamellama\Carapace\Attributes\MapTo;
+
+final class User extends ImmutableDTO
+{
+    public function __construct(
+        #[MapTo('full_name')]
+        public string $name,
+
+        #[MapTo('email_address')]
+        public string $email,
+    ) {}
+}
+```
+
+```php
+$user = User::from([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com',
+]);
+
+print_r($user->toArray());
+```
+
+```php
+// Output:
+[
+    'full_name' => 'John Doe',
+    'email_address' => 'john.doe@example.com',
+]
+```
+
+---
+
+## Serialization
+
+```php
+$dto->toArray();
+$->toJson();
+```
+
+- Nested DTOs are automatically and recursively serialized.
+- Property keys can be customized using `MapTo`.
+
+---
+
+## ❓ Why Carapace?
+
+- ⚖️ **Strict typing**: Encourages well-typed, predictable data structures.
+- 🧊 **Immutable by default**: No accidental mutation.
+- 🪄 **Attribute-driven**: Minimal boilerplate for mapping/casting.
+- 💡 **Framework-agnostic**: Works in Laravel, Symfony, or plain PHP.
+- 🛠️ **Simple, expressive API**: DTOs that are a pleasure to work with.
+
+---
+
+## 🧪 Testing
+
+Carapace is fully tested and aims for 100% test coverage. PRs are welcome.
+
+---
+
+## 🐘 Requirements
+
+- PHP 8.2 or higher
+
+---

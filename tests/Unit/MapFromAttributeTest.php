@@ -6,7 +6,7 @@ namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\MapFrom;
 
-test('can map attributes from array using MapFrom attribute', function (): void {
+it('can map attributes from an array using MapFrom', function (): void {
     $data = [
         'name' => 'Nick',
         'email_address' => 'nick@example.com',

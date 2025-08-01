@@ -7,7 +7,7 @@ namespace Tests\Unit;
 use Alamellama\Carapace\Attributes\MapTo;
 use Alamellama\Carapace\Traits\SerializationTrait;
 
-it('transforms property keys using MapTo', function (): void {
+it('can transform property keys using MapTo', function (): void {
     $dto = new class
     {
         use SerializationTrait;
@@ -23,7 +23,7 @@ it('transforms property keys using MapTo', function (): void {
         ->not->toHaveKey('originalKey');
 });
 
-it('works with multiple properties using MapTo', function (): void {
+it('can transform multiple properties using MapTo', function (): void {
     $dto = new class
     {
         use SerializationTrait;

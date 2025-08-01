@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
 
-test('can cast nested array of DTOs', function (): void {
+it('can cast nested arrays into DTO instances', function (): void {
     $data['users'] = [
         [
             'name' => 'Nick',
@@ -39,7 +39,7 @@ test('can cast nested array of DTOs', function (): void {
         ->and($data['users'][1])->toBeInstanceOf(User::class);
 });
 
-test('handles missing property when casting', function (): void {
+it('ignores missing properties during casting', function (): void {
     $data = [
         'not_users' => [],
     ];
@@ -52,7 +52,7 @@ test('handles missing property when casting', function (): void {
         ->toHaveCount(0);
 });
 
-test('handles array where all items are already caster instances', function (): void {
+it('skips re-casting for array of DTO instances', function (): void {
     $data = [
         'users' => [
             new User(name: 'Nick', email: 'nick@example.com', address: new Address(street: '123 Main St', city: 'Melbourne', postcode: '3000')),
@@ -69,7 +69,7 @@ test('handles array where all items are already caster instances', function (): 
         ->and($data['users'][1])->toBeInstanceOf(User::class);
 });
 
-test('handles non-array value that is already a caster instance', function (): void {
+it('handles non-array value that is already a DTO instance', function (): void {
     $casterClass = User::class;
     $data = [
         'user' => new User(name: 'Nick', email: 'nick@example.com', address: new Address(street: '123 Main St', city: 'Melbourne', postcode: '3000')),
@@ -81,7 +81,7 @@ test('handles non-array value that is already a caster instance', function (): v
     expect($data['user'])->toBeInstanceOf(User::class);
 });
 
-test('handles non-array value that requires casting', function (): void {
+it('can cast a non-array value into a DTO instance', function (): void {
     $data = [
         'user' => [
             'name' => 'Nick',
@@ -102,7 +102,7 @@ test('handles non-array value that requires casting', function (): void {
         ->email->toBe('nick@example.com');
 });
 
-test('throws if value is not array or caster instance', function (): void {
+it('throws if value is not an array or DTO instance', function (): void {
     $casterClass = User::class;
     $data = [
         'user' => 'not a valid user object or array',

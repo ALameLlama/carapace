@@ -7,7 +7,7 @@ namespace Tests\Unit;
 use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\User;
 
-test('using named param returns a new instance with overridden values', function (): void {
+it('can return a new instance with overridden values when using named parameters', function (): void {
     $dto = User::from([
         'name' => 'Nick',
         'email' => 'nick@example.com',
@@ -31,7 +31,7 @@ test('using named param returns a new instance with overridden values', function
     expect($dto)->not->toBe($dto2);
 });
 
-test('using array returns a new instance with overridden values', function (): void {
+it('can return a new instance with overridden values when using an array', function (): void {
     $dto = User::from([
         'name' => 'Nick',
         'email' => 'nick@example.com',
@@ -55,7 +55,7 @@ test('using array returns a new instance with overridden values', function (): v
     expect($dto)->not->toBe($dto2);
 });
 
-test('using both array and named params returns a new instance with overridden values', function (): void {
+it('can return a new instance with overridden values when using both an array and named parameters', function (): void {
     $dto = User::from([
         'name' => 'Nick',
         'email' => 'nick@example.com',
@@ -79,7 +79,7 @@ test('using both array and named params returns a new instance with overridden v
     expect($dto)->not->toBe($dto2);
 });
 
-test('can use a CastWith attribute returns a new instance with overridden values', function (): void {
+it('can return a new instance with overridden values using a CastWith attribute', function (): void {
     $dto = Account::from([
         'name' => 'Me, Myself and I',
         'users' => [

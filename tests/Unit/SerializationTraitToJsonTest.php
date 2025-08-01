@@ -8,7 +8,7 @@ use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
 
-test('can returns recursive DTOs', function (): void {
+it('can return recursive DTOs', function (): void {
     $dto = User::from([
         'name' => 'Nick',
         'email' => 'nick@example.com',
@@ -33,7 +33,7 @@ test('can returns recursive DTOs', function (): void {
     ]));
 });
 
-test('can returns recursive array of DTOs', function (): void {
+it('can return a recursive array of DTOs', function (): void {
     $dto = Account::from([
         'name' => 'Me, Myself and I',
         'users' => [
