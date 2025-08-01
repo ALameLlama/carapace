@@ -6,7 +6,14 @@ namespace Alamellama\Carapace\Traits;
 
 use Alamellama\Carapace\Attributes;
 use ReflectionClass;
+use ReflectionProperty;
 
+/**
+ * Trait for serializing objects to arrays and JSON.
+ *
+ * This trait provides methods to convert an object to an array and to a JSON string.
+ * It also supports custom property transformations using attributes.
+ */
 trait SerializationTrait
 {
     /**
@@ -20,18 +27,19 @@ trait SerializationTrait
 
         $reflection = new ReflectionClass($this);
 
-        foreach ($reflection->getProperties() as $property) {
-            $property->setAccessible(true);
+        // Only public properties are considered for serialization
+        foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
 
-            // Look for HandlesPropertyTransform attributes
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
 
+                // Ran all HandlesPropertyTransform attributes
+                // Such as MapTo, etc.
                 if ($attrInstance instanceof Attributes\HandlesPropertyTransform) {
                     ['key' => $name, 'value' => $value] = $attrInstance->handle($name, $value);
-                    break; // Assume only one mapping attribute
+                    break;
                 }
             }
 

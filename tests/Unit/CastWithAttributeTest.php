@@ -9,23 +9,25 @@ use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
 
 it('can cast nested arrays into DTO instances', function (): void {
-    $data['users'] = [
-        [
-            'name' => 'Nick',
-            'email' => 'nick@example.com',
-            'address' => [
-                'street' => '123 Main St',
-                'city' => 'Melbourne',
-                'postcode' => '3000',
+    $data = [
+        'users' => [
+            [
+                'name' => 'Nick',
+                'email' => 'nick@example.com',
+                'address' => [
+                    'street' => '123 Main St',
+                    'city' => 'Melbourne',
+                    'postcode' => '3000',
+                ],
             ],
-        ],
-        [
-            'name' => 'Mike',
-            'email' => 'mike@example.com',
-            'address' => [
-                'street' => '123 Main St',
-                'city' => 'Melbourne',
-                'postcode' => '3000',
+            [
+                'name' => 'Mike',
+                'email' => 'mike@example.com',
+                'address' => [
+                    'street' => '123 Main St',
+                    'city' => 'Melbourne',
+                    'postcode' => '3000',
+                ],
             ],
         ],
     ];
@@ -70,12 +72,11 @@ it('skips re-casting for array of DTO instances', function (): void {
 });
 
 it('handles non-array value that is already a DTO instance', function (): void {
-    $casterClass = User::class;
     $data = [
         'user' => new User(name: 'Nick', email: 'nick@example.com', address: new Address(street: '123 Main St', city: 'Melbourne', postcode: '3000')),
     ];
 
-    $attribute = new \Alamellama\Carapace\Attributes\CastWith($casterClass);
+    $attribute = new \Alamellama\Carapace\Attributes\CastWith(User::class);
     $attribute->handle('user', $data);
 
     expect($data['user'])->toBeInstanceOf(User::class);
@@ -103,12 +104,11 @@ it('can cast a non-array value into a DTO instance', function (): void {
 });
 
 it('throws if value is not an array or DTO instance', function (): void {
-    $casterClass = User::class;
     $data = [
         'user' => 'not a valid user object or array',
     ];
 
-    $attribute = new \Alamellama\Carapace\Attributes\CastWith($casterClass);
+    $attribute = new \Alamellama\Carapace\Attributes\CastWith(User::class);
 
     $attribute->handle('user', $data);
-})->throws(InvalidArgumentException::class, "Unable to cast property 'user' to {$casterClass}");
+})->throws(InvalidArgumentException::class, "Unable to cast property 'user' to ".User::class);

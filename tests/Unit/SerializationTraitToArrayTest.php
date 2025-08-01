@@ -89,4 +89,25 @@ it('can return a recursive array of DTOs', function (): void {
             ],
         ],
     ]);
+
+});
+
+it('only includes public properties in toArray()', function (): void {
+    $dto = new class
+    {
+        use \Alamellama\Carapace\Traits\SerializationTrait;
+
+        public string $publicProperty = 'value';
+
+        protected string $protectedProperty = 'protected';
+
+        private string $privateProperty = 'private';
+    };
+
+    $result = $dto->toArray();
+
+    expect($result)
+        ->toHaveKey('publicProperty', 'value')
+        ->not->toHaveKey('protectedProperty')
+        ->not->toHaveKey('privateProperty');
 });

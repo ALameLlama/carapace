@@ -13,8 +13,8 @@ use ReflectionParameter;
 /**
  * Persistent Immutable Data Transfer Object (DTO) base class.
  *
- * Provides methods to create instances from arrays, override properties,
- * and convert to arrays or JSON.
+ * Provides methods to create instances from arrays and json,
+ * and to create modified copies of the instance with new values.
  */
 abstract class ImmutableDTO
 {

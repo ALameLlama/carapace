@@ -185,6 +185,7 @@ $->toJson();
 
 - Nested DTOs are automatically and recursively serialized.
 - Property keys can be customized using `MapTo`.
+- `toArray()` only serializes public properties.
 
 ---
 

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
+/**
+ * Interface for attributes that handle property transformations when converting to an array.
+ * This allows for custom handling of properties during the transformation process.
+ * e.g. MapTo
+ */
 interface HandlesPropertyTransform
 {
     /**
