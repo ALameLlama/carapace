@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace;
 
+use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionNamedType;
@@ -17,6 +18,8 @@ use ReflectionParameter;
  */
 abstract class ImmutableDTO
 {
+    use SerializationTrait;
+
     /**
      * @param  array<mixed, mixed>  $data
      */
@@ -25,20 +28,23 @@ abstract class ImmutableDTO
         $reflection = new ReflectionClass(static::class);
 
         // Run all HandlesBeforeHydration attributes
+        // Such as CastWith, MapFrom, etc.
         foreach ($reflection->getProperties() as $property) {
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
                 if ($attrInstance instanceof Attributes\HandlesBeforeHydration) {
-                    $attrInstance->handleBefore($property->getName(), $data);
+                    $attrInstance->handle($property->getName(), $data);
                 }
             }
         }
 
         $params = $reflection->getConstructor()?->getParameters() ?? [];
 
-        $args = array_map(function (ReflectionParameter $param) use ($data, $reflection) {
+        $args = array_map(function (ReflectionParameter $param) use ($data) {
             $name = $param->getName();
 
+            // If the parameter is not present in the data, check for default value or nullability
+            // and throw an exception if it's required but missing.
             if (! array_key_exists($name, $data)) {
                 if ($param->isDefaultValueAvailable()) {
                     return $param->getDefaultValue();
@@ -54,20 +60,7 @@ abstract class ImmutableDTO
             $value = $data[$name];
             $type = $param->getType();
 
-            // Handle HandlesPropertyValue attributes (e.g., CastWith, etc.)
-            $property = $reflection->hasProperty($name)
-                ? $reflection->getProperty($name)
-                : null;
-
-            if ($property) {
-                foreach ($property->getAttributes() as $attr) {
-                    $attrInstance = $attr->newInstance();
-
-                    if ($attrInstance instanceof Attributes\HandlesPropertyValue) {
-                        $value = $attrInstance->handle($value, $data);
-                    }
-                }
-            }
+            // TODO: add during hydration interface? something so you can do validation etc
 
             // Handle nested DTO hydration
             if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
@@ -110,31 +103,4 @@ abstract class ImmutableDTO
     /**
      * @return array<string, mixed>
      */
-    public function toArray(): array
-    {
-        $props = get_object_vars($this);
-
-        return array_map(
-            fn ($value): mixed => $this->recursiveToArray($value),
-            $props
-        );
-    }
-
-    public function toJson(): string
-    {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
-    }
-
-    private function recursiveToArray(mixed $value): mixed
-    {
-        if (is_array($value)) {
-            return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
-        }
-
-        if ($value instanceof self) {
-            return $value->toArray();
-        }
-
-        return $value;
-    }
 }
