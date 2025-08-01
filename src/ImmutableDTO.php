@@ -21,10 +21,15 @@ abstract class ImmutableDTO
     use SerializationTrait;
 
     /**
-     * @param  array<mixed, mixed>  $data
+     * @param  string|array<mixed, mixed>  $data
      */
-    public static function from(array $data): static
+    public static function from(string|array $data): static
     {
+        // If the data is a JSON string, decode it to an array
+        if (is_string($data)) {
+            $data = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        }
+
         $reflection = new ReflectionClass(static::class);
 
         // Run all HandlesBeforeHydration attributes

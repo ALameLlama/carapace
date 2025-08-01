@@ -72,3 +72,21 @@ test('can construct DTO with constructor param but no declared property', functi
 
     expect($dto)->not->toHaveProperty('foo');
 });
+
+test('can handle json encoded data', function (): void {
+    $json = json_encode([
+        'make' => 'Toyota',
+        'model' => 'Corolla',
+        'year' => 2020,
+        'color' => 'Blue',
+    ]);
+
+    $dto = Car::from($json);
+
+    expect($dto)
+        ->toBeInstanceOf(Car::class)
+        ->make->toBe('Toyota')
+        ->model->toBe('Corolla')
+        ->year->toBe(2020)
+        ->color->toBe('Blue');
+});
