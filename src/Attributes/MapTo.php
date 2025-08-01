@@ -10,11 +10,11 @@ use Attribute;
 final class MapTo implements HandlesPropertyTransform
 {
     public function __construct(
-        public string $key
+        public string $destinationKey
     ) {}
 
-    public function handle(string $propertyName, mixed $value = null): array
+    public function handle(string $propertyName, mixed $value): array
     {
-        return ['key' => $this->key, 'value' => $value];
+        return ['key' => $this->destinationKey, 'value' => $value];
     }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Traits;
 
+use Alamellama\Carapace\Attributes;
+use ReflectionClass;
+
 trait SerializationTrait
 {
     /**
@@ -13,12 +16,29 @@ trait SerializationTrait
      */
     public function toArray(): array
     {
-        $props = get_object_vars($this);
+        $result = [];
 
-        return array_map(
-            fn ($value): mixed => $this->recursiveToArray($value),
-            $props
-        );
+        $reflection = new ReflectionClass($this);
+
+        foreach ($reflection->getProperties() as $property) {
+            $property->setAccessible(true);
+            $name = $property->getName();
+            $value = $property->getValue($this);
+
+            // Look for HandlesPropertyTransform attributes
+            foreach ($property->getAttributes() as $attr) {
+                $attrInstance = $attr->newInstance();
+
+                if ($attrInstance instanceof Attributes\HandlesPropertyTransform) {
+                    ['key' => $name, 'value' => $value] = $attrInstance->handle($name, $value);
+                    break; // Assume only one mapping attribute
+                }
+            }
+
+            $result[$name] = $this->recursiveToArray($value);
+        }
+
+        return $result;
     }
 
     /**

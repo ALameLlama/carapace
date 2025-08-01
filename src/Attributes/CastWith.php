@@ -16,8 +16,6 @@ final class CastWith implements HandlesBeforeHydration
 
     public function handle(string $propertyName, array &$data): void
     {
-        // TODO: Should this throw?
-        // The issue is if the property is nullable or has a default, we can't tell at this stage
         if (! array_key_exists($propertyName, $data)) {
             return;
         }
