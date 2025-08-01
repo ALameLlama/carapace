@@ -13,8 +13,11 @@ final class MapFrom implements HandlesBeforeHydration
 
     public function handle(string $propertyName, array &$data): void
     {
-        if (array_key_exists($this->sourceKey, $data)) {
-            $data[$propertyName] = $data[$this->sourceKey];
+        if (! array_key_exists($this->sourceKey, $data)) {
+            return;
         }
+
+        $data[$propertyName] = $data[$this->sourceKey];
+        unset($data[$this->sourceKey]);
     }
 }
