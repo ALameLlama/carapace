@@ -9,9 +9,6 @@ use Alamellama\Carapace\ImmutableDTO;
 
 final class Account extends ImmutableDTO
 {
-    /**
-     * @param  array<mixed,mixed>  $users
-     */
     public function __construct(
         public string $name,
         #[CastWith(User::class)]

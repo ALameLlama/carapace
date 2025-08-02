@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Alamellama\Carapace\Traits\SerializationTrait;
 use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
@@ -95,7 +96,7 @@ it('can return a recursive array of DTOs', function (): void {
 it('only includes public properties in toArray()', function (): void {
     $dto = new class
     {
-        use \Alamellama\Carapace\Traits\SerializationTrait;
+        use SerializationTrait;
 
         public string $publicProperty = 'value';
 

@@ -7,11 +7,11 @@ use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/src',
-        __DIR__.'/tests',
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
     ])
     ->withSkip([
-        __DIR__.'/tests/Fixtures',
+        __DIR__ . '/tests/Fixtures',
     ])
     ->withPreparedSets(
         deadCode: true,
