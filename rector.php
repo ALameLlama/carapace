@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 
 return RectorConfig::configure()
@@ -13,7 +12,6 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         __DIR__.'/tests/Fixtures',
-        AddOverrideAttributeToOverriddenMethodsRector::class,
     ])
     ->withPreparedSets(
         deadCode: true,

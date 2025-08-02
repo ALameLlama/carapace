@@ -1,0 +1,55 @@
+name: 🤖 Tests
+
+on: ["push", "pull_request"]
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.2, 8.3, 8.4]
+        dependency-version: [prefer-lowest, prefer-stable]
+
+    name: 🧪 PHP ${{ matrix.php }} • ${{ matrix.os }} • ${{ matrix.dependency-version }}
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📚 Install Aspell
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update && sudo apt-get install -y aspell aspell-en
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install aspell
+          fi
+
+      - name: ⚙️ Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, mbstring, zip
+          coverage: pcov
+
+      - name: 📁 Get Composer cache directory
+        id: composer-cache
+        shell: bash
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: 💾 Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-${{ matrix.dependency-version }}-composer-
+
+      - name: 🧰 Install dependencies via Composer
+        run: |
+          composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
+
+      - name: 🧪 Run unit tests
+        run: composer test:unit
