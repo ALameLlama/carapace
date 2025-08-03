@@ -13,7 +13,10 @@ Carapace is a lightweight PHP library for building immutable, strictly typed Dat
 ### 🎯 Attribute-Driven Mapping
 
 - **`CastWith`**  
-  Automatically casts nested DTOs and collections during hydration.
+  Automatically casts values during hydration:
+  - Nested DTOs and collections
+  - Primitive types (int, float, string, bool, array)
+  - Custom types via `CasterInterface`
 - **`MapFrom`**  
   Maps properties from custom keys in the input array.
 - **`MapTo`**  
@@ -90,6 +93,10 @@ echo $updatedUser>name // Jane
 
 ### `CastWith`
 
+The `CastWith` attribute can be used in two ways:
+
+#### 1. Casting to DTOs
+
 Automatically cast a property into a specific DTO (or array of DTOs):
 
 ```php
@@ -112,6 +119,107 @@ $account = Account::from([
         ['name' => 'John', 'email' => 'john@example.com'],
         ['name' => 'Jane', 'email' => 'jane@example.com'],
     ],
+]);
+```
+
+#### 2. Primitive Type Casting
+
+Cast values to primitive types using the `PrimitiveCaster`:
+
+```php
+use Alamellama\Carapace\Attributes\CastWith;
+use Alamellama\Carapace\Casters\PrimitiveCaster;
+
+final class Product extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        #[CastWith(new PrimitiveCaster('int'))]
+        public int $price,
+        #[CastWith(new PrimitiveCaster('bool'))]
+        public bool $inStock,
+        #[CastWith(new PrimitiveCaster('array'))]
+        public array $tags,
+    ) {}
+}
+```
+
+```php
+$product = Product::from([
+    'name' => 'Awesome Product',
+    'price' => '1299', // String will be cast to int
+    'inStock' => 1,    // Integer will be cast to bool
+    'tags' => '["sale", "new"]', // JSON string will be cast to array
+]);
+
+// You can also pass scalar values to be wrapped in an array
+$product = Product::from([
+    'name' => 'Awesome Product',
+    'price' => 1299,
+    'inStock' => true,
+    'tags' => 'featured', // Will become ['featured']
+]);
+```
+
+The `PrimitiveCaster` supports the following types:
+- `int`: Casts to integer
+- `float`: Casts to float
+- `string`: Casts to string
+- `bool`: Casts to boolean
+- `array`: Handles multiple scenarios:
+  - Keeps arrays as-is
+  - Converts JSON strings to arrays
+  - Converts objects to arrays
+  - Wraps scalar values in an array
+
+#### 3. Custom Casters
+
+You can create your own casters by implementing the `CasterInterface`:
+
+```php
+use Alamellama\Carapace\Contracts\CasterInterface;
+
+final readonly class DateTimeCaster implements CasterInterface
+{
+    public function __construct(
+        private string $format = 'Y-m-d H:i:s'
+    ) {}
+
+    public function cast(mixed $value): \DateTime
+    {
+        if ($value instanceof \DateTime) {
+            return $value;
+        }
+        
+        if (is_string($value)) {
+            return \DateTime::createFromFormat($this->format, $value) 
+                ?? new \DateTime($value);
+        }
+        
+        if (is_int($value)) {
+            return (new \DateTime())->setTimestamp($value);
+        }
+        
+        throw new \InvalidArgumentException('Cannot cast to DateTime');
+    }
+}
+```
+
+Then use it with the `CastWith` attribute:
+
+```php
+final class Event extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        #[CastWith(new DateTimeCaster('Y-m-d'))]
+        public \DateTime $date,
+    ) {}
+}
+
+$event = Event::from([
+    'name' => 'Conference',
+    'date' => '2025-08-15', // Will be cast to DateTime
 ]);
 ```
 
