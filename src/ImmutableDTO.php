@@ -6,7 +6,6 @@ namespace Alamellama\Carapace;
 
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
-use JsonException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -26,10 +25,8 @@ abstract class ImmutableDTO
      * Creates a new instance of the DTO from the provided data.
      *
      * @param  string|array<mixed, mixed>  $data  The input data, either as JSON or an associative array.
-     * @return static A fully hydrated DTO instance.
      *
-     * @throws JsonException If an error occurs during JSON decoding.
-     * @throws InvalidArgumentException If required parameters are missing.
+     * @return static A fully hydrated DTO instance.
      */
     public static function from(string|array $data): static
     {
@@ -45,7 +42,7 @@ abstract class ImmutableDTO
         foreach ($reflection->getProperties() as $property) {
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Contracts\PreHydrationHandler) {
+                if ($attrInstance instanceof Contracts\PreHydrationInterface) {
                     $attrInstance->handle($property->getName(), $data);
                 }
             }
@@ -76,7 +73,7 @@ abstract class ImmutableDTO
             foreach ($reflection->getProperties() as $property) {
                 foreach ($property->getAttributes() as $attr) {
                     $attrInstance = $attr->newInstance();
-                    if ($attrInstance instanceof Contracts\HydrationHandler) {
+                    if ($attrInstance instanceof Contracts\HydrationInterface) {
                         $attrInstance->handle($property->getName(), $data);
                     }
                 }
@@ -106,7 +103,8 @@ abstract class ImmutableDTO
      * Creates a modified copy of the DTO with overridden values.
      *
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
-     * @param  mixed  $namedOverrides  Additional named overrides.
+     * @param mixed $namedOverrides Additional named overrides.
+
      * @return static A new DTO instance with updated values.
      */
     public function with(array $overrides = [], ...$namedOverrides): static

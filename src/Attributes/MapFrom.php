@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Contracts\PreHydrationHandler;
+use Alamellama\Carapace\Contracts\PreHydrationInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -14,7 +14,7 @@ use Attribute;
  * Useful for transforming data where the source key needs to be renamed
  * or moved to a different property during hydration.
  */
-final class MapFrom implements PreHydrationHandler
+final class MapFrom implements PreHydrationInterface
 {
     public function __construct(public string $sourceKey) {}
 

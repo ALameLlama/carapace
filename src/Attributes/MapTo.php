@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Contracts\TransformationHandler;
+use Alamellama\Carapace\Contracts\TransformationInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -14,7 +14,7 @@ use Attribute;
  * This is useful for ensuring that the property is always represented with a specific key.
  * For instance, you might have properties using PascalCase while array keys use snake_case.
  */
-final class MapTo implements TransformationHandler
+final class MapTo implements TransformationInterface
 {
     public function __construct(
         public string $destinationKey

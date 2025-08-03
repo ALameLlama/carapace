@@ -40,7 +40,7 @@ trait SerializationTrait
 
                 // Ran all HandlesPropertyTransform attributes
                 // Such as MapTo, etc.
-                if ($attrInstance instanceof Contracts\TransformationHandler) {
+                if ($attrInstance instanceof Contracts\TransformationInterface) {
                     [$name, $value] = $attrInstance->handle($name, $value);
                 }
             }

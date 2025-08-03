@@ -8,9 +8,9 @@ namespace Alamellama\Carapace\Contracts;
  * Interface for attributes that handle modifications to hydration data before it is applied to the object.
  *
  * This enables custom handling of properties before the hydration process.
- * e.g CastWith, MapFrom
+ * e.g. CastWith, MapFrom
  */
-interface PreHydrationHandler
+interface PreHydrationInterface
 {
     /**
      * Allows attributes to modify hydration data as needed.
