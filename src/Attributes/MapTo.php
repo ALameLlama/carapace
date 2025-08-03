@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
+use Alamellama\Carapace\Interfaces\TransformationHandler;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -12,7 +13,7 @@ use Attribute;
  * This is useful for ensuring that the property is always represented with a specific key,
  * or want to have properties use PascalCase but the array keys use snake_case when converting to an array.
  */
-final class MapTo implements HandlesPropertyTransformation
+final class MapTo implements TransformationHandler
 {
     public function __construct(
         public string $destinationKey
@@ -25,7 +26,7 @@ final class MapTo implements HandlesPropertyTransformation
      * @param  mixed  $value  The value of the property.
      * @return array{key: string, value: mixed} The key-value pair to be used in the array.
      */
-    public function handlePropertyTransformation(string $propertyName, mixed $value): array
+    public function handle(string $propertyName, mixed $value): array
     {
         return ['key' => $this->destinationKey, 'value' => $value];
     }

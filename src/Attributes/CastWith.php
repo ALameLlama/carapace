@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
+use Alamellama\Carapace\Interfaces\PreHydrationHandler;
 use Attribute;
 use InvalidArgumentException;
 
@@ -12,7 +13,7 @@ use InvalidArgumentException;
  * Casts a property to a specific DTO class when hydrating an object.
  * This is useful for ensuring that the property is always represented as a specific DTO type.
  */
-final class CastWith implements HandlesBeforeHydration
+final class CastWith implements PreHydrationHandler
 {
     public function __construct(
         public string $casterClass
@@ -26,7 +27,7 @@ final class CastWith implements HandlesBeforeHydration
      *
      * @throws InvalidArgumentException If the value cannot be cast to the specified DTO class.
      */
-    public function handleBeforeHydration(string $propertyName, array &$data): void
+    public function handle(string $propertyName, array &$data): void
     {
         if (! array_key_exists($propertyName, $data)) {
             return;

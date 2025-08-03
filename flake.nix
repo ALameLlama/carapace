@@ -62,7 +62,7 @@
             # If you included dockerd, spin it up in the background:
             if ! pgrep -x dockerd > /dev/null; then
               echo "🚀 Starting rootless Docker daemon..."
-              (dockerd-rootless) &
+              (dockerd-rootless > /dev/null 2>&1) &
             fi
           '';
         };

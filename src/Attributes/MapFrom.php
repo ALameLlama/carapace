@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
+use Alamellama\Carapace\Interfaces\PreHydrationHandler;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -12,7 +13,7 @@ use Attribute;
  * This is useful for transforming data where the source key needs to be renamed
  * or moved to a different property during hydration.
  */
-final class MapFrom implements HandlesBeforeHydration
+final class MapFrom implements PreHydrationHandler
 {
     public function __construct(public string $sourceKey) {}
 
@@ -22,7 +23,7 @@ final class MapFrom implements HandlesBeforeHydration
      * @param  string  $propertyName  The name of the property being handled.
      * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handleBeforeHydration(string $propertyName, array &$data): void
+    public function handle(string $propertyName, array &$data): void
     {
         if (! array_key_exists($this->sourceKey, $data)) {
             return;

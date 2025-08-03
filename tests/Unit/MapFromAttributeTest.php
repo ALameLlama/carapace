@@ -18,7 +18,7 @@ it('can map attributes from an array using MapFrom', function (): void {
     ];
 
     $attribute = new MapFrom('email_address');
-    $attribute->handleBeforeHydration('email', $data);
+    $attribute->handle('email', $data);
 
     expect($data)
         ->toHaveKey('email')

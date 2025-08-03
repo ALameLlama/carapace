@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Traits;
 
-use Alamellama\Carapace\Attributes;
+use Alamellama\Carapace\Interfaces;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -37,8 +37,8 @@ trait SerializationTrait
 
                 // Ran all HandlesPropertyTransform attributes
                 // Such as MapTo, etc.
-                if ($attrInstance instanceof Attributes\HandlesPropertyTransformation) {
-                    ['key' => $name, 'value' => $value] = $attrInstance->handlePropertyTransformation($name, $value);
+                if ($attrInstance instanceof Interfaces\TransformationHandler) {
+                    ['key' => $name, 'value' => $value] = $attrInstance->handle($name, $value);
                     break;
                 }
             }

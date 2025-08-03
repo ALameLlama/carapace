@@ -37,8 +37,8 @@ abstract class ImmutableDTO
         foreach ($reflection->getProperties() as $property) {
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Attributes\HandlesBeforeHydration) {
-                    $attrInstance->handleBeforeHydration($property->getName(), $data);
+                if ($attrInstance instanceof Interfaces\PreHydrationHandler) {
+                    $attrInstance->handle($property->getName(), $data);
                 }
             }
         }
