@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Traits;
 
-use Alamellama\Carapace\Interfaces;
+use Alamellama\Carapace\Contracts;
+use JsonException;
 use ReflectionClass;
 use ReflectionProperty;
 
 /**
- * Trait for serializing objects to arrays and JSON.
+ * Trait for Serializing Objects.
  *
- * This trait provides methods to convert an object to an array and to a JSON string.
- * It also supports custom property transformations using attributes.
+ * Provides utility methods to:
+ * - Convert an object to an array.
+ * - Serialize an object to a JSON string.
+ * - Apply attribute-based property transformations.
  */
 trait SerializationTrait
 {
     /**
-     * Converts the object to an array.
+     * Converts the object into an associative array.
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> An array representation of the object's public properties.
      */
     public function toArray(): array
     {
@@ -37,9 +40,8 @@ trait SerializationTrait
 
                 // Ran all HandlesPropertyTransform attributes
                 // Such as MapTo, etc.
-                if ($attrInstance instanceof Interfaces\TransformationHandler) {
-                    ['key' => $name, 'value' => $value] = $attrInstance->handle($name, $value);
-                    break;
+                if ($attrInstance instanceof Contracts\TransformationHandler) {
+                    [$name, $value] = $attrInstance->handle($name, $value);
                 }
             }
 
@@ -50,7 +52,11 @@ trait SerializationTrait
     }
 
     /**
-     * Converts the object to a JSON string.
+     * Serializes the object into a JSON string.
+     *
+     * @return string A JSON-encoded representation of the object.
+     *
+     * @throws JsonException If encoding fails.
      */
     public function toJson(): string
     {
@@ -58,7 +64,10 @@ trait SerializationTrait
     }
 
     /**
-     * Recursively converts properties to an array.
+     * Recursively transforms nested properties into arrays.
+     *
+     * @param  mixed  $value  The value to be converted.
+     * @return mixed The transformed array or original value if not transformable.
      */
     private function recursiveToArray(mixed $value): mixed
     {

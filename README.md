@@ -73,12 +73,13 @@ Use the `with` method to create a modified copy:
 
 ```php
 $updatedUser = $user->with(['name' => 'Jane Doe']);
-```
 
-Or using named arguments:
+// Or using named arguments:
 
-```php
 $updatedUser = $user->with(name: 'Jane Doe');
+
+echo $user->name // John
+echo $updatedUser>name // Jane
 ```
 
 > The original instance remains unchanged.

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Interfaces\PreHydrationHandler;
+use Alamellama\Carapace\Contracts\PreHydrationHandler;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
  * Maps a property from another key in the data array when hydrating an object.
- * This is useful for transforming data where the source key needs to be renamed
+ *
+ * Useful for transforming data where the source key needs to be renamed
  * or moved to a different property during hydration.
  */
 final class MapFrom implements PreHydrationHandler

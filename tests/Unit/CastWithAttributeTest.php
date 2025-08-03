@@ -113,3 +113,16 @@ it('throws if value is not an array or DTO instance', function (): void {
 
     $attribute->handle('user', $data);
 })->throws(InvalidArgumentException::class, "Unable to cast property 'user' to " . User::class);
+
+it('handles empty array without throwing exception', function (): void {
+    $data = [
+        'users' => [],
+    ];
+
+    $attribute = new CastWith(User::class);
+    $attribute->handle('users', $data);
+
+    expect($data['users'])
+        ->toBeArray()
+        ->toHaveCount(0);
+});

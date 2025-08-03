@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Alamellama\Carapace\Interfaces;
+namespace Alamellama\Carapace\Contracts;
 
 /**
  * Interface for attributes that handle modifications to hydration data before it is applied to the object.
- * This allows for custom handling of properties during the hydration process.
+ *
+ * This enables custom handling of properties before the hydration process.
  * e.g CastWith, MapFrom
  */
 interface PreHydrationHandler

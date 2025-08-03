@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Alamellama\Carapace\Interfaces;
+namespace Alamellama\Carapace\Contracts;
 
 /**
- * Interface for attributes that handle hydration of properties.
- * This allows for custom handling of properties during the hydration process.
- * TODO: This interface is not yet implemented.
+ * Interface for attributes that handle the hydration of properties.
+ *
+ * This enables custom property handling during the hydration process,
+ * TODO: currently I don't have a use case for this, but it is here for future use.
+ * so I'm not sure if the interface data is correct.
  */
 interface HydrationHandler
 {

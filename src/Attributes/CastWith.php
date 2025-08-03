@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Interfaces\PreHydrationHandler;
+use Alamellama\Carapace\Contracts\PreHydrationHandler;
 use Attribute;
 use InvalidArgumentException;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
  * Casts a property to a specific DTO class when hydrating an object.
- * This is useful for ensuring that the property is always represented as a specific DTO type.
+ *
+ * This ensures the property is always represented as a specific DTO type
  */
 final class CastWith implements PreHydrationHandler
 {

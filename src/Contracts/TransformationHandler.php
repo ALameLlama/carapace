@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Alamellama\Carapace\Interfaces;
+namespace Alamellama\Carapace\Contracts;
 
 /**
  * Interface for attributes that handle property transformations when converting to an array.
- * This allows for custom handling of properties d
- * during the transformation process.
+ *
+ * This enable custom handling of properties during the transformation process.
  * e.g. MapTo
  */
 interface TransformationHandler
@@ -15,7 +15,7 @@ interface TransformationHandler
     /**
      * Allows attributes to modify property when transforming to array.
      *
-     * @return array{key: string, value: mixed}
+     * @return array{string, mixed}
      */
     public function handle(string $propertyName, mixed $value): array;
 }

@@ -6,22 +6,30 @@ namespace Alamellama\Carapace;
 
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
+use JsonException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
 /**
- * Persistent Immutable Data Transfer Object (DTO) base class.
+ * Immutable Data Transfer Object (DTO) Base Class.
  *
- * Provides methods to create instances from arrays and json,
- * and to create modified copies of the instance with new values.
+ * This abstract class provides a foundation for creating an immutable DTO. It supports:
+ * - Hydrating instances from arrays or JSON.
+ * - Generating modified copies of the instance with overridden values.
  */
 abstract class ImmutableDTO
 {
     use SerializationTrait;
 
     /**
-     * @param  string|array<mixed, mixed>  $data
+     * Creates a new instance of the DTO from the provided data.
+     *
+     * @param  string|array<mixed, mixed>  $data  The input data, either as JSON or an associative array.
+     * @return static A fully hydrated DTO instance.
+     *
+     * @throws JsonException If an error occurs during JSON decoding.
+     * @throws InvalidArgumentException If required parameters are missing.
      */
     public static function from(string|array $data): static
     {
@@ -32,12 +40,12 @@ abstract class ImmutableDTO
 
         $reflection = new ReflectionClass(static::class);
 
-        // Run all HandlesBeforeHydration attributes
+        // Run all Contracts\PreHydrationHandler attributes
         // Such as CastWith, MapFrom, etc.
         foreach ($reflection->getProperties() as $property) {
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Interfaces\PreHydrationHandler) {
+                if ($attrInstance instanceof Contracts\PreHydrationHandler) {
                     $attrInstance->handle($property->getName(), $data);
                 }
             }
@@ -45,7 +53,7 @@ abstract class ImmutableDTO
 
         $params = $reflection->getConstructor()?->getParameters() ?? [];
 
-        $args = array_map(function (ReflectionParameter $param) use ($data) {
+        $args = array_map(function (ReflectionParameter $param) use ($data, $reflection) {
             $name = $param->getName();
 
             // If the parameter is not present in the data, check for default value or nullability
@@ -62,10 +70,20 @@ abstract class ImmutableDTO
                 throw new InvalidArgumentException("Missing required parameter: $name");
             }
 
+            // Run all Contracts\HydrationHandler attributes
+            // TODO: currently I don't have a use case for this, but it is here for future use.
+            // might be usable for validators or other custom handlers.
+            foreach ($reflection->getProperties() as $property) {
+                foreach ($property->getAttributes() as $attr) {
+                    $attrInstance = $attr->newInstance();
+                    if ($attrInstance instanceof Contracts\HydrationHandler) {
+                        $attrInstance->handle($property->getName(), $data);
+                    }
+                }
+            }
+
             $value = $data[$name];
             $type = $param->getType();
-
-            // TODO: add during hydration interface? something so you can do validation etc
 
             // Handle nested DTO hydration
             if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
@@ -85,8 +103,11 @@ abstract class ImmutableDTO
     }
 
     /**
-     * @param  array<mixed,mixed>  $overrides
-     * @param  mixed  $namedOverrides
+     * Creates a modified copy of the DTO with overridden values.
+     *
+     * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
+     * @param  mixed  $namedOverrides  Additional named overrides.
+     * @return static A new DTO instance with updated values.
      */
     public function with(array $overrides = [], ...$namedOverrides): static
     {
@@ -104,8 +125,4 @@ abstract class ImmutableDTO
 
         return static::from($data);
     }
-
-    /**
-     * @return array<string, mixed>
-     */
 }
