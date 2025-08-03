@@ -174,33 +174,47 @@ The `PrimitiveCaster` supports the following types:
 
 #### 3. Custom Casters
 
-You can create your own casters by implementing the `CasterInterface`:
+You can create your own casters by implementing the `CasterInterface`. Here's an example of how you might create a caster for Carbon dates:
 
 ```php
 use Alamellama\Carapace\Contracts\CasterInterface;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use DateTimeInterface;
 
-final readonly class DateTimeCaster implements CasterInterface
+final readonly class CarbonCaster implements CasterInterface
 {
     public function __construct(
         private string $format = 'Y-m-d H:i:s'
     ) {}
 
-    public function cast(mixed $value): \DateTime
+    public function cast(mixed $value): mixed // Would return CarbonInterface in real implementation
     {
-        if ($value instanceof \DateTime) {
+        if ($value instanceof CarbonInterface) {
             return $value;
         }
         
+        if ($value instanceof DateTimeInterface) {
+            return Carbon::instance($value);
+        }
+        
         if (is_string($value)) {
-            return \DateTime::createFromFormat($this->format, $value) 
-                ?? new \DateTime($value);
+            try {
+                $carbon = Carbon::createFromFormat($this->format, $value);
+                if ($carbon !== false) {
+                    return $carbon;
+                }
+            } catch (\Exception $e) {
+                // If format parsing fails, try the flexible parser
+                return Carbon::parse($value);
+            }
         }
         
         if (is_int($value)) {
-            return (new \DateTime())->setTimestamp($value);
+            return Carbon::createFromTimestamp($value);
         }
         
-        throw new \InvalidArgumentException('Cannot cast to DateTime');
+        throw new \InvalidArgumentException('Cannot cast to Carbon: unsupported type ' . gettype($value));
     }
 }
 ```
@@ -212,14 +226,14 @@ final class Event extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        #[CastWith(new DateTimeCaster('Y-m-d'))]
-        public \DateTime $date,
+        #[CastWith(new CarbonCaster('Y-m-d'))]
+        public CarbonInterface $date,
     ) {}
 }
 
 $event = Event::from([
     'name' => 'Conference',
-    'date' => '2025-08-15', // Will be cast to DateTime
+    'date' => '2025-08-15', // Will be cast to Carbon
 ]);
 ```
 

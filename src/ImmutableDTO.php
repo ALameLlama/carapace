@@ -25,7 +25,6 @@ abstract class ImmutableDTO
      * Creates a new instance of the DTO from the provided data.
      *
      * @param  string|array<mixed, mixed>  $data  The input data, either as JSON or an associative array.
-     *
      * @return static A fully hydrated DTO instance.
      */
     public static function from(string|array $data): static
