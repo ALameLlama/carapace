@@ -9,12 +9,12 @@ namespace Alamellama\Carapace\Attributes;
  * This allows for custom handling of properties during the transformation process.
  * e.g. MapTo
  */
-interface HandlesPropertyTransform
+interface HandlesPropertyTransformation
 {
     /**
      * Allows attributes to modify property when transforming to array.
      *
      * @return array{key: string, value: mixed}
      */
-    public function handle(string $propertyName, mixed $value): array;
+    public function handlePropertyTransformation(string $propertyName, mixed $value): array;
 }

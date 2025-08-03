@@ -37,8 +37,8 @@ trait SerializationTrait
 
                 // Ran all HandlesPropertyTransform attributes
                 // Such as MapTo, etc.
-                if ($attrInstance instanceof Attributes\HandlesPropertyTransform) {
-                    ['key' => $name, 'value' => $value] = $attrInstance->handle($name, $value);
+                if ($attrInstance instanceof Attributes\HandlesPropertyTransformation) {
+                    ['key' => $name, 'value' => $value] = $attrInstance->handlePropertyTransformation($name, $value);
                     break;
                 }
             }

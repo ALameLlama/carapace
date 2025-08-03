@@ -1,6 +1,6 @@
 {
   "name": "alamellama/carapace",
-  "description": "Generic DTO's for PHP",
+  "description": "Framework-agnostic DTOs for PHP",
   "type": "library",
   "license": "MIT",
   "autoload": {

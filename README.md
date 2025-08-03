@@ -106,7 +106,7 @@ final class Account extends ImmutableDTO
 
 ```php
 $account = Account::from([
-    'name' => 'My, Myself and I',
+    'name' => 'Me, Myself and I',
     'users' => [
         ['name' => 'John', 'email' => 'john@example.com'],
         ['name' => 'Jane', 'email' => 'jane@example.com'],
@@ -180,7 +180,7 @@ print_r($user->toArray());
 
 ```php
 $dto->toArray();
-$->toJson();
+$dto->toJson();
 ```
 
 - Nested DTOs are automatically and recursively serialized.

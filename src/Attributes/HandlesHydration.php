@@ -17,5 +17,5 @@ interface HandlesHydration
      * @param  string  $propertyName  The property name being handled.
      * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void;
+    public function handleHydration(string $propertyName, array &$data): void;
 }
