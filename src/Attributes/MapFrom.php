@@ -22,7 +22,7 @@ final class MapFrom implements HandlesBeforeHydration
      * @param  string  $propertyName  The name of the property being handled.
      * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void
+    public function handleBeforeHydration(string $propertyName, array &$data): void
     {
         if (! array_key_exists($this->sourceKey, $data)) {
             return;

@@ -18,6 +18,9 @@ it('can transform property keys using MapTo', function (): void {
 
     $result = $dto->toArray();
 
+    expect($dto)
+        ->originalKey->toBe('value');
+
     expect($result)
         ->toHaveKey('renamed_key', 'value')
         ->not->toHaveKey('originalKey');
@@ -36,6 +39,10 @@ it('can transform multiple properties using MapTo', function (): void {
     };
 
     $result = $dto->toArray();
+
+    expect($dto)
+        ->key1->toBe('value1')
+        ->key2->toBe('value2');
 
     expect($result)
         ->toHaveKey('new_key1', 'value1')

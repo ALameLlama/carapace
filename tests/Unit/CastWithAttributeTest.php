@@ -34,7 +34,7 @@ it('can cast nested arrays into DTO instances', function (): void {
     ];
 
     $attribute = new CastWith(User::class);
-    $attribute->handle('users', $data);
+    $attribute->handleBeforeHydration('users', $data);
 
     expect($data['users'])
         ->toHaveCount(2)
@@ -48,7 +48,7 @@ it('ignores missing properties during casting', function (): void {
     ];
 
     $attribute = new CastWith(User::class);
-    $attribute->handle('users', $data);
+    $attribute->handleBeforeHydration('users', $data);
 
     expect($data['not_users'])
         ->toBeArray()
@@ -64,7 +64,7 @@ it('skips re-casting for array of DTO instances', function (): void {
     ];
 
     $attribute = new CastWith(User::class);
-    $attribute->handle('users', $data);
+    $attribute->handleBeforeHydration('users', $data);
 
     expect($data['users'])
         ->toHaveCount(2)
@@ -78,7 +78,7 @@ it('handles non-array value that is already a DTO instance', function (): void {
     ];
 
     $attribute = new CastWith(User::class);
-    $attribute->handle('user', $data);
+    $attribute->handleBeforeHydration('user', $data);
 
     expect($data['user'])->toBeInstanceOf(User::class);
 });
@@ -97,7 +97,7 @@ it('can cast a non-array value into a DTO instance', function (): void {
     ];
 
     $attribute = new CastWith(User::class);
-    $attribute->handle('user', $data);
+    $attribute->handleBeforeHydration('user', $data);
 
     expect($data['user'])->toBeInstanceOf(User::class)
         ->name->toBe('Nick')
@@ -111,5 +111,5 @@ it('throws if value is not an array or DTO instance', function (): void {
 
     $attribute = new CastWith(User::class);
 
-    $attribute->handle('user', $data);
+    $attribute->handleBeforeHydration('user', $data);
 })->throws(InvalidArgumentException::class, "Unable to cast property 'user' to " . User::class);

@@ -26,7 +26,7 @@ final class CastWith implements HandlesBeforeHydration
      *
      * @throws InvalidArgumentException If the value cannot be cast to the specified DTO class.
      */
-    public function handle(string $propertyName, array &$data): void
+    public function handleBeforeHydration(string $propertyName, array &$data): void
     {
         if (! array_key_exists($propertyName, $data)) {
             return;
