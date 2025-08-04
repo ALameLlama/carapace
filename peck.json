@@ -3,7 +3,9 @@
   "ignore": {
     "words": [
       "php",
-      "dto"
+      "dto",
+      "img",
+      "fn"
     ],
     "paths": [
       "tests"

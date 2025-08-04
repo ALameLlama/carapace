@@ -26,9 +26,8 @@ it('excludes properties marked with Hidden attribute when serializing to array',
 
     expect($array)
         ->toHaveKey('visible')
-        ->not->toHaveKey('hidden');
-
-    expect($array['visible'])->toBe('This should be visible');
+        ->not->toHaveKey('hidden')
+        ->and($array['visible'])->toBe('This should be visible');
 });
 
 it('excludes properties marked with Hidden attribute when serializing to JSON', function (): void {

@@ -46,6 +46,8 @@
             # Docker CLI & daemon
             docker
             rootlesskit
+
+            yarn
           ];
 
           # Optional: expose Docker socket from nix

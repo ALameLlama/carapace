@@ -16,6 +16,9 @@ use Attribute;
  */
 final class MapTo implements TransformationInterface
 {
+    /**
+     * @param  string  $destinationKey  The key to use in the output array
+     */
     public function __construct(
         public string $destinationKey
     ) {}

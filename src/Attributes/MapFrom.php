@@ -9,14 +9,26 @@ use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
- * Maps a property from another key in the data array when hydrating an object.
+ * Maps a property from one or more keys in the data array when hydrating an object.
  *
  * Useful for transforming data where the source key needs to be renamed
- * or moved to a different property during hydration.
+ * or moved to a different property during hydration. Can accept multiple source keys
+ * which will be checked in order until a match is found.
  */
 final class MapFrom implements PreHydrationInterface
 {
-    public function __construct(public string $sourceKey) {}
+    /**
+     * @var array<string> The keys in the input data to map from (checked in order)
+     */
+    public array $sourceKeys;
+
+    /**
+     * @param  string  ...$sourceKeys  The keys in the input data to map from (checked in order)
+     */
+    public function __construct(string ...$sourceKeys)
+    {
+        $this->sourceKeys = $sourceKeys;
+    }
 
     /**
      * Handles the mapping of a property from another key in the data array.
@@ -26,11 +38,15 @@ final class MapFrom implements PreHydrationInterface
      */
     public function handle(string $propertyName, array &$data): void
     {
-        if (! array_key_exists($this->sourceKey, $data)) {
+        foreach ($this->sourceKeys as $sourceKey) {
+            if (! array_key_exists($sourceKey, $data)) {
+                continue;
+            }
+
+            $data[$propertyName] = $data[$sourceKey];
+            unset($data[$sourceKey]);
+
             return;
         }
-
-        $data[$propertyName] = $data[$this->sourceKey];
-        unset($data[$this->sourceKey]);
     }
 }

@@ -102,7 +102,7 @@ abstract class ImmutableDTO
      * Creates a modified copy of the DTO with overridden values.
      *
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
-     * @param mixed $namedOverrides Additional named overrides.
+     * @param  mixed  $namedOverrides  Additional named overrides.
 
      * @return static A new DTO instance with updated values.
      */
