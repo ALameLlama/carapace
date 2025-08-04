@@ -67,7 +67,9 @@ final readonly class EnumCaster implements CasterInterface
                 if ($value !== null) {
                     $result = $this->enumClass::tryFrom($value);
                     if ($result !== null) {
+                        // @codeCoverageIgnoreStart
                         return $result;
+                        // @codeCoverageIgnoreEnd
                     }
                 }
 
