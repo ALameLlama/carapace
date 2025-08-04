@@ -16,6 +16,7 @@ Carapace is a lightweight PHP library for building immutable, strictly typed Dat
   Automatically casts values during hydration:
   - Nested DTOs and collections
   - Primitive types (int, float, string, bool, array)
+  - PHP enums (backed and unit enums)
   - Custom types via `CasterInterface`
 - **`MapFrom`**  
   Maps properties from custom keys in the input array.
@@ -234,6 +235,66 @@ final class Event extends ImmutableDTO
 $event = Event::from([
     'name' => 'Conference',
     'date' => '2025-08-15', // Will be cast to Carbon
+]);
+```
+
+#### 4. Enum Casting
+
+The `EnumCaster` allows you to cast values to native PHP enums (both backed and unit enums):
+
+```php
+use Alamellama\Carapace\Attributes\CastWith;
+use Alamellama\Carapace\Casters\EnumCaster;
+use Alamellama\Carapace\ImmutableDTO;
+
+// Define your enums
+enum Status: string
+{
+    case PENDING = 'pending';
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+}
+
+enum Color
+{
+    case RED;
+    case GREEN;
+    case BLUE;
+}
+
+// Use EnumCaster in your DTO
+final class Task extends ImmutableDTO
+{
+    public function __construct(
+        public string $title,
+        #[CastWith(new EnumCaster(Status::class))]
+        public Status $status,
+        #[CastWith(new EnumCaster(Color::class))]
+        public Color $color
+    ) {}
+}
+```
+
+```php
+// The EnumCaster will handle the conversion
+$task = Task::from([
+    'title' => 'Complete documentation',
+    'status' => 'active',     // String value for backed enum
+    'color' => 'RED',         // Case name for unit enum
+]);
+
+// Case-insensitive matching is supported
+$task = Task::from([
+    'title' => 'Complete documentation',
+    'status' => 'ACTIVE',     // Will match Status::ACTIVE
+    'color' => 'red',         // Will match Color::RED
+]);
+
+// You can also use enum instances directly
+$task = Task::from([
+    'title' => 'Complete documentation',
+    'status' => Status::PENDING,
+    'color' => Color::BLUE,
 ]);
 ```
 
