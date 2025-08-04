@@ -22,6 +22,8 @@ Carapace is a lightweight PHP library for building immutable, strictly typed Dat
   Maps properties from custom keys in the input array.
 - **`MapTo`**  
   Controls output keys when serializing the DTO.
+- **`Hidden`**  
+  Excludes properties from serialization output.
 
 ### 📦 Serialization
 
@@ -357,6 +359,45 @@ print_r($user->toArray());
     'email_address' => 'john.doe@example.com',
 ]
 ```
+
+### `Hidden`
+
+Exclude sensitive or internal properties from serialization:
+
+```php
+use Alamellama\Carapace\Attributes\Hidden;
+
+final class User extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        public string $email,
+        #[Hidden]
+        public string $password,
+    ) {}
+}
+```
+
+```php
+$user = User::from([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com',
+    'password' => 'secret123',
+]);
+
+print_r($user->toArray());
+```
+
+```php
+// Output:
+[
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com',
+    // password is excluded from serialization
+]
+```
+
+The `Hidden` attribute works with both `toArray()` and `toJson()` methods, ensuring sensitive data is never included in serialized output.
 
 ---
 

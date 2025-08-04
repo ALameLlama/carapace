@@ -38,10 +38,14 @@ trait SerializationTrait
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
 
-                // Ran all HandlesPropertyTransform attributes
-                // Such as MapTo, etc.
+                // Run all TransformationInterface attributes
+                // Such as MapTo, Hidden, etc.
                 if ($attrInstance instanceof Contracts\TransformationInterface) {
                     [$name, $value] = $attrInstance->handle($name, $value);
+
+                    if ($name === '__hidden__') {
+                        continue 2;
+                    }
                 }
             }
 
