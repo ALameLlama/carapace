@@ -1,0 +1,87 @@
+# Carapace
+
+Carapace is a lightweight PHP library for building immutable, strictly typed Data Transfer Objects.
+It leverages PHP attributes for casting, property mapping,
+and serialization, while providing a simple, expressive API.
+
+## Features
+
+- **Immutable DTOs**: Define immutable data objects with constructor promotion
+- **Attribute-Driven Mapping**: Use attributes for casting, mapping, and serialization
+- **Strictly Typed**: Leverage PHP's type system for predictable data structures
+- **Framework-Agnostic**: Works in Laravel, Symfony, or plain PHP projects
+- **Simple API**: Create, hydrate, and transform DTOs with minimal boilerplate
+
+## Installation
+
+```bash
+composer require alamellama/carapace
+```
+
+## Usage
+
+```php
+use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Attributes\CastWith;
+use Alamellama\Carapace\Attributes\MapFrom;
+use Alamellama\Carapace\Attributes\Hidden;
+
+final class User extends ImmutableDTO
+{
+    public function __construct(
+        public string $name,
+        #[MapFrom('email_address')]
+        
+        public string $email,
+        
+        #[Hidden]
+        public string $password,
+        
+        #[CastWith(Address::class)]
+        public Address $address,
+    ) {}
+}
+
+// Create from array
+$user = User::from([
+    'name' => 'John Doe',
+    'email_address' => 'john@example.com',
+    'password' => 'secret',
+    'address' => [
+        'street' => '123 Main St',
+        'city' => 'Anytown',
+    ],
+]);
+
+// Create a modified copy
+$updatedUser = $user->with(name: 'Jane Doe');
+
+// Serialize
+$array = $user->toArray(); // Password will be excluded
+$json = $user->toJson();
+```
+
+## Documentation
+
+For detailed documentation, visit our [documentation site](https://alamellama.github.io/carapace/).
+
+## Coding Style
+
+Carapace follows PSR-12 coding standards with Laravel-style modifications. We use Laravel Pint for code style enforcement and Rector for automated refactoring.
+
+```bash
+composer fix
+```
+
+## Testing
+
+Carapace uses Pest PHP for testing and aims for 100% test coverage.
+
+```bash
+# Run all tests
+composer test
+```
+
+## License
+
+Carapace is open-sourced software licensed under the MIT license.

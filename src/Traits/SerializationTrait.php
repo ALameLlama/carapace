@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Alamellama\Carapace\Traits;
+
+use Alamellama\Carapace\Contracts;
+use JsonException;
+use ReflectionClass;
+use ReflectionProperty;
+
+/**
+ * Trait for Serializing Objects.
+ *
+ * Provides utility methods to:
+ * - Convert an object to an array.
+ * - Serialize an object to a JSON string.
+ * - Apply attribute-based property transformations.
+ */
+trait SerializationTrait
+{
+    /**
+     * Converts the object into an associative array.
+     *
+     * @return array<string, mixed> An array representation of the object's public properties.
+     */
+    public function toArray(): array
+    {
+        $result = [];
+
+        $reflection = new ReflectionClass($this);
+        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+
+        if (empty($properties)) {
+            return $result;
+        }
+
+        // Only public properties are considered for serialization
+        foreach ($properties as $property) {
+            $name = $property->getName();
+            $value = $property->getValue($this);
+
+            foreach ($property->getAttributes() as $attr) {
+                $attrInstance = $attr->newInstance();
+
+                // Run all TransformationInterface attributes
+                // Such as MapTo, Hidden, etc.
+                if ($attrInstance instanceof Contracts\TransformationInterface) {
+                    [$name, $value] = $attrInstance->handle($name, $value);
+
+                    if ($name === '__hidden__') {
+                        continue 2;
+                    }
+                }
+            }
+
+            $result[$name] = $this->recursiveToArray($value);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Serializes the object into a JSON string.
+     *
+     * @return string A JSON-encoded representation of the object.
+     *
+     * @throws JsonException If encoding fails.
+     */
+    public function toJson(): string
+    {
+        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * Recursively transforms nested properties into arrays.
+     *
+     * @param  mixed  $value  The value to be converted.
+     * @return mixed The transformed array or original value if not transformable.
+     */
+    private function recursiveToArray(mixed $value): mixed
+    {
+        // Early return for arrays
+        if (is_array($value)) {
+            return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
+        }
+
+        // Early return for self instances
+        if ($value instanceof self) {
+            return $value->toArray();
+        }
+
+        // Default return for all other types
+        return $value;
+    }
+}

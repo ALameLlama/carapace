@@ -1,0 +1,8 @@
+vendor
+.phpunit.cache
+.php-cs-fixer.cache
+.idea
+.junie
+node_modules
+docs/.vitepress/cache
+docs/.vitepress/dist
