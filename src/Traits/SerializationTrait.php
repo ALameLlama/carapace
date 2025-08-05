@@ -29,9 +29,14 @@ trait SerializationTrait
         $result = [];
 
         $reflection = new ReflectionClass($this);
+        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+
+        if (empty($properties)) {
+            return $result;
+        }
 
         // Only public properties are considered for serialization
-        foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+        foreach ($properties as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
 
@@ -75,14 +80,17 @@ trait SerializationTrait
      */
     private function recursiveToArray(mixed $value): mixed
     {
+        // Early return for arrays
         if (is_array($value)) {
             return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
         }
 
+        // Early return for self instances
         if ($value instanceof self) {
             return $value->toArray();
         }
 
+        // Default return for all other types
         return $value;
     }
 }

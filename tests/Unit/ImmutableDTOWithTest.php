@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Alamellama\Carapace\ImmutableDTO;
 use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\User;
 
@@ -135,4 +136,48 @@ it('can return a new instance with overridden values using a CastWith attribute'
     expect($dto2->users[0])
         ->toBeInstanceOf(User::class)
         ->name->toBe('Nicholas');
+});
+
+it('can handle empty array', function (): void {
+    $dto = User::from([
+        'name' => 'Nick',
+        'email' => 'nick@example.com',
+        'address' => [
+            'street' => '123 Main St',
+            'city' => 'Melbourne',
+            'postcode' => '3000',
+        ],
+    ]);
+
+    $dto2 = $dto->with([]);
+
+    expect($dto)
+        ->name->toBe('Nick')
+        ->email->toBe('nick@example.com');
+
+    expect($dto2)
+        ->name->toBe('Nick')
+        ->email->toBe('nick@example.com');
+
+    expect($dto)->not->toBe($dto2);
+});
+
+final class emptyDTO extends ImmutableDTO
+{
+    public function __construct(
+    ) {}
+}
+
+it('can handle empty dto', function (): void {
+    $dto = emptyDTO::from([]);
+
+    $dto2 = $dto->with([]);
+
+    expect($dto)
+        ->toBeInstanceOf(emptyDTO::class);
+
+    expect($dto2)
+        ->toBeInstanceOf(emptyDTO::class);
+
+    expect($dto)->not->toBe($dto2);
 });

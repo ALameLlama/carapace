@@ -81,15 +81,14 @@ abstract class ImmutableDTO
             $value = $data[$name];
             $type = $param->getType();
 
-            // Handle nested DTO hydration
-            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
-                $typeName = $type->getName();
-
-                if (is_subclass_of($typeName, self::class) && is_array($value)) {
-                    return $typeName::from($value);
-                }
-
+            if (! ($type instanceof ReflectionNamedType) || $type->isBuiltin()) {
                 return $value;
+            }
+
+            $typeName = $type->getName();
+
+            if (is_subclass_of($typeName, self::class) && is_array($value)) {
+                return $typeName::from($value);
             }
 
             return $value;
@@ -112,6 +111,10 @@ abstract class ImmutableDTO
 
         $reflection = new ReflectionClass($this);
         $params = $reflection->getConstructor()?->getParameters() ?? [];
+
+        if (empty($params)) {
+            return static::from([]);
+        }
 
         $data = [];
 

@@ -93,7 +93,7 @@ it('can return a recursive array of DTOs', function (): void {
 
 });
 
-it('only includes public properties in toArray()', function (): void {
+it('only includes public properties', function (): void {
     $dto = new class
     {
         use SerializationTrait;
@@ -105,10 +105,21 @@ it('only includes public properties in toArray()', function (): void {
         private string $privateProperty = 'private';
     };
 
-    $result = $dto->toArray();
-
-    expect($result)
+    expect($dto->toArray())
         ->toHaveKey('publicProperty', 'value')
         ->not->toHaveKey('protectedProperty')
         ->not->toHaveKey('privateProperty');
+});
+
+it('return empty if no public properties', function (): void {
+    $dto = new class
+    {
+        use SerializationTrait;
+
+        private string $privateProperty = 'private';
+    };
+
+    expect($dto->toArray())
+        ->toBeArray()
+        ->toBeEmpty();
 });

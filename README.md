@@ -1,7 +1,7 @@
 # Carapace
 
 Carapace is a lightweight PHP library for building immutable, strictly typed Data Transfer Objects.
-It leverages PHP 8+ attributes for casting, property mapping,
+It leverages PHP attributes for casting, property mapping,
 and serialization, while providing a simple, expressive API.
 
 ## Features
@@ -31,9 +31,12 @@ final class User extends ImmutableDTO
     public function __construct(
         public string $name,
         #[MapFrom('email_address')]
+        
         public string $email,
+        
         #[Hidden]
         public string $password,
+        
         #[CastWith(Address::class)]
         public Address $address,
     ) {}
@@ -61,15 +64,6 @@ $json = $user->toJson();
 ## Documentation
 
 For detailed documentation, visit our [documentation site](https://alamellama.github.io/carapace/).
-
-- [Getting Started](https://alamellama.github.io/carapace/guide/)
-- [Usage Guide](https://alamellama.github.io/carapace/guide/usage)
-- [Attributes](https://alamellama.github.io/carapace/attributes/)
-  - [CastWith](https://alamellama.github.io/carapace/attributes/cast-with)
-  - [MapFrom](https://alamellama.github.io/carapace/attributes/map-from)
-  - [MapTo](https://alamellama.github.io/carapace/attributes/map-to)
-  - [Hidden](https://alamellama.github.io/carapace/attributes/hidden)
-- [Testing](https://alamellama.github.io/carapace/guide/testing)
 
 ## Coding Style
 
