@@ -8,7 +8,6 @@ export default defineConfig({
     search: {
       provider: 'local'
     },
-    cleanUrls: true,
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
@@ -53,6 +52,9 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/alamellama/carapace' }
-    ]
-  }
+    ],
+  },
+  base: '/carapace/',
+  cleanUrls: true,
+  lastUpdated: true,
 })
