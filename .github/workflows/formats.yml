@@ -1,6 +1,10 @@
 name: 🧹 Formats
 
-on: ["push", "pull_request"]
+on:
+  push:
+    paths-ignore:
+      - 'CHANGELOG.md'
+  pull_request:
 
 jobs:
   ci:
