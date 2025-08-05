@@ -6,6 +6,9 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
+/**
+ * @method self with(array $overrides = [], string $name = null) Creates a modified copy of the DTO with overridden values.
+ */
 final class WithDefaultValue extends ImmutableDTO
 {
     public function __construct(

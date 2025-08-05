@@ -37,6 +37,7 @@
       "@refactor",
       "@lint"
     ],
+    "generate-with-doc": "php bin/generate-with-doc.php",
     "test:refactor": "rector --dry-run",
     "test:typos": "peck",
     "test:lint": "pint --parallel --test",
