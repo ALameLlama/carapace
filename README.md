@@ -1,4 +1,10 @@
-# Carapace
+<h1 align="center">Carapace</h1>
+<p align="center">
+    <img alt="Packagist License" src="https://img.shields.io/packagist/l/ALameLlama/carapace">
+    <img alt="Packagist Version" src="https://img.shields.io/packagist/v/ALameLlama/carapace">
+    <img alt="Packagist Stars" src="https://img.shields.io/packagist/stars/ALameLlama/carapace">
+    <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/ALameLlama/carapace">
+</p>
 
 Carapace is a lightweight PHP library for building immutable, strictly typed Data Transfer Objects.
 It leverages PHP attributes for casting, property mapping,
