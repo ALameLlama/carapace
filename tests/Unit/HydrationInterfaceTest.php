@@ -29,9 +29,6 @@ final class ValidateIPv4 implements HydrationInterface
     }
 }
 
-/**
- * A DTO with an IPv4 address property that uses the ValidateIPv4 attribute.
- */
 final class ServerDTO extends ImmutableDTO
 {
     public function __construct(
