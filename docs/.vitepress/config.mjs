@@ -54,7 +54,7 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/alamellama/carapace' }
     ],
   },
-  base: '/carapace/',
+  // base: '/carapace/',
   cleanUrls: true,
   lastUpdated: true,
 })
