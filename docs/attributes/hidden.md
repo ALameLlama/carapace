@@ -13,7 +13,7 @@ final class User extends ImmutableDTO
     public function __construct(
         public string $name,
         public string $email,
-        
+
         #[Hidden]
         public string $password,
     ) {}
@@ -40,4 +40,3 @@ print_r($user->toArray());
 ```
 
 The `Hidden` attribute works with both `toArray()` and `toJson()` methods, ensuring sensitive data is never included in serialized output.
-

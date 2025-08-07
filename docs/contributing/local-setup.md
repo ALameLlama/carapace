@@ -46,6 +46,7 @@ composer test
 ```
 
 This will run:
+
 - PHPUnit/Pest tests
 - PHPStan static analysis
 - Laravel Pint code style checks

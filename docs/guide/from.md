@@ -36,7 +36,7 @@ final class User extends ImmutableDTO
     public function __construct(
         public string $name,
         public string $email,
-        
+
         #[CastWith(Address::class)]
         public Address $address,
     ) {}
@@ -64,7 +64,7 @@ final class Team extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[CastWith(User::class)]
         /** @var User[] */
         public array $members,
@@ -81,4 +81,5 @@ $team = Team::from([
 
 echo $team->members[0]->name; // Outputs: John
 ```
+
 > **Important**: The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.

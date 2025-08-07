@@ -13,7 +13,7 @@ final class Account extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[CastWith(User::class)]
         /** @var User[] */
         public array $users,
@@ -30,6 +30,7 @@ $account = Account::from([
     ],
 ]);
 ```
+
 > **Important**: The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.
 
 ## Primitive Type Casting
@@ -44,13 +45,13 @@ final class Product extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[CastWith(new PrimitiveCaster('int'))]
         public int $price,
-        
+
         #[CastWith(new PrimitiveCaster('bool'))]
         public bool $inStock,
-        
+
         #[CastWith(new PrimitiveCaster('array'))]
         public array $tags,
     ) {}
@@ -75,6 +76,7 @@ $product = Product::from([
 ```
 
 The `PrimitiveCaster` supports the following types:
+
 - `int`: Casts to integer
 - `float`: Casts to float
 - `string`: Casts to string
@@ -114,10 +116,10 @@ final class Task extends ImmutableDTO
 {
     public function __construct(
         public string $title,
-        
+
         #[CastWith(new EnumCaster(Status::class))]
         public Status $status,
-        
+
         #[CastWith(new EnumCaster(Color::class))]
         public Color $color
     ) {}
@@ -160,10 +162,10 @@ final class Event extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[CastWith(new DateTimeCaster)]
         public DateTimeInterface $createdAt,
-        
+
         #[CastWith(new DateTimeCaster('Y-m-d'))]
         public DateTimeInterface $eventDate,
     ) {}

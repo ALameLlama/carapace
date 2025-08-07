@@ -28,4 +28,3 @@ features:
   - title: Comprehensive Documentation
     details: Detailed documentation with examples for all features. Learn how to use Carapace effectively and get the most out of your DTOs.
 ---
-

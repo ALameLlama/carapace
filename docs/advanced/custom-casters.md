@@ -40,11 +40,11 @@ final readonly class CarbonCaster implements CasterInterface
         if ($value instanceof CarbonInterface) {
             return $value;
         }
-        
+
         if ($value instanceof DateTimeInterface) {
             return Carbon::instance($value);
         }
-        
+
         if (is_string($value)) {
             try {
                 $carbon = Carbon::createFromFormat($this->format, $value);
@@ -56,11 +56,11 @@ final readonly class CarbonCaster implements CasterInterface
                 return Carbon::parse($value);
             }
         }
-        
+
         if (is_int($value)) {
             return Carbon::createFromTimestamp($value);
         }
-        
+
         throw new \InvalidArgumentException('Cannot cast to Carbon: unsupported type ' . gettype($value));
     }
 }
@@ -78,7 +78,7 @@ final class Event extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[CastWith(new CarbonCaster('Y-m-d'))]
         public CarbonInterface $date,
     ) {}

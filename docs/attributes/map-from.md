@@ -12,7 +12,7 @@ final class User extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[MapFrom('email_address')]
         public string $email,
     ) {}
@@ -37,12 +37,13 @@ final class UserProfile extends ImmutableDTO
 {
     public function __construct(
         public string $name,
-        
+
         #[MapFrom('email_address', 'contact_email')]
         public string $email,
     ) {}
 }
 ```
+
 You can also use multiple `MapFrom` attributes on the same property:
 
 ```php

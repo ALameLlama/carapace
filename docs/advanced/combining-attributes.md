@@ -31,11 +31,11 @@ final class User extends ImmutableDTO
         #[MapFrom('user_name')]
         #[MapTo('full_name')]
         public string $name,
-        
+
         #[MapFrom('user_email')]
         #[MapTo('email_address')]
         public string $email,
-        
+
         #[Hidden]
         public string $password,
     ) {}
@@ -43,6 +43,7 @@ final class User extends ImmutableDTO
 ```
 
 In this example:
+
 - `name` is mapped from `user_name` or `display_name` in the input and to `full_name` in the output
 - `email` is mapped from `user_email` in the input and to `email_address` in the output
 - `password` is excluded from serialization
@@ -56,17 +57,19 @@ final class Order extends ImmutableDTO
 {
     public function __construct(
         public string $id,
-        
+
         #[MapFrom('order_date')]
         #[CastWith(new DateTimeCaster('Y-m-d'))]
         public DateTimeInterface $date,
-        
+
         #[MapFrom('items')]
         #[CastWith(OrderItem::class)]
         public array $orderItems,
     ) {}
 }
 ```
+
 This allows you to:
+
 1. Accept data with different key names
 2. Automatically cast that data to the appropriate types
