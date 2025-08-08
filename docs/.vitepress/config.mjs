@@ -11,8 +11,9 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "Home", link: "/" },
-      { text: "Guide", link: "/guide/" },
+      { text: "Getting Started", link: "/guide/" },
       { text: "Attributes", link: "/attributes/" },
+      { text: "Advanced", link: "/advanced/" },
     ],
 
     sidebar: [
@@ -27,7 +28,6 @@ export default defineConfig({
       {
         text: "Attributes",
         items: [
-          { text: "Overview", link: "/attributes/" },
           { text: "CastWith", link: "/attributes/cast-with" },
           { text: "MapFrom", link: "/attributes/map-from" },
           { text: "MapTo", link: "/attributes/map-to" },
