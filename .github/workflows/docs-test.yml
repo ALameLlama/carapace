@@ -2,31 +2,34 @@ name: 📝 Test Documentation Build
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
-      - 'docs/**'
-      - '.github/workflows/docs-test.yml'
+      - "docs/**"
+      - ".github/workflows/docs-test.yml"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
-        
+
+      - name: 🧶 Enable Corepack
+        run: corepack enable
+
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
-          
+          node-version: "22"
+          cache: "yarn"
+
       - name: 🧰 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🏗️ Build documentation
         run: yarn docs:build
-        
+
       - name: 🔍 Check build output
         run: |
           if [ ! -d "docs/.vitepress/dist" ]; then

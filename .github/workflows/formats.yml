@@ -3,7 +3,7 @@ name: 🧹 Formats
 on:
   push:
     paths-ignore:
-      - 'CHANGELOG.md'
+      - "CHANGELOG.md"
   pull_request:
 
 jobs:
