@@ -9,6 +9,8 @@ use Alamellama\Carapace\ImmutableDTO;
 use Attribute;
 use InvalidArgumentException;
 
+use function is_string;
+
 /**
  * An attribute that validates IPv4 addresses during hydration.
  */

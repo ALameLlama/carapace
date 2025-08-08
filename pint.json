@@ -14,6 +14,11 @@
       "import_constants": true,
       "import_functions": true
     },
+    "native_function_invocation": {
+      "include": ["@compiler_optimized"],
+      "scope": "namespaced",
+      "strict": true
+    },
     "ordered_class_elements": {
       "order": [
         "use_trait",
