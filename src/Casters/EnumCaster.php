@@ -10,6 +10,8 @@ use InvalidArgumentException;
 use UnitEnum;
 use ValueError;
 
+use function is_string;
+
 /**
  * Caster for native PHP Enums.
  *

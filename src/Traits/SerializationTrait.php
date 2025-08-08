@@ -9,6 +9,8 @@ use JsonException;
 use ReflectionClass;
 use ReflectionProperty;
 
+use function is_array;
+
 /**
  * Trait for Serializing Objects.
  *

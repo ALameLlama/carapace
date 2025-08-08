@@ -7,6 +7,10 @@ namespace Alamellama\Carapace\Casters;
 use Alamellama\Carapace\Contracts\CasterInterface;
 use InvalidArgumentException;
 
+use function is_array;
+use function is_object;
+use function is_string;
+
 /**
  * Caster for primitive PHP types.
  *

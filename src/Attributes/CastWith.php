@@ -9,6 +9,9 @@ use Alamellama\Carapace\Contracts\PreHydrationInterface;
 use Attribute;
 use InvalidArgumentException;
 
+use function array_key_exists;
+use function is_array;
+
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
  * Casts a property using either a DTO class or a CasterInterface implementation.

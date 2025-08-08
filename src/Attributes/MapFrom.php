@@ -7,6 +7,8 @@ namespace Alamellama\Carapace\Attributes;
 use Alamellama\Carapace\Contracts\PreHydrationInterface;
 use Attribute;
 
+use function array_key_exists;
+
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
  * Maps a property from one or more keys in the data array when hydrating an object.

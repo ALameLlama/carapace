@@ -10,6 +10,10 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
+use function array_key_exists;
+use function is_array;
+use function is_string;
+
 /**
  * Immutable Data Transfer Object (DTO) Base Class.
  *

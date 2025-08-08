@@ -10,6 +10,10 @@ use DateTimeInterface;
 use Exception;
 use InvalidArgumentException;
 
+use function gettype;
+use function is_int;
+use function is_string;
+
 /**
  * Caster for DateTime objects.
  *
