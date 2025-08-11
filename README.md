@@ -48,7 +48,7 @@ final class User extends ImmutableDTO
     ) {}
 }
 
-// Create from array
+// Create from an array
 $user = User::from([
     'name' => 'John Doe',
     'email_address' => 'john@example.com',
@@ -87,6 +87,21 @@ Carapace uses Pest PHP for testing and aims for 100% test coverage.
 # Run all tests
 composer test
 ```
+
+## Acknowledgements & Inspirations
+
+In particular, drew inspiration and ideas from:
+
+- Spatie's data libraries, including [spatie/data-transfer-object](https://github.com/spatie/data-transfer-object) and [spatie/laravel-data](https://github.com/spatie/laravel-data)
+- [CuyZ/Valinor](https://github.com/CuyZ/Valinor)
+- [Symfony Serializer](https://symfony.com/doc/current/components/serializer.html)
+
+We also rely on fantastic tooling that keeps this project reliable and maintainable:
+
+- [Pest PHP](https://pestphp.com/) for testing
+- [PHPStan](https://phpstan.org/) for static analysis
+- [Laravel Pint](https://laravel.com/docs/pint) for code style
+- [Rector](https://github.com/rectorphp/rector) for automated refactoring
 
 ## License
 
