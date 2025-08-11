@@ -38,8 +38,10 @@ it('can cast nested arrays into DTO instances', function (): void {
 
     expect($data['users'])
         ->toHaveCount(2)
-        ->and($data['users'][0])->toBeInstanceOf(User::class)
-        ->and($data['users'][1])->toBeInstanceOf(User::class);
+        ->and($data['users'][0])
+        ->toBeInstanceOf(User::class)
+        ->and($data['users'][1])
+        ->toBeInstanceOf(User::class);
 });
 
 it('ignores missing properties during casting', function (): void {
@@ -68,8 +70,10 @@ it('skips re-casting for array of DTO instances', function (): void {
 
     expect($data['users'])
         ->toHaveCount(2)
-        ->and($data['users'][0])->toBeInstanceOf(User::class)
-        ->and($data['users'][1])->toBeInstanceOf(User::class);
+        ->and($data['users'][0])
+        ->toBeInstanceOf(User::class)
+        ->and($data['users'][1])
+        ->toBeInstanceOf(User::class);
 });
 
 it('handles non-array value that is already a DTO instance', function (): void {
@@ -99,7 +103,8 @@ it('can cast a non-array value into a DTO instance', function (): void {
     $attribute = new CastWith(User::class);
     $attribute->handle('user', $data);
 
-    expect($data['user'])->toBeInstanceOf(User::class)
+    expect($data['user'])
+        ->toBeInstanceOf(User::class)
         ->name->toBe('Nick')
         ->email->toBe('nick@example.com');
 });

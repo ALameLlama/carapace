@@ -30,7 +30,8 @@ it('can cast string to DateTime using default format', function (): void {
 
     expect($dto->defaultFormat)
         ->toBeInstanceOf(DateTimeInterface::class)
-        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))->toBe('2025-08-03 07:09:00');
+        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))
+        ->toBe('2025-08-03 07:09:00');
 });
 
 it('can cast string to DateTime using custom format', function (): void {
@@ -41,7 +42,8 @@ it('can cast string to DateTime using custom format', function (): void {
 
     expect($dto->customFormat)
         ->toBeInstanceOf(DateTimeInterface::class)
-        ->and($dto->customFormat->format('Y-m-d'))->toBe('2025-08-03');
+        ->and($dto->customFormat->format('Y-m-d'))
+        ->toBe('2025-08-03');
 });
 
 it('can cast timestamp to DateTime', function (): void {
@@ -54,7 +56,8 @@ it('can cast timestamp to DateTime', function (): void {
 
     expect($dto->defaultFormat)
         ->toBeInstanceOf(DateTimeInterface::class)
-        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))->toBe('2025-08-03 07:09:00');
+        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))
+        ->toBe('2025-08-03 07:09:00');
 });
 
 it('can handle existing DateTime objects', function (): void {
@@ -67,7 +70,8 @@ it('can handle existing DateTime objects', function (): void {
 
     expect($dto->defaultFormat)
         ->toBeInstanceOf(DateTimeInterface::class)
-        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))->toBe('2025-08-03 07:09:00');
+        ->and($dto->defaultFormat->format('Y-m-d H:i:s'))
+        ->toBe('2025-08-03 07:09:00');
 });
 
 it('can parse date string without specific format', function (): void {
@@ -78,7 +82,8 @@ it('can parse date string without specific format', function (): void {
 
     expect($dto->defaultFormat)
         ->toBeInstanceOf(DateTimeInterface::class)
-        ->and($dto->defaultFormat->format('Y-m-d'))->toBe('2025-08-03');
+        ->and($dto->defaultFormat->format('Y-m-d'))
+        ->toBe('2025-08-03');
 });
 
 it('throws exception for invalid date string', function (): void {
