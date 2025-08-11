@@ -35,7 +35,7 @@ abstract class ImmutableDTO
     {
         // If the data is a JSON string, decode it to an array
         if (is_string($data)) {
-            $data = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $data = self::parseJson($data);
         }
 
         $reflection = new ReflectionClass(static::class);
@@ -102,7 +102,7 @@ abstract class ImmutableDTO
     }
 
     /**
-     * Creates a array of DTOs from the provided data.
+     * Creates an array of DTOs from the provided data.
      *
      * @param  string|array<array<mixed>>  $data  The input data, either as JSON or array.
      * @return static[] A fully hydrated array of DTO instances.
@@ -111,7 +111,7 @@ abstract class ImmutableDTO
     {
         // If the data is a JSON string, decode it to an array
         if (is_string($data)) {
-            $data = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $data = self::parseJson($data);
         }
 
         $dtos = [];
@@ -151,5 +151,17 @@ abstract class ImmutableDTO
         }
 
         return static::from($data);
+    }
+
+    /**
+     * PHPStan can conditionally show a throw warning https://github.com/phpstan/phpstan/issues/7906
+     * And the most common use case will be an array so I am abusing this function to suppress the throw warning.
+     *
+     * @param  string  $data  JSON string to decode.
+     * @return array<mixed, mixed>
+     */
+    private static function parseJson(string $data): array
+    {
+        return (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 }
