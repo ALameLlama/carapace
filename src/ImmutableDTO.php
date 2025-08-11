@@ -102,6 +102,29 @@ abstract class ImmutableDTO
     }
 
     /**
+     * Creates a array of DTOs from the provided data.
+     *
+     * @param  string|array<array<mixed>>  $data  The input data, either as JSON or array.
+     * @return static[] A fully hydrated array of DTO instances.
+     */
+    public static function collect(string|array $data): array
+    {
+        // If the data is a JSON string, decode it to an array
+        if (is_string($data)) {
+            $data = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        }
+
+        $dtos = [];
+
+        /** @var array<mixed> $dto */
+        foreach ($data as $dto) {
+            $dtos[] = static::from($dto);
+        }
+
+        return $dtos;
+    }
+
+    /**
      * Creates a modified copy of the DTO with overridden values.
      *
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
