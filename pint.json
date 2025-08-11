@@ -19,6 +19,11 @@
       "scope": "namespaced",
       "strict": true
     },
+    "native_constant_invocation": {
+      "include": ["@compiler_optimized"],
+      "scope": "namespaced",
+      "strict": true
+    },
     "ordered_class_elements": {
       "order": [
         "use_trait",

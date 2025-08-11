@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace;
 
+use const JSON_THROW_ON_ERROR;
+
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
 use ReflectionClass;

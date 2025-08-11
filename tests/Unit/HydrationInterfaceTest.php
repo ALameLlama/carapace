@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use const FILTER_FLAG_IPV4;
+use const FILTER_VALIDATE_IP;
+
 use Alamellama\Carapace\Contracts\HydrationInterface;
 use Alamellama\Carapace\ImmutableDTO;
 use Attribute;
