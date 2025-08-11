@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.0](https://github.com/ALameLlama/carapace/compare/v1.1.0...v1.2.0) (2025-08-11)
+
+
+### Features
+
+* add missing attribute to MapFrom ([#4](https://github.com/ALameLlama/carapace/issues/4)) ([ee941a9](https://github.com/ALameLlama/carapace/commit/ee941a93e31f05f27d94e9682c2cb20ef60b4e80))
+* add more micro optimizations ([#7](https://github.com/ALameLlama/carapace/issues/7)) ([5e334cb](https://github.com/ALameLlama/carapace/commit/5e334cbab7f38819d0000dcf17adf8037b576684))
+* collect function ([#6](https://github.com/ALameLlama/carapace/issues/6)) ([aaae39f](https://github.com/ALameLlama/carapace/commit/aaae39f3073ca05f66e42c3a8c53bf49a5e2ffab))
+
 ## [1.1.0](https://github.com/ALameLlama/carapace/compare/v1.0.0...v1.1.0) (2025-08-08)
 
 
