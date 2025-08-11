@@ -22,6 +22,7 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/" },
           { text: "Creating DTOs", link: "/guide/from" },
+          { text: "Collecting DTOs", link: "/guide/collect" },
           { text: "Updating DTOs", link: "/guide/with" },
         ],
       },
