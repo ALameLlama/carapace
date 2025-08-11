@@ -28,7 +28,10 @@ it('can create a user DTO', function (): void {
 });
 
 it('can create a user DTO from JSON', function (): void {
-    $user = User::fromJson('{"name": "John Doe", "email": "john.doe@example.com"}');
+    $user = User::from(json_encode([
+        'name' => 'John Doe',
+        'email' => 'john.doe@example.com',
+    ]));
 
     expect($user)
         ->toBeInstanceOf(User::class)

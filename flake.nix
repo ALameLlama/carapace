@@ -47,13 +47,16 @@
             docker
             rootlesskit
 
-            yarn
+            nodejs_22
+            yarn-berry
           ];
 
           # Optional: expose Docker socket from nix
           # This lets you run `docker …` without extra permissions
           shellHook = ''
             echo "🐘 PHP $(php -v | head -n1) ready"
+            echo "📦 Node.js: $(node --version)"
+            echo "📦 Yarn: $(yarn --version)"
             echo "📦 Composer: $(composer --version)"
             echo "📝 Aspell: $(aspell --version)"
             echo "🎡 act: $(act --version)"

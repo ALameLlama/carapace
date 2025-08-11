@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use InvalidArgumentException;
+use JsonException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\Car;
 use Tests\Fixtures\DTO\NoProperty;
@@ -61,9 +62,8 @@ it('can assign null to nullable parameters when not provided', function (): void
 });
 
 it('throws an exception if required parameter is missing', function (): void {
-    expect(fn (): RequiredOnly => RequiredOnly::from([]))
-        ->toThrow(InvalidArgumentException::class, 'Missing required parameter: required');
-});
+    RequiredOnly::from([]);
+})->throws(InvalidArgumentException::class, 'Missing required parameter: required');
 
 // I guess you could pass in some sort of state value and change the DTO from within the constructor?
 // I'm not sure if this is a good idea, but it is possible.
@@ -79,7 +79,7 @@ it('can handle JSON encoded data', function (): void {
         'model' => 'Corolla',
         'year' => 2020,
         'color' => 'Blue',
-    ]);
+    ], JSON_THROW_ON_ERROR);
 
     $dto = Car::from($json);
 
@@ -90,3 +90,9 @@ it('can handle JSON encoded data', function (): void {
         ->year->toBe(2020)
         ->color->toBe('Blue');
 });
+
+it('throws a JsonException when given invalid JSON', function (): void {
+    $invalidJson = '{"name": "Nick", }';
+
+    User::from($invalidJson);
+})->throws(JsonException::class);
