@@ -114,14 +114,8 @@ abstract class ImmutableDTO
             $data = self::parseJson($data);
         }
 
-        $dtos = [];
-
-        /** @var array<mixed> $dto */
-        foreach ($data as $dto) {
-            $dtos[] = static::from($dto);
-        }
-
-        return $dtos;
+        /** @var array<int, array<mixed, mixed>> $data */
+        return array_map(static fn (array $dto): static => static::from($dto), $data);
     }
 
     /**

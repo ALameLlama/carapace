@@ -79,7 +79,7 @@ it('can handle JSON encoded data', function (): void {
         'model' => 'Corolla',
         'year' => 2020,
         'color' => 'Blue',
-    ]);
+    ], JSON_THROW_ON_ERROR);
 
     $dto = Car::from($json);
 
