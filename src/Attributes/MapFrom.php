@@ -9,7 +9,7 @@ use Attribute;
 
 use function array_key_exists;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 /**
  * Maps a property from one or more keys in the data array when hydrating an object.
  *
