@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use const JSON_THROW_ON_ERROR;
+
 use JsonException;
 use Tests\Fixtures\DTO\User;
 

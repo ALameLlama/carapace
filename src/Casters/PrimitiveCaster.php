@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Casters;
 
+use const JSON_ERROR_NONE;
+
 use Alamellama\Carapace\Contracts\CasterInterface;
 use InvalidArgumentException;
 
