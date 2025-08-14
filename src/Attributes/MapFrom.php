@@ -38,7 +38,7 @@ final class MapFrom implements PreHydrationInterface
      * @param  string  $propertyName  The name of the property being handled.
      * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void
+    public function handle(string $propertyName, array|object &$data): void
     {
         foreach ($this->sourceKeys as $sourceKey) {
             if (! array_key_exists($sourceKey, $data)) {

@@ -10,6 +10,7 @@ use Attribute;
 use InvalidArgumentException;
 
 use function array_key_exists;
+use function gettype;
 use function is_array;
 use function is_null;
 
@@ -36,13 +37,21 @@ final class CastWith implements PreHydrationInterface
      *
      * @throws InvalidArgumentException If the value cannot be cast properly.
      */
-    public function handle(string $propertyName, array &$data): void
+    public function handle(string $propertyName, array|object &$data): void
     {
-        if (! array_key_exists($propertyName, $data)) {
+        $exists = match (gettype($data)) {
+            'array' => array_key_exists($propertyName, $data),
+            'object' => property_exists($data, $propertyName),
+        };
+
+        if (! $exists) {
             return;
         }
 
-        $value = $data[$propertyName];
+        $value = match (gettype($data)) {
+            'array' => $data[$propertyName],
+            'object' => $data->{$propertyName},
+        };
 
         // If it's null return early
         if (is_null($value)) {
@@ -51,7 +60,11 @@ final class CastWith implements PreHydrationInterface
 
         // If using a CasterInterface implementation
         if ($this->caster instanceof CasterInterface) {
-            $data[$propertyName] = $this->caster->cast($value);
+            $value = $this->caster->cast($value);
+            match (gettype($data)) {
+                'array' => $data[$propertyName] = $value,
+                'object' => $data->{$propertyName} = $value,
+            };
 
             return;
         }
