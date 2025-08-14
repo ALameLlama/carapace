@@ -1,10 +1,14 @@
 name: 🧹 Formats
 
 on:
-  push:
+  pull_request:
+    branches: [main, master]
     paths-ignore:
       - "CHANGELOG.md"
-  pull_request:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - "CHANGELOG.md"
 
 jobs:
   ci:
