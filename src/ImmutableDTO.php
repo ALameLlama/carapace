@@ -13,7 +13,9 @@ use ReflectionNamedType;
 use ReflectionParameter;
 
 use function array_key_exists;
+use function gettype;
 use function is_array;
+use function is_object;
 use function is_string;
 
 /**
@@ -33,7 +35,7 @@ abstract class ImmutableDTO
      * @param  string|array<mixed, mixed>  $data  The input data, either as JSON or an associative array.
      * @return static A fully hydrated DTO instance.
      */
-    public static function from(string|array $data): static
+    public static function from(string|array|object $data): static
     {
         // If the data is a JSON string, decode it to an array
         if (is_string($data)) {
@@ -60,7 +62,13 @@ abstract class ImmutableDTO
 
             // If the parameter is not present in the data, check for default value or nullability
             // and throw an exception if it's required but missing.
-            if (! array_key_exists($name, $data)) {
+
+            $exists = match (gettype($data)) {
+                'array' => array_key_exists($name, $data),
+                'object' => property_exists($data, $name),
+            };
+
+            if (! $exists && gettype($data) === 'array') {
                 if ($param->isDefaultValueAvailable()) {
                     return $param->getDefaultValue();
                 }
@@ -84,7 +92,11 @@ abstract class ImmutableDTO
                 }
             }
 
-            $value = $data[$name];
+            $value = match (gettype($data)) {
+                'array' => $data[$name],
+                'object' => $data->{$name},
+            };
+
             $type = $param->getType();
 
             if (! ($type instanceof ReflectionNamedType) || $type->isBuiltin()) {
@@ -93,7 +105,7 @@ abstract class ImmutableDTO
 
             $typeName = $type->getName();
 
-            if (is_subclass_of($typeName, self::class) && is_array($value)) {
+            if (is_subclass_of($typeName, self::class) && (is_array($value) || is_object($value))) {
                 return $typeName::from($value);
             }
 
