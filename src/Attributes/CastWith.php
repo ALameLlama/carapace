@@ -11,6 +11,7 @@ use InvalidArgumentException;
 
 use function array_key_exists;
 use function is_array;
+use function is_null;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
@@ -42,6 +43,11 @@ final class CastWith implements PreHydrationInterface
         }
 
         $value = $data[$propertyName];
+
+        // If it's null return early
+        if (is_null($value)) {
+            return;
+        }
 
         // If using a CasterInterface implementation
         if ($this->caster instanceof CasterInterface) {
