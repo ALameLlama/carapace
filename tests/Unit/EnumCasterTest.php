@@ -10,54 +10,96 @@ use Alamellama\Carapace\ImmutableDTO;
 use InvalidArgumentException;
 use Tests\Fixtures\Enums\Color;
 use Tests\Fixtures\Enums\Status;
+use Tests\Fixtures\Enums\StatusCode;
 
-final class WithEnumCasting extends ImmutableDTO
+final class StatusDto extends ImmutableDTO
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(Status::class))]
+        public Status $status,
+    ) {}
+}
+
+final class ColorDto extends ImmutableDTO
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(Color::class))]
+        public Color $color,
+    ) {}
+}
+
+final class StatusCodeDto extends ImmutableDTO
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(StatusCode::class))]
+        public StatusCode $statusCode,
+    ) {}
+}
+
+final class CombinedDto extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
         public Status $status,
 
-        #[CastWith(new EnumCaster(Color::class))]
-        public Color $color
+        #[CastWith(new EnumCaster(StatusCode::class))]
+        public ?StatusCode $statusCode,
     ) {}
 }
 
 it('can cast string to backed enum using exact value', function (): void {
-    $dto = WithEnumCasting::from([
+    $dto = StatusDto::from([
         'status' => 'active',
-        'color' => 'RED',
-    ]);
-
-    expect($dto->status)
-        ->toBe(Status::ACTIVE)
-        ->and($dto->color)
-        ->toBe(Color::RED);
-});
-
-it('can cast string to backed enum using case-insensitive value', function (): void {
-    $dto = WithEnumCasting::from([
-        'status' => 'ACTIVE',
-        'color' => 'RED',
     ]);
 
     expect($dto->status)
         ->toBe(Status::ACTIVE);
 });
 
-it('can handle existing enum instances', function (): void {
-    $dto = WithEnumCasting::from([
-        'status' => Status::PENDING,
-        'color' => Color::GREEN,
+it('can cast string to backed enum using case-insensitive value', function (): void {
+    $dto = StatusDto::from([
+        'status' => 'ACTIVE',
     ]);
 
     expect($dto->status)
+        ->toBe(Status::ACTIVE);
+});
+
+it('can cast int backed enum using int value', function (): void {
+    $dto = StatusCodeDto::from([
+        'statusCode' => 100,
+    ]);
+
+    expect($dto->statusCode)
+        ->toBe(StatusCode::PENDING);
+});
+
+it('can cast int backed enum using string value', function (): void {
+    $dto = StatusCodeDto::from([
+        'statusCode' => '300',
+    ]);
+
+    expect($dto->statusCode)
+        ->toBe(StatusCode::INACTIVE);
+});
+
+it('can handle existing enum instances', function (): void {
+    $dto1 = StatusDto::from([
+        'status' => Status::PENDING,
+    ]);
+
+    $dto2 = ColorDto::from([
+        'color' => Color::GREEN,
+    ]);
+
+    expect($dto1->status)
         ->toBe(Status::PENDING)
-        ->and($dto->color)
+        ->and($dto2->color)
         ->toBe(Color::GREEN);
 });
 
 it('can cast string to unit enum using case name', function (): void {
-    $dto = WithEnumCasting::from([
+    $dto = ColorDto::from([
         'status' => 'active',
         'color' => 'BLUE',
     ]);
@@ -67,8 +109,7 @@ it('can cast string to unit enum using case name', function (): void {
 });
 
 it('can cast string to unit enum using case-insensitive name', function (): void {
-    $dto = WithEnumCasting::from([
-        'status' => 'active',
+    $dto = ColorDto::from([
         'color' => 'blue',
     ]);
 
@@ -77,15 +118,13 @@ it('can cast string to unit enum using case-insensitive name', function (): void
 });
 
 it('throws exception for invalid backed enum value', function (): void {
-    WithEnumCasting::from([
+    StatusDto::from([
         'status' => 'unknown',
-        'color' => 'RED',
     ]);
 })->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Status');
 
 it('throws exception for invalid unit enum name', function (): void {
-    WithEnumCasting::from([
-        'status' => 'active',
+    ColorDto::from([
         'color' => 'YELLOW',
     ]);
 })->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Color: no matching case found');
@@ -99,3 +138,28 @@ it('throws exception for unsupported value type with unit enum', function (): vo
     $caster = new EnumCaster(Color::class);
     $caster->cast(123);
 })->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Color: no matching case found');
+
+it('can handle optional property', function (): void {
+    $dto = CombinedDto::from([
+        'status' => Status::PENDING,
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::PENDING);
+
+    expect($dto->statusCode)
+        ->toBeNull();
+});
+
+it('can handle null property', function (): void {
+    $dto = CombinedDto::from([
+        'status' => Status::PENDING,
+        'statusCode' => null,
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::PENDING);
+
+    expect($dto->statusCode)
+        ->toBeNull();
+});
