@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/ALameLlama/carapace/compare/v1.2.0...v1.2.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* EnumCaster Backed Typing ([#9](https://github.com/ALameLlama/carapace/issues/9)) ([27cdb14](https://github.com/ALameLlama/carapace/commit/27cdb143a3430823eef82188b18bf9a9d45d4fa3))
+
 ## [1.2.0](https://github.com/ALameLlama/carapace/compare/v1.1.0...v1.2.0) (2025-08-11)
 
 
