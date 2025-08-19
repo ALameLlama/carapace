@@ -7,6 +7,7 @@ namespace Alamellama\Carapace\Casters;
 use Alamellama\Carapace\Contracts\CasterInterface;
 use BackedEnum;
 use InvalidArgumentException;
+use ReflectionEnum;
 use UnitEnum;
 use ValueError;
 
@@ -39,21 +40,21 @@ final readonly class EnumCaster implements CasterInterface
      */
     public function cast(mixed $value): UnitEnum
     {
-        // If already an instance of the target enum, return it
         if ($value instanceof $this->enumClass && $value instanceof UnitEnum) {
             return $value;
         }
 
-        // Check if the enum class exists
         if (! enum_exists($this->enumClass)) {
             throw new InvalidArgumentException("Invalid enum class: {$this->enumClass}");
         }
 
-        // Handle backed enums
         if (is_subclass_of($this->enumClass, BackedEnum::class)) {
-            // Try to get the enum case from its value
             try {
-                /** @var int|string $value */
+                $reflectedEnum = new ReflectionEnum($this->enumClass);
+
+                // @phpstan-ignore-next-line
+                $value = $reflectedEnum->getBackingType()?->getName() === 'int' ? (int) $value : (string) $value;
+
                 return $this->enumClass::from($value);
             } catch (ValueError $e) {
                 // If the exact value doesn't exist, try to find a case that matches case-insensitively
@@ -64,15 +65,12 @@ final readonly class EnumCaster implements CasterInterface
                         }
                     }
                 }
-
                 // Use tryFrom as a fallback
-                if ($value !== null) {
-                    $result = $this->enumClass::tryFrom($value);
-                    if ($result !== null) {
-                        // @codeCoverageIgnoreStart
-                        return $result;
-                        // @codeCoverageIgnoreEnd
-                    }
+                $result = $this->enumClass::tryFrom($value);
+                if ($result !== null) {
+                    // @codeCoverageIgnoreStart
+                    return $result;
+                    // @codeCoverageIgnoreEnd
                 }
 
                 throw new InvalidArgumentException(
@@ -83,7 +81,6 @@ final readonly class EnumCaster implements CasterInterface
             }
         }
 
-        // Handle unit enums (enums without values)
         // For unit enums, we need to match by name
         if (is_string($value)) {
             foreach ($this->enumClass::cases() as $case) {
