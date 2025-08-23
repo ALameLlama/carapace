@@ -7,8 +7,10 @@ namespace Alamellama\Carapace\Support;
 use const JSON_THROW_ON_ERROR;
 
 use Throwable;
+use Traversable;
 
 use function array_key_exists;
+use function get_object_vars;
 use function is_array;
 use function is_object;
 use function is_string;
@@ -48,6 +50,11 @@ final class Data
         }
 
         return new self($data);
+    }
+
+    public static function isArrayOrObject(mixed $value): bool
+    {
+        return is_array($value) || is_object($value);
     }
 
     // TODO: see if we can use a more specific return type here using phpstan
@@ -137,5 +144,50 @@ final class Data
     public function isObject(): bool
     {
         return is_object($this->data);
+    }
+
+    /**
+     * Normalizes wrapped array|object into an array.
+     *
+     * - Arrays: returned as-is
+     * - Objects: public properties via get_object_vars
+     *
+     * @return array<mixed, mixed>
+     */
+    public function toArray(): array
+    {
+        if (is_array($this->data)) {
+            return $this->data;
+        }
+
+        return get_object_vars($this->data);
+    }
+
+    /**
+     * Returns a list of items contained in a wrapped array, iterator, or plain object.
+     * - Arrays: returned as-is (numeric or string keys)
+     * - Iterators: iterated into a plain array
+     * - Objects: iterated over public properties via get_object_vars
+     *
+     * @return array<int|string, mixed>
+     */
+    public function items(): array
+    {
+        $raw = $this->data;
+
+        if (is_array($raw)) {
+            return $raw;
+        }
+
+        if ($raw instanceof Traversable) {
+            $items = [];
+            foreach ($raw as $item) {
+                $items[] = $item;
+            }
+
+            return $items;
+        }
+
+        return array_values(get_object_vars($raw));
     }
 }

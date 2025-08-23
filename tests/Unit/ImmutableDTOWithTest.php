@@ -181,3 +181,29 @@ it('can handle empty dto', function (): void {
 
     expect($dto)->not->toBe($dto2);
 });
+
+it('can return a new instance with overridden values when using an object for overrides', function (): void {
+    $dto = User::from([
+        'name' => 'Nick',
+        'email' => 'nick@example.com',
+        'address' => [
+            'street' => '123 Main St',
+            'city' => 'Melbourne',
+            'postcode' => '3000',
+        ],
+    ]);
+
+    $overrides = (object) ['name' => 'Nicholas'];
+
+    $dto2 = $dto->with($overrides);
+
+    expect($dto)
+        ->name->toBe('Nick')
+        ->email->toBe('nick@example.com');
+
+    expect($dto2)
+        ->name->toBe('Nicholas')
+        ->email->toBe('nick@example.com');
+
+    expect($dto)->not->toBe($dto2);
+});

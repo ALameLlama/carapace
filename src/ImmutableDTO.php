@@ -11,9 +11,6 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
-use function is_array;
-use function is_object;
-
 /**
  * Immutable Data Transfer Object (DTO) Base Class.
  */
@@ -81,7 +78,8 @@ abstract class ImmutableDTO
 
             $typeName = $type->getName();
 
-            if (is_subclass_of($typeName, self::class) && (is_array($value) || is_object($value))) {
+            if (is_subclass_of($typeName, self::class) && Data::isArrayOrObject($value)) {
+                /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
 
@@ -94,16 +92,15 @@ abstract class ImmutableDTO
     /**
      * Creates an array of DTOs from the provided data.
      *
-     * @param  string|array<array<mixed>>  $data  The input data, either as JSON or array.
+     * @param  string|array<array<mixed, mixed>|object>|object  $data  The input data, either as JSON, array, or object containing items.
      * @return static[] A fully hydrated array of DTO instances.
      */
-    public static function collect(string|array $data): array
+    public static function collect(string|array|object $data): array
     {
-        $data = Data::wrap($data);
-        /** @var array<int, array<mixed, mixed>> $normalized */
-        $normalized = $data->raw();
+        $items = Data::wrap($data)->items();
 
-        return array_map(static fn (array $dto): static => static::from($dto), $normalized);
+        /** @var array<int, array<mixed, mixed>|object> $items */
+        return array_map(static fn (array|object $dto): static => static::from($dto), $items);
     }
 
     /**
@@ -115,9 +112,10 @@ abstract class ImmutableDTO
 
      * @return static A new DTO instance with updated values.
      */
-    public function with(array $overrides = [], ...$namedOverrides): static
+    public function with(array|object $overrides = [], ...$namedOverrides): static
     {
-        $combined = array_merge($overrides, $namedOverrides);
+        $baseOverrides = Data::wrap($overrides)->toArray();
+        $combined = array_merge($baseOverrides, $namedOverrides);
 
         $reflection = new ReflectionClass($this);
         $params = $reflection->getConstructor()?->getParameters() ?? [];
