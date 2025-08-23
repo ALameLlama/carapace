@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Contracts;
 
+use Alamellama\Carapace\Support\Data;
+
 /**
  * Interface for attributes that handle modifications to hydration data before it is applied to the object.
  *
@@ -16,7 +18,6 @@ interface PreHydrationInterface
      * Allows attributes to modify hydration data as needed.
      *
      * @param  string  $propertyName  The property name being handled.
-     * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void;
+    public function handle(string $propertyName, Data $data): void;
 }

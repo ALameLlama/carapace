@@ -4,24 +4,15 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace;
 
-use const JSON_THROW_ON_ERROR;
-
+use Alamellama\Carapace\Support\Data;
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
-use function array_key_exists;
-use function is_array;
-use function is_string;
-
 /**
  * Immutable Data Transfer Object (DTO) Base Class.
- *
- * This abstract class provides a foundation for creating an immutable DTO. It supports:
- * - Hydrating instances from arrays or JSON.
- * - Generating modified copies of the instance with overridden values.
  */
 abstract class ImmutableDTO
 {
@@ -30,16 +21,12 @@ abstract class ImmutableDTO
     /**
      * Creates a new instance of the DTO from the provided data.
      *
-     * @param  string|array<mixed, mixed>  $data  The input data, either as JSON or an associative array.
+     * @param  string|array<mixed, mixed>|object  $data  The input data, either as JSON, associative array, or model-like object.
      * @return static A fully hydrated DTO instance.
      */
-    public static function from(string|array $data): static
+    public static function from(string|array|object $data): static
     {
-        // If the data is a JSON string, decode it to an array
-        if (is_string($data)) {
-            $data = self::parseJson($data);
-        }
-
+        $data = Data::wrap($data);
         $reflection = new ReflectionClass(static::class);
 
         // Run all Contracts\PreHydrationHandler attributes
@@ -55,12 +42,10 @@ abstract class ImmutableDTO
 
         $params = $reflection->getConstructor()?->getParameters() ?? [];
 
-        $args = array_map(function (ReflectionParameter $param) use ($data, $reflection) {
+        $args = array_map(static function (ReflectionParameter $param) use ($reflection, $data) {
             $name = $param->getName();
 
-            // If the parameter is not present in the data, check for default value or nullability
-            // and throw an exception if it's required but missing.
-            if (! array_key_exists($name, $data)) {
+            if (! $data->has($name)) {
                 if ($param->isDefaultValueAvailable()) {
                     return $param->getDefaultValue();
                 }
@@ -73,8 +58,7 @@ abstract class ImmutableDTO
             }
 
             // Run all Contracts\HydrationHandler attributes
-            // TODO: currently I don't have a use case for this, but it is here for future use.
-            // might be usable for validators or other custom handlers.
+            // This can be used for validators or other custom handlers.
             foreach ($reflection->getProperties() as $property) {
                 foreach ($property->getAttributes() as $attr) {
                     $attrInstance = $attr->newInstance();
@@ -84,7 +68,8 @@ abstract class ImmutableDTO
                 }
             }
 
-            $value = $data[$name];
+            $value = $data->get($name);
+
             $type = $param->getType();
 
             if (! ($type instanceof ReflectionNamedType) || $type->isBuiltin()) {
@@ -93,7 +78,8 @@ abstract class ImmutableDTO
 
             $typeName = $type->getName();
 
-            if (is_subclass_of($typeName, self::class) && is_array($value)) {
+            if (is_subclass_of($typeName, self::class) && Data::isArrayOrObject($value)) {
+                /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
 
@@ -106,31 +92,30 @@ abstract class ImmutableDTO
     /**
      * Creates an array of DTOs from the provided data.
      *
-     * @param  string|array<array<mixed>>  $data  The input data, either as JSON or array.
+     * @param  string|array<array<mixed, mixed>|object>|object  $data  The input data, either as JSON, array, or object containing items.
      * @return static[] A fully hydrated array of DTO instances.
      */
-    public static function collect(string|array $data): array
+    public static function collect(string|array|object $data): array
     {
-        // If the data is a JSON string, decode it to an array
-        if (is_string($data)) {
-            $data = self::parseJson($data);
-        }
+        $items = Data::wrap($data)->items();
 
-        /** @var array<int, array<mixed, mixed>> $data */
-        return array_map(static fn (array $dto): static => static::from($dto), $data);
+        /** @var array<int, array<mixed, mixed>|object> $items */
+        return array_map(static fn (array|object $dto): static => static::from($dto), $items);
     }
 
     /**
      * Creates a modified copy of the DTO with overridden values.
+
      *
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
      * @param  mixed  $namedOverrides  Additional named overrides.
 
      * @return static A new DTO instance with updated values.
      */
-    public function with(array $overrides = [], ...$namedOverrides): static
+    public function with(array|object $overrides = [], ...$namedOverrides): static
     {
-        $combined = array_merge($overrides, $namedOverrides);
+        $baseOverrides = Data::wrap($overrides)->toArray();
+        $combined = array_merge($baseOverrides, $namedOverrides);
 
         $reflection = new ReflectionClass($this);
         $params = $reflection->getConstructor()?->getParameters() ?? [];
@@ -147,17 +132,5 @@ abstract class ImmutableDTO
         }
 
         return static::from($data);
-    }
-
-    /**
-     * PHPStan can conditionally show a throw warning https://github.com/phpstan/phpstan/issues/7906
-     * And the most common use case will be an array so I am abusing this function to suppress the throw warning.
-     *
-     * @param  string  $data  JSON string to decode.
-     * @return array<mixed, mixed>
-     */
-    private static function parseJson(string $data): array
-    {
-        return (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 }

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Attributes;
 
 use Alamellama\Carapace\Contracts\PreHydrationInterface;
+use Alamellama\Carapace\Support\Data;
 use Attribute;
-
-use function array_key_exists;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 /**
@@ -36,17 +35,16 @@ final class MapFrom implements PreHydrationInterface
      * Handles the mapping of a property from another key in the data array.
      *
      * @param  string  $propertyName  The name of the property being handled.
-     * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void
+    public function handle(string $propertyName, Data $data): void
     {
         foreach ($this->sourceKeys as $sourceKey) {
-            if (! array_key_exists($sourceKey, $data)) {
+            if (! $data->has($sourceKey)) {
                 continue;
             }
 
-            $data[$propertyName] = $data[$sourceKey];
-            unset($data[$sourceKey]);
+            $data->set($propertyName, $data->get($sourceKey));
+            $data->unset($sourceKey);
 
             return;
         }
