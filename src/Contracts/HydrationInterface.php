@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Contracts;
 
+use Alamellama\Carapace\Support\Data;
+
 /**
  * Interface for attributes that handle the hydration of properties.
  *
@@ -17,7 +19,6 @@ interface HydrationInterface
      * Allows attributes to modify hydration data.
      *
      * @param  string  $propertyName  The property name being handled.
-     * @param  array<mixed>  $data  The data being hydrated.
      */
-    public function handle(string $propertyName, array &$data): void;
+    public function handle(string $propertyName, Data $data): void;
 }

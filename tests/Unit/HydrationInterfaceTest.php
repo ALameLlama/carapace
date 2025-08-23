@@ -9,6 +9,7 @@ use const FILTER_VALIDATE_IP;
 
 use Alamellama\Carapace\Contracts\HydrationInterface;
 use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Support\Data;
 use Attribute;
 use InvalidArgumentException;
 
@@ -20,13 +21,13 @@ use function is_string;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ValidateIPv4 implements HydrationInterface
 {
-    public function handle(string $propertyName, array &$data): void
+    public function handle(string $propertyName, Data $data): void
     {
-        if (! isset($data[$propertyName])) {
+        if (! $data->has($propertyName)) {
             return;
         }
 
-        $value = $data[$propertyName];
+        $value = $data->get($propertyName);
 
         if (! is_string($value) || ! filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             throw new InvalidArgumentException("Invalid IPv4 address for property '{$propertyName}': {$value}");

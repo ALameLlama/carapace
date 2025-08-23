@@ -36,8 +36,7 @@ final class Data
     /**
      * @param  array<mixed,mixed>|object  $data
      */
-    private function __construct(private array|object $data)
-    {}
+    private function __construct(private array|object $data) {}
 
     /**
      * @param  string|array<mixed,mixed>|object  $data
@@ -51,6 +50,7 @@ final class Data
         return new self($data);
     }
 
+    // TODO: see if we can use a more specific return type here using phpstan
     /**
      * @return array<mixed,mixed>|object
      */

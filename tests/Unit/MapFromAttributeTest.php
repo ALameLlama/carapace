@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\MapFrom;
+use Alamellama\Carapace\Support\Data;
 
 it('can map attributes from an array using MapFrom with a single source key', function (): void {
     $data = [
@@ -18,11 +19,13 @@ it('can map attributes from an array using MapFrom with a single source key', fu
     ];
 
     $attribute = new MapFrom('email_address');
-    $attribute->handle('email', $data);
+    $acc = Data::wrap($data);
+    $attribute->handle('email', $acc);
 
-    expect($data)
+    $updated = $acc->raw();
+    expect($updated)
         ->toHaveKey('email')
-        ->and($data['email'])
+        ->and($updated['email'])
         ->toBe('nick@example.com');
 });
 
@@ -38,11 +41,13 @@ it('can map attributes using the first matching source key', function (): void {
     ];
 
     $attribute = new MapFrom('contact_email', 'email_address');
-    $attribute->handle('email', $data);
+    $acc = Data::wrap($data);
+    $attribute->handle('email', $acc);
 
-    expect($data)
+    $updated = $acc->raw();
+    expect($updated)
         ->toHaveKey('email')
-        ->and($data['email'])
+        ->and($updated['email'])
         ->toBe('nick@example.com');
 });
 
@@ -58,11 +63,13 @@ it('can map attributes using the second source key when first is not present', f
     ];
 
     $attribute = new MapFrom('email_address', 'contact_email');
-    $attribute->handle('email', $data);
+    $acc = Data::wrap($data);
+    $attribute->handle('email', $acc);
 
-    expect($data)
+    $updated = $acc->raw();
+    expect($updated)
         ->toHaveKey('email')
-        ->and($data['email'])
+        ->and($updated['email'])
         ->toBe('nick@example.com');
 });
 
@@ -77,7 +84,8 @@ it('does nothing when none of the source keys are present', function (): void {
     ];
 
     $attribute = new MapFrom('email_address', 'contact_email');
-    $attribute->handle('email', $data);
+    $acc = Data::wrap($data);
+    $attribute->handle('email', $acc);
 
     expect($data)
         ->not->toHaveKey('email');
@@ -90,7 +98,8 @@ it('does nothing when sourceKeys array is empty', function (): void {
     ];
 
     $attribute = new MapFrom;
-    $attribute->handle('email', $data);
+    $acc = Data::wrap($data);
+    $attribute->handle('email', $acc);
 
     expect($data)
         ->not->toHaveKey('email')
