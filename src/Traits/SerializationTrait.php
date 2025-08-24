@@ -39,7 +39,6 @@ trait SerializationTrait
             return $result;
         }
 
-        // Only public properties are considered for serialization
         foreach ($properties as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
@@ -49,12 +48,15 @@ trait SerializationTrait
 
                 // Run all TransformationInterface attributes
                 // Such as MapTo, Hidden, etc.
-                if ($attrInstance instanceof Contracts\TransformationInterface) {
-                    [$name, $value] = $attrInstance->handle($name, $value);
+                if ($attrInstance instanceof Contracts\PropertyTransformationInterface) {
+                    [$name, $value] = $attrInstance->propertyTransform($property, $value);
 
-                    if ($name === '__hidden__') {
-                        continue 2;
-                    }
+                }
+
+                // TODO: add support for class based transformation
+
+                if ($name === '__hidden__') {
+                    continue 2;
                 }
             }
 
@@ -84,17 +86,14 @@ trait SerializationTrait
      */
     private function recursiveToArray(mixed $value): mixed
     {
-        // Early return for arrays
         if (is_array($value)) {
             return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
         }
 
-        // Early return for self instances
         if ($value instanceof self) {
             return $value->toArray();
         }
 
-        // Default return for all other types
         return $value;
     }
 }

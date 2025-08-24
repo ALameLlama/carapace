@@ -5,10 +5,44 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\MapFrom;
-use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\ImmutableDTO;
+
+final class EmailFromSingleKeyDTO extends ImmutableDTO
+{
+    public function __construct(
+        #[MapFrom('email_address')]
+        public string $email,
+    ) {}
+}
+
+final class EmailFromEitherKeyDTO extends ImmutableDTO
+{
+    public function __construct(
+        #[MapFrom('contact_email')]
+        #[MapFrom('email_address')]
+        public string $email,
+    ) {}
+}
+
+final class EmailFromEitherKeyReverseDTO extends ImmutableDTO
+{
+    public function __construct(
+        #[MapFrom('email_address')]
+        #[MapFrom('contact_email')]
+        public string $email,
+    ) {}
+}
+
+final class OptionalEmailDTO extends ImmutableDTO
+{
+    public function __construct(
+        #[MapFrom]
+        public ?string $email = null,
+    ) {}
+}
 
 it('can map attributes from an array using MapFrom with a single source key', function (): void {
-    $data = [
+    $dto = EmailFromSingleKeyDTO::from([
         'name' => 'Nick',
         'email_address' => 'nick@example.com',
         'address' => [
@@ -16,21 +50,13 @@ it('can map attributes from an array using MapFrom with a single source key', fu
             'city' => 'Melbourne',
             'postcode' => '3000',
         ],
-    ];
+    ]);
 
-    $attribute = new MapFrom('email_address');
-    $acc = Data::wrap($data);
-    $attribute->handle('email', $acc);
-
-    $updated = $acc->raw();
-    expect($updated)
-        ->toHaveKey('email')
-        ->and($updated['email'])
-        ->toBe('nick@example.com');
+    expect($dto->email)->toBe('nick@example.com');
 });
 
 it('can map attributes using the first matching source key', function (): void {
-    $data = [
+    $dto = EmailFromEitherKeyDTO::from([
         'name' => 'Nick',
         'email_address' => 'nick@example.com',
         'address' => [
@@ -38,21 +64,13 @@ it('can map attributes using the first matching source key', function (): void {
             'city' => 'Melbourne',
             'postcode' => '3000',
         ],
-    ];
+    ]);
 
-    $attribute = new MapFrom('contact_email', 'email_address');
-    $acc = Data::wrap($data);
-    $attribute->handle('email', $acc);
-
-    $updated = $acc->raw();
-    expect($updated)
-        ->toHaveKey('email')
-        ->and($updated['email'])
-        ->toBe('nick@example.com');
+    expect($dto->email)->toBe('nick@example.com');
 });
 
 it('can map attributes using the second source key when first is not present', function (): void {
-    $data = [
+    $dto = EmailFromEitherKeyReverseDTO::from([
         'name' => 'Nick',
         'contact_email' => 'nick@example.com',
         'address' => [
@@ -60,49 +78,29 @@ it('can map attributes using the second source key when first is not present', f
             'city' => 'Melbourne',
             'postcode' => '3000',
         ],
-    ];
+    ]);
 
-    $attribute = new MapFrom('email_address', 'contact_email');
-    $acc = Data::wrap($data);
-    $attribute->handle('email', $acc);
-
-    $updated = $acc->raw();
-    expect($updated)
-        ->toHaveKey('email')
-        ->and($updated['email'])
-        ->toBe('nick@example.com');
+    expect($dto->email)->toBe('nick@example.com');
 });
 
 it('does nothing when none of the source keys are present', function (): void {
-    $data = [
+    $dto = OptionalEmailDTO::from([
         'name' => 'Nick',
         'address' => [
             'street' => '123 Main St',
             'city' => 'Melbourne',
             'postcode' => '3000',
         ],
-    ];
+    ]);
 
-    $attribute = new MapFrom('email_address', 'contact_email');
-    $acc = Data::wrap($data);
-    $attribute->handle('email', $acc);
-
-    expect($data)
-        ->not->toHaveKey('email');
+    expect($dto->email)->toBeNull();
 });
 
 it('does nothing when sourceKeys array is empty', function (): void {
-    $data = [
+    $dto = OptionalEmailDTO::from([
         'name' => 'Nick',
         'email_address' => 'nick@example.com',
-    ];
+    ]);
 
-    $attribute = new MapFrom;
-    $acc = Data::wrap($data);
-    $attribute->handle('email', $acc);
-
-    expect($data)
-        ->not->toHaveKey('email')
-        ->and($data)
-        ->toHaveKey('email_address');
+    expect($dto->email)->toBeNull();
 });

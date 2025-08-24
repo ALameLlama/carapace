@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Contracts;
 
 use Alamellama\Carapace\Support\Data;
+use ReflectionProperty;
 
 /**
  * Interface for attributes that handle the hydration of properties.
@@ -13,12 +14,10 @@ use Alamellama\Carapace\Support\Data;
  * TODO: currently I don't have a use case for this, but it is here for future use.
  * so I'm not sure if the interface data is correct.
  */
-interface HydrationInterface
+interface PropertyHydrationInterface
 {
     /**
      * Allows attributes to modify hydration data.
-     *
-     * @param  string  $propertyName  The property name being handled.
      */
-    public function handle(string $propertyName, Data $data): void;
+    public function propertyHydrate(ReflectionProperty $property, Data $data): void;
 }

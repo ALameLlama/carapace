@@ -7,11 +7,12 @@ namespace Tests\Unit;
 use const FILTER_FLAG_IPV4;
 use const FILTER_VALIDATE_IP;
 
-use Alamellama\Carapace\Contracts\HydrationInterface;
+use Alamellama\Carapace\Contracts\PropertyHydrationInterface;
 use Alamellama\Carapace\ImmutableDTO;
 use Alamellama\Carapace\Support\Data;
 use Attribute;
 use InvalidArgumentException;
+use ReflectionProperty;
 
 use function is_string;
 
@@ -19,10 +20,12 @@ use function is_string;
  * An attribute that validates IPv4 addresses during hydration.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ValidateIPv4 implements HydrationInterface
+final class ValidateIPv4 implements PropertyHydrationInterface
 {
-    public function handle(string $propertyName, Data $data): void
+    public function propertyHydrate(ReflectionProperty $property, Data $data): void
     {
+        $propertyName = $property->getName();
+
         if (! $data->has($propertyName)) {
             return;
         }

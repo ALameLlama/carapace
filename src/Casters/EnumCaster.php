@@ -52,6 +52,7 @@ final readonly class EnumCaster implements CasterInterface
             try {
                 $reflectedEnum = new ReflectionEnum($this->enumClass);
 
+                // If the backing type is int, cast to int, otherwise cast to string
                 // @phpstan-ignore-next-line
                 $value = $reflectedEnum->getBackingType()?->getName() === 'int' ? (int) $value : (string) $value;
 

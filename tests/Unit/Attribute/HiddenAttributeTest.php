@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\ImmutableDTO;
