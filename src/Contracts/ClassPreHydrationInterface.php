@@ -8,15 +8,15 @@ use Alamellama\Carapace\Support\Data;
 use ReflectionProperty;
 
 /**
- * Interface for attributes that handle modifications to hydration data before it is applied to the object.
+ * Interface for attributes that handle modifications to hydration data before it is applied to the object from the class.
  *
  * This enables custom handling of properties before the hydration process.
- * e.g. CastWith, MapFrom
+ * e.g. SnakeCase,
  */
-interface PropertyPreHydrationInterface
+interface ClassPreHydrationInterface
 {
     /**
      * Allows attributes to modify hydration data as needed.
      */
-    public function propertyPreHydrate(ReflectionProperty $property, Data $data): void;
+    public function classPreHydrate(ReflectionProperty $property, Data $data): void;
 }

@@ -40,7 +40,15 @@ abstract class ImmutableDTO
             }
         }
 
-        // TODO: Add support for class based pre-hydration
+        // Run all Contracts\ClassPreHydrationInterface attributes
+        foreach ($reflection->getAttributes() as $classAttr) {
+            $classAttrInstance = $classAttr->newInstance();
+            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
+                foreach ($reflection->getProperties() as $property) {
+                    $classAttrInstance->classPreHydrate($property, $data);
+                }
+            }
+        }
 
         $params = $reflection->getConstructor()?->getParameters() ?? [];
 
@@ -70,7 +78,15 @@ abstract class ImmutableDTO
                 }
             }
 
-            // TODO: add support for class based hydration
+            // Run all Contracts\ClassHydrationInterface attributes
+            foreach ($reflection->getAttributes() as $classAttr) {
+                $classAttrInstance = $classAttr->newInstance();
+                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
+                    foreach ($reflection->getProperties() as $property) {
+                        $classAttrInstance->classHydrate($property, $data);
+                    }
+                }
+            }
 
             $value = $data->get($name);
 

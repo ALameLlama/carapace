@@ -45,18 +45,34 @@ trait SerializationTrait
 
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-
-                // Run all TransformationInterface attributes
+                // Run all PropertyTransformationInterface attributes
                 // Such as MapTo, Hidden, etc.
                 if ($attrInstance instanceof Contracts\PropertyTransformationInterface) {
                     [$name, $value] = $attrInstance->propertyTransform($property, $value);
-
                 }
-
-                // TODO: add support for class based transformation
 
                 if ($name === '__hidden__') {
                     continue 2;
+                }
+            }
+
+            foreach ($reflection->getAttributes() as $classAttr) {
+                $classAttrInstance = $classAttr->newInstance();
+                if ($classAttrInstance instanceof Contracts\ClassTransformationInterface) {
+                    $originalName = $name;
+                    // Run all ClassTransformationInterface attributes
+                    // Such as SnakeCase, etc.
+                    [$proposedName, $value] = $classAttrInstance->classTransform($property, $value);
+                    if ($proposedName === '__hidden__') {
+                        $name = $proposedName;
+
+                        continue 2;
+                    }
+
+                    // TODO: I need to see if I am happy with this, might need to scope this better instead of it being global.
+                    // If the class-level transform returns the original property name,
+                    // preserve the name produced by property-level transforms (if any).
+                    $name = $proposedName === $property->getName() ? $originalName : $proposedName;
                 }
             }
 

@@ -45,3 +45,21 @@ it('excludes properties marked with Hidden attribute when serializing to JSON', 
         ->not->toContain('hidden')
         ->not->toContain('This should be hidden');
 });
+
+#[Hidden]
+final class HiddenByClassDTO extends ImmutableDTO
+{
+    public function __construct(
+        public string $field,
+    ) {}
+}
+
+it('class-level Hidden can hide all properties using a class attribute', function (): void {
+    $dto = HiddenByClassDTO::from([
+        'field' => 'value',
+    ]);
+
+    expect($dto->toArray())
+        ->toBeArray()
+        ->toBeEmpty();
+});
