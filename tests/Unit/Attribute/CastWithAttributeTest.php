@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\DateTimeCaster;
+use Alamellama\Carapace\Casters\DTOCaster;
 use Alamellama\Carapace\ImmutableDTO;
 use InvalidArgumentException;
 use Tests\Fixtures\DTO\Address;
@@ -15,7 +16,7 @@ it('can cast class-string of DTO instances', function (): void {
     $attribute = new CastWith(User::class);
 
     expect($attribute->caster)
-        ->toBeString(User::class);
+        ->toBeInstanceOf(DTOCaster::class);
 });
 
 it('can cast class-string of caster interface', function (): void {

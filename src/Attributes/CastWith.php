@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
+use Alamellama\Carapace\Casters\DTOCaster;
 use Alamellama\Carapace\Contracts\CasterInterface;
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\ImmutableDTO;
 use Alamellama\Carapace\Support\Data;
 use Attribute;
 use InvalidArgumentException;
+use JsonException;
 use ReflectionProperty;
 
-use function is_array;
 use function is_null;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -23,10 +24,7 @@ use function is_null;
  */
 class CastWith implements PropertyPreHydrationInterface
 {
-    /**
-     * @var class-string<ImmutableDTO>|class-string<CasterInterface>|CasterInterface
-     */
-    public string|CasterInterface $caster;
+    public CasterInterface $caster;
 
     /**
      * @param  class-string<ImmutableDTO>|class-string<CasterInterface>|CasterInterface  $caster  Either a class-string of ImmutableDTO/CasterInterface class or a CasterInterface implementation.
@@ -47,7 +45,7 @@ class CastWith implements PropertyPreHydrationInterface
         }
 
         if (class_exists($caster) && is_subclass_of($caster, ImmutableDTO::class)) {
-            $this->caster = $caster;
+            $this->caster = new DTOCaster($caster);
 
             return;
         }
@@ -73,41 +71,23 @@ class CastWith implements PropertyPreHydrationInterface
         $type = $property->getType();
 
         // Only return early if we allow null otherwise the caster might handle this
-        if (is_null($type) || $type->allowsNull() && is_null($value)) {
+        if (is_null($type) || ($type->allowsNull() && is_null($value))) {
             return;
         }
 
-        if ($value instanceof $this->caster) {
-            return;
+        // Always delegate to the caster, but standardize error context
+        try {
+            $casted = $this->caster->cast($value);
+        } catch (JsonException $e) {
+            if (method_exists($this->caster, 'targetClass')) {
+                /** @var DTOCaster $caster */
+                $caster = $this->caster;
+                throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $caster->targetClass(), $e->getCode(), previous: $e);
+            }
+
+            throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $this->caster::class, $e->getCode(), previous: $e);
         }
 
-        if ($this->caster instanceof CasterInterface) {
-            $value = $this->caster->cast($value);
-            $data->set($propertyName, $value);
-
-            return;
-        }
-
-        // Collection of DTOs
-        if (is_array($value) && array_is_list($value)) {
-            $data->set(
-                $propertyName,
-                array_map(
-                    fn ($item) => $item instanceof $this->caster ? $item : $this->caster::from($item),
-                    $value
-                )
-            );
-
-            return;
-        }
-
-        // Single DTO array
-        if (is_array($value)) {
-            $data->set($propertyName, $this->caster::from($value));
-
-            return;
-        }
-
-        throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $this->caster);
+        $data->set($propertyName, $casted);
     }
 }
