@@ -18,6 +18,8 @@ use ReflectionProperty;
  */
 final class Hidden implements ClassTransformationInterface, PropertyTransformationInterface
 {
+    public const SIGNAL = '__hidden__';
+
     /**
      * Handles the exclusion of a property from serialized output.
      *
@@ -25,7 +27,7 @@ final class Hidden implements ClassTransformationInterface, PropertyTransformati
      */
     public function propertyTransform(ReflectionProperty $property, mixed $value): array
     {
-        return ['__hidden__', null];
+        return [self::SIGNAL, null];
     }
 
     /**
@@ -35,6 +37,6 @@ final class Hidden implements ClassTransformationInterface, PropertyTransformati
      */
     public function classTransform(ReflectionProperty $property, mixed $value): array
     {
-        return ['__hidden__', null];
+        return [self::SIGNAL, null];
     }
 }
