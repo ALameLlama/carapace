@@ -6,7 +6,7 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
-final class WithDefaultValue extends ImmutableDTO
+class WithDefaultValue extends ImmutableDTO
 {
     public function __construct(
         public string $name = 'Default Nick',

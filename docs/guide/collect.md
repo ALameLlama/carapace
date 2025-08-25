@@ -7,7 +7,7 @@ The `collect` method allows you to hydrate an array of DTO instances from an arr
 Use the static `collect` method to create multiple DTOs at once:
 
 ```php
-final class User extends ImmutableDTO
+class User extends ImmutableDTO
 {
     public function __construct(
         public string $name,
@@ -40,7 +40,7 @@ $users = User::collect('[
 Nested DTOs are handled the same way as with `from()` — if your DTO contains a property that is another DTO, pass the nested structure and it will be properly hydrated.
 
 ```php
-final class Address extends ImmutableDTO
+class Address extends ImmutableDTO
 {
     public function __construct(
         public string $street,
@@ -48,7 +48,7 @@ final class Address extends ImmutableDTO
     ) {}
 }
 
-final class User extends ImmutableDTO
+class User extends ImmutableDTO
 {
     public function __construct(
         public string $name,

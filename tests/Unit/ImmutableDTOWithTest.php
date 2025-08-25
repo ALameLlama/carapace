@@ -162,7 +162,7 @@ it('can handle empty array', function (): void {
     expect($dto)->not->toBe($dto2);
 });
 
-final class emptyDTO extends ImmutableDTO
+class emptyDTO extends ImmutableDTO
 {
     public function __construct(
     ) {}

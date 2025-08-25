@@ -20,7 +20,7 @@ use function is_string;
  * An attribute that validates IPv4 addresses during hydration.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ValidateIPv4 implements PropertyHydrationInterface
+class ValidateIPv4 implements PropertyHydrationInterface
 {
     public function propertyHydrate(ReflectionProperty $property, Data $data): void
     {
@@ -38,7 +38,7 @@ final class ValidateIPv4 implements PropertyHydrationInterface
     }
 }
 
-final class ServerDTO extends ImmutableDTO
+class ServerDTO extends ImmutableDTO
 {
     public function __construct(
         #[ValidateIPv4]

@@ -11,7 +11,7 @@ use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 
-final class WithDateTimeCasting extends ImmutableDTO
+class WithDateTimeCasting extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new DateTimeCaster)]

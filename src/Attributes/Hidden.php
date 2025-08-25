@@ -16,7 +16,7 @@ use ReflectionProperty;
  * When applied to a property or class, this attribute will exclude the property or properties
  * when converting the DTO to an array or JSON.
  */
-final class Hidden implements ClassTransformationInterface, PropertyTransformationInterface
+class Hidden implements ClassTransformationInterface, PropertyTransformationInterface
 {
     public const SIGNAL = '__hidden__';
 

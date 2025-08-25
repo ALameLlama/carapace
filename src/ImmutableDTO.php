@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace;
 
 use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Traits\GetParentAttributes;
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -16,6 +17,7 @@ use ReflectionParameter;
  */
 abstract class ImmutableDTO
 {
+    use GetParentAttributes;
     use SerializationTrait;
 
     /**
@@ -29,6 +31,16 @@ abstract class ImmutableDTO
         $data = Data::wrap($data);
         $reflection = new ReflectionClass(static::class);
 
+        // Run all Contracts\ClassPreHydrationInterface attributes
+        foreach (self::getParentAttributes($reflection) as $classAttr) {
+            $classAttrInstance = $classAttr->newInstance();
+            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
+                foreach ($reflection->getProperties() as $property) {
+                    $classAttrInstance->classPreHydrate($property, $data);
+                }
+            }
+        }
+
         // Run all Contracts\PreHydrationHandler attributes
         // Such as CastWith, MapFrom, etc.
         foreach ($reflection->getProperties() as $property) {
@@ -36,16 +48,6 @@ abstract class ImmutableDTO
                 $attrInstance = $attr->newInstance();
                 if ($attrInstance instanceof Contracts\PropertyPreHydrationInterface) {
                     $attrInstance->propertyPreHydrate($property, $data);
-                }
-            }
-        }
-
-        // Run all Contracts\ClassPreHydrationInterface attributes
-        foreach ($reflection->getAttributes() as $classAttr) {
-            $classAttrInstance = $classAttr->newInstance();
-            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
-                foreach ($reflection->getProperties() as $property) {
-                    $classAttrInstance->classPreHydrate($property, $data);
                 }
             }
         }
@@ -67,6 +69,16 @@ abstract class ImmutableDTO
                 throw new InvalidArgumentException("Missing required parameter: $name");
             }
 
+            // Run all Contracts\ClassHydrationInterface attributes
+            foreach ($reflection->getAttributes() as $classAttr) {
+                $classAttrInstance = $classAttr->newInstance();
+                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
+                    foreach ($reflection->getProperties() as $property) {
+                        $classAttrInstance->classHydrate($property, $data);
+                    }
+                }
+            }
+
             // Run all Contracts\HydrationHandler attributes
             // This can be used for validators or other custom handlers.
             foreach ($reflection->getProperties() as $property) {
@@ -74,16 +86,6 @@ abstract class ImmutableDTO
                     $attrInstance = $attr->newInstance();
                     if ($attrInstance instanceof Contracts\PropertyHydrationInterface) {
                         $attrInstance->propertyHydrate($property, $data);
-                    }
-                }
-            }
-
-            // Run all Contracts\ClassHydrationInterface attributes
-            foreach ($reflection->getAttributes() as $classAttr) {
-                $classAttrInstance = $classAttr->newInstance();
-                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
-                    foreach ($reflection->getProperties() as $property) {
-                        $classAttrInstance->classHydrate($property, $data);
                     }
                 }
             }

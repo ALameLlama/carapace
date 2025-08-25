@@ -32,7 +32,7 @@ it('can cast caster interface', function (): void {
         ->toBeInstanceOf(DateTimeCaster::class);
 });
 
-final class CastWithUsersDTO extends ImmutableDTO
+class CastWithUsersDTO extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(User::class)]
@@ -41,7 +41,7 @@ final class CastWithUsersDTO extends ImmutableDTO
     ) {}
 }
 
-final class CastWithUserDTO extends ImmutableDTO
+class CastWithUserDTO extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(User::class)]

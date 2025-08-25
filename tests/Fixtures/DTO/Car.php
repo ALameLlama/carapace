@@ -6,7 +6,7 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
-final class Car extends ImmutableDTO
+class Car extends ImmutableDTO
 {
     public function __construct(
         public string $make,

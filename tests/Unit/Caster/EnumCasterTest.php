@@ -12,7 +12,7 @@ use Tests\Fixtures\Enums\Color;
 use Tests\Fixtures\Enums\Status;
 use Tests\Fixtures\Enums\StatusCode;
 
-final class StatusDto extends ImmutableDTO
+class StatusDto extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
@@ -20,7 +20,7 @@ final class StatusDto extends ImmutableDTO
     ) {}
 }
 
-final class ColorDto extends ImmutableDTO
+class ColorDto extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new EnumCaster(Color::class))]
@@ -28,7 +28,7 @@ final class ColorDto extends ImmutableDTO
     ) {}
 }
 
-final class StatusCodeDto extends ImmutableDTO
+class StatusCodeDto extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new EnumCaster(StatusCode::class))]
@@ -36,7 +36,7 @@ final class StatusCodeDto extends ImmutableDTO
     ) {}
 }
 
-final class CombinedDto extends ImmutableDTO
+class CombinedDto extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]

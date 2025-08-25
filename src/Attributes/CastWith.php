@@ -21,7 +21,7 @@ use function is_null;
  *
  * This ensures the property is properly cast to the desired type during hydration.
  */
-final class CastWith implements PropertyPreHydrationInterface
+class CastWith implements PropertyPreHydrationInterface
 {
     /**
      * @var class-string<ImmutableDTO>|class-string<CasterInterface>|CasterInterface

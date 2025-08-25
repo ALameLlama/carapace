@@ -74,7 +74,7 @@ Use your custom caster with the `CastWith` attribute:
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\ImmutableDTO;
 
-final class Event extends ImmutableDTO
+class Event extends ImmutableDTO
 {
     public function __construct(
         public string $name,
