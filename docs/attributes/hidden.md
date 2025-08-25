@@ -8,7 +8,7 @@ The `Hidden` attribute allows you to exclude specific properties from serializat
 use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\ImmutableDTO;
 
-final class User extends ImmutableDTO
+class User extends ImmutableDTO
 {
     public function __construct(
         public string $name,

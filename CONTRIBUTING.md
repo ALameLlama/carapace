@@ -122,7 +122,7 @@ namespace Tests\Demo;
 
 use Alamellama\Carapace\ImmutableDTO;
 
-final class SimpleDTO extends ImmutableDTO
+class SimpleDTO extends ImmutableDTO
 {
     public function __construct(
         public string $name,

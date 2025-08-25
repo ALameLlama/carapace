@@ -8,7 +8,7 @@ The `MapTo` attribute allows you to customize the output key for a property duri
 use Alamellama\Carapace\Attributes\MapTo;
 use Alamellama\Carapace\ImmutableDTO;
 
-final class User extends ImmutableDTO
+class User extends ImmutableDTO
 {
     public function __construct(
         #[MapTo('full_name')]

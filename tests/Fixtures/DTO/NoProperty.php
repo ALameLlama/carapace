@@ -6,7 +6,7 @@ namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\ImmutableDTO;
 
-final class NoProperty extends ImmutableDTO
+class NoProperty extends ImmutableDTO
 {
     public function __construct(string $foo) {}
 }

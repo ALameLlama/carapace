@@ -9,7 +9,7 @@ use Alamellama\Carapace\Casters\PrimitiveCaster;
 use Alamellama\Carapace\ImmutableDTO;
 use InvalidArgumentException;
 
-final class WithPrimitiveCasting extends ImmutableDTO
+class WithPrimitiveCasting extends ImmutableDTO
 {
     public function __construct(
         #[CastWith(new PrimitiveCaster('int'))]

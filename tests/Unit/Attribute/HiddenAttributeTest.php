@@ -7,7 +7,7 @@ namespace Tests\Unit\Attribute;
 use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\ImmutableDTO;
 
-final class HiddenPropertyDTO extends ImmutableDTO
+class HiddenPropertyDTO extends ImmutableDTO
 {
     public function __construct(
         public string $visible,
@@ -47,7 +47,7 @@ it('excludes properties marked with Hidden attribute when serializing to JSON', 
 });
 
 #[Hidden]
-final class HiddenByClassDTO extends ImmutableDTO
+class HiddenByClassDTO extends ImmutableDTO
 {
     public function __construct(
         public string $field,

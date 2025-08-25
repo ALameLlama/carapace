@@ -32,7 +32,7 @@ use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Attributes\MapFrom;
 use Alamellama\Carapace\Attributes\Hidden;
 
-final class User extends ImmutableDTO
+class User extends ImmutableDTO
 {
     public function __construct(
         public string $name,

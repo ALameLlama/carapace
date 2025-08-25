@@ -11,7 +11,7 @@ use Attribute;
 use ReflectionProperty;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EnsureNonEmpty implements ClassHydrationInterface
+class EnsureNonEmpty implements ClassHydrationInterface
 {
     public function classHydrate(ReflectionProperty $property, Data $data): void
     {
@@ -29,7 +29,7 @@ final class EnsureNonEmpty implements ClassHydrationInterface
 }
 
 #[EnsureNonEmpty]
-final class Server2DTO extends ImmutableDTO
+class Server2DTO extends ImmutableDTO
 {
     public function __construct(
         public string $host,

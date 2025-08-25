@@ -23,7 +23,7 @@ use ReflectionProperty;
  * Explicit MapTo/MapFrom attributes on a property take precedence over class-level SnakeCase.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterface, PropertyPreHydrationInterface, PropertyTransformationInterface
+class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterface, PropertyPreHydrationInterface, PropertyTransformationInterface
 {
     use PropertyHasAttribute;
 

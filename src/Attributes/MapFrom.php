@@ -17,7 +17,7 @@ use ReflectionProperty;
  * or moved to a different property during hydration. Can accept multiple source keys
  * which will be checked in order until a match is found.
  */
-final class MapFrom implements PropertyPreHydrationInterface
+class MapFrom implements PropertyPreHydrationInterface
 {
     /**
      * @var array<string> The keys in the input data to map from (checked in order)

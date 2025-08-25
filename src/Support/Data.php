@@ -33,7 +33,7 @@ use function property_exists;
  *              for objects, set() assigns the property on the underlying object;
  *              unset() is a no-op for objects to avoid side-effects on models.
  */
-final class Data
+class Data
 {
     /**
      * @param  array<mixed,mixed>|object  $data

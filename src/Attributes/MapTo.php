@@ -15,7 +15,7 @@ use ReflectionProperty;
  * This is useful for ensuring that the property is always represented with a specific key.
  * For instance, you might have properties using PascalCase while array keys use snake_case.
  */
-final class MapTo implements PropertyTransformationInterface
+class MapTo implements PropertyTransformationInterface
 {
     /**
      * @param  string  $destinationKey  The key to use in the output array
