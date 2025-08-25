@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Attributes;
 
 use Alamellama\Carapace\Contracts\CasterInterface;
-use Alamellama\Carapace\Contracts\PreHydrationInterface;
+use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\ImmutableDTO;
 use Alamellama\Carapace\Support\Data;
 use Attribute;
 use InvalidArgumentException;
+use ReflectionProperty;
 
 use function is_array;
 use function is_null;
@@ -20,7 +21,7 @@ use function is_null;
  *
  * This ensures the property is properly cast to the desired type during hydration.
  */
-final class CastWith implements PreHydrationInterface
+final class CastWith implements PropertyPreHydrationInterface
 {
     /**
      * @var class-string<ImmutableDTO>|class-string<CasterInterface>|CasterInterface
@@ -57,19 +58,22 @@ final class CastWith implements PreHydrationInterface
     /**
      * Handles the casting of a property using either a class-string of ImmutableDTO/CasterInterface class or a CasterInterface implementation.
      *
-     * @param  string  $propertyName  The name of the property being handled.
-     *
      * @throws InvalidArgumentException If the value cannot be cast properly.
      */
-    public function handle(string $propertyName, Data $data): void
+    public function propertyPreHydrate(ReflectionProperty $property, Data $data): void
     {
+        $propertyName = $property->getName();
+
         if (! $data->has($propertyName)) {
             return;
         }
 
         $value = $data->get($propertyName);
 
-        if (is_null($value)) {
+        $type = $property->getType();
+
+        // Only return early if we allow null otherwise the caster might handle this
+        if (is_null($type) || $type->allowsNull() && is_null($value)) {
             return;
         }
 

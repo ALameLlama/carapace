@@ -34,8 +34,18 @@ abstract class ImmutableDTO
         foreach ($reflection->getProperties() as $property) {
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Contracts\PreHydrationInterface) {
-                    $attrInstance->handle($property->getName(), $data);
+                if ($attrInstance instanceof Contracts\PropertyPreHydrationInterface) {
+                    $attrInstance->propertyPreHydrate($property, $data);
+                }
+            }
+        }
+
+        // Run all Contracts\ClassPreHydrationInterface attributes
+        foreach ($reflection->getAttributes() as $classAttr) {
+            $classAttrInstance = $classAttr->newInstance();
+            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
+                foreach ($reflection->getProperties() as $property) {
+                    $classAttrInstance->classPreHydrate($property, $data);
                 }
             }
         }
@@ -62,8 +72,18 @@ abstract class ImmutableDTO
             foreach ($reflection->getProperties() as $property) {
                 foreach ($property->getAttributes() as $attr) {
                     $attrInstance = $attr->newInstance();
-                    if ($attrInstance instanceof Contracts\HydrationInterface) {
-                        $attrInstance->handle($property->getName(), $data);
+                    if ($attrInstance instanceof Contracts\PropertyHydrationInterface) {
+                        $attrInstance->propertyHydrate($property, $data);
+                    }
+                }
+            }
+
+            // Run all Contracts\ClassHydrationInterface attributes
+            foreach ($reflection->getAttributes() as $classAttr) {
+                $classAttrInstance = $classAttr->newInstance();
+                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
+                    foreach ($reflection->getProperties() as $property) {
+                        $classAttrInstance->classHydrate($property, $data);
                     }
                 }
             }

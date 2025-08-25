@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Contracts\PreHydrationInterface;
+use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Support\Data;
 use Attribute;
+use ReflectionProperty;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 /**
@@ -16,7 +17,7 @@ use Attribute;
  * or moved to a different property during hydration. Can accept multiple source keys
  * which will be checked in order until a match is found.
  */
-final class MapFrom implements PreHydrationInterface
+final class MapFrom implements PropertyPreHydrationInterface
 {
     /**
      * @var array<string> The keys in the input data to map from (checked in order)
@@ -33,17 +34,15 @@ final class MapFrom implements PreHydrationInterface
 
     /**
      * Handles the mapping of a property from another key in the data array.
-     *
-     * @param  string  $propertyName  The name of the property being handled.
      */
-    public function handle(string $propertyName, Data $data): void
+    public function propertyPreHydrate(ReflectionProperty $property, Data $data): void
     {
         foreach ($this->sourceKeys as $sourceKey) {
             if (! $data->has($sourceKey)) {
                 continue;
             }
 
-            $data->set($propertyName, $data->get($sourceKey));
+            $data->set($property->getName(), $data->get($sourceKey));
             $data->unset($sourceKey);
 
             return;
