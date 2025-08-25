@@ -21,7 +21,7 @@ use ReflectionProperty;
  * ImmutableDTO to hydrate the nested Address DTO automatically.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class GroupFrom implements PropertyPreHydrationInterface
+class GroupFrom implements PropertyPreHydrationInterface
 {
     /**
      * @var array<string>
