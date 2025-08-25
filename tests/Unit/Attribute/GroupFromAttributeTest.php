@@ -8,7 +8,7 @@ use Alamellama\Carapace\Attributes\GroupFrom;
 use Alamellama\Carapace\ImmutableDTO;
 use Tests\Fixtures\DTO\Address;
 
-final class UserWithAddressDTO extends ImmutableDTO
+class UserWithAddressDTO extends ImmutableDTO
 {
     public function __construct(
         public string $name,
@@ -17,7 +17,7 @@ final class UserWithAddressDTO extends ImmutableDTO
     ) {}
 }
 
-final class UserWithOptionalAddressDTO extends ImmutableDTO
+class UserWithOptionalAddressDTO extends ImmutableDTO
 {
     public function __construct(
         public string $name,

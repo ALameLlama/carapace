@@ -21,7 +21,7 @@ use function is_null;
  * Can be applied at class level (affects all properties) or property level (affects only that property).
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class ConvertEmptyToNull implements ClassPreHydrationInterface, PropertyPreHydrationInterface
+class ConvertEmptyToNull implements ClassPreHydrationInterface, PropertyPreHydrationInterface
 {
     public function classPreHydrate(ReflectionProperty $property, Data $data): void
     {
