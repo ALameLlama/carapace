@@ -70,7 +70,10 @@ final class CastWith implements PropertyPreHydrationInterface
 
         $value = $data->get($propertyName);
 
-        if (is_null($value)) {
+        $type = $property->getType();
+
+        // Only return early if we allow null otherwise the caster might handle this
+        if (is_null($type) || $type->allowsNull() && is_null($value)) {
             return;
         }
 

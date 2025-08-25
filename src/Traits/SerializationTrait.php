@@ -6,6 +6,7 @@ namespace Alamellama\Carapace\Traits;
 
 use const JSON_THROW_ON_ERROR;
 
+use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\Contracts;
 use JsonException;
 use ReflectionClass;
@@ -51,7 +52,7 @@ trait SerializationTrait
                     [$name, $value] = $attrInstance->propertyTransform($property, $value);
                 }
 
-                if ($name === '__hidden__') {
+                if ($name === Hidden::SIGNAL) {
                     continue 2;
                 }
             }
@@ -63,7 +64,7 @@ trait SerializationTrait
                     // Run all ClassTransformationInterface attributes
                     // Such as SnakeCase, etc.
                     [$proposedName, $value] = $classAttrInstance->classTransform($property, $value);
-                    if ($proposedName === '__hidden__') {
+                    if ($proposedName === Hidden::SIGNAL) {
                         $name = $proposedName;
 
                         continue 2;
