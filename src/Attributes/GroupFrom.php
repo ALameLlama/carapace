@@ -18,7 +18,7 @@ use ReflectionProperty;
  *
  * If the incoming data has keys `street`, `city`, and `postcode`, this attribute
  * will collect them into an array and assign it to the `address` property, allowing
- * ImmutableDTO to hydrate the nested Address DTO automatically.
+ * Data to hydrate the nested Address DTO automatically.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class GroupFrom implements PropertyPreHydrationInterface

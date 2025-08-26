@@ -7,10 +7,10 @@ namespace Tests\Unit;
 use Alamellama\Carapace\Attributes\MapFrom;
 use Alamellama\Carapace\Attributes\MapTo;
 use Alamellama\Carapace\Attributes\SnakeCase;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
 #[SnakeCase]
-class SnakeUserDTO extends ImmutableDTO
+class SnakeUserDTO extends Data
 {
     public function __construct(
         public string $firstName,
@@ -18,7 +18,7 @@ class SnakeUserDTO extends ImmutableDTO
     ) {}
 }
 
-class SnakePropertyDTO extends ImmutableDTO
+class SnakePropertyDTO extends Data
 {
     public function __construct(
         #[SnakeCase]
@@ -28,7 +28,7 @@ class SnakePropertyDTO extends ImmutableDTO
 }
 
 #[SnakeCase]
-class SnakeOverridesDTO extends ImmutableDTO
+class SnakeOverridesDTO extends Data
 {
     public function __construct(
         #[MapFrom('custom_in')]
@@ -89,7 +89,7 @@ it('respects explicit MapFrom/MapTo over class-level SnakeCase', function (): vo
         ->not->toHaveKey('otherField');
 });
 
-class CamelInputDTO extends ImmutableDTO
+class CamelInputDTO extends Data
 {
     public function __construct(
         #[SnakeCase]
@@ -97,7 +97,7 @@ class CamelInputDTO extends ImmutableDTO
     ) {}
 }
 
-class OptionalSnakeDTO extends ImmutableDTO
+class OptionalSnakeDTO extends Data
 {
     public function __construct(
         #[SnakeCase]
@@ -125,7 +125,7 @@ it('property-level SnakeCase on optional property with no input produces snake_c
 });
 
 #[SnakeCase]
-class OptionalSnakeClassDTO extends ImmutableDTO
+class OptionalSnakeClassDTO extends Data
 {
     public function __construct(
         public ?string $firstName = null,
@@ -133,7 +133,7 @@ class OptionalSnakeClassDTO extends ImmutableDTO
 }
 
 #[SnakeCase]
-class CamelInputClassDTO extends ImmutableDTO
+class CamelInputClassDTO extends Data
 {
     public function __construct(
         public string $firstName,

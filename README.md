@@ -27,12 +27,12 @@ composer require alamellama/carapace
 ## Usage
 
 ```php
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Attributes\MapFrom;
 use Alamellama\Carapace\Attributes\Hidden;
 
-class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,

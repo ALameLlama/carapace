@@ -9,7 +9,7 @@ Automatically cast a property into a specific DTO (or array of DTOs):
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
 
-class Account extends ImmutableDTO
+class Account extends Data
 {
     public function __construct(
         public string $name,
@@ -41,7 +41,7 @@ Cast values to primitive types using the `PrimitiveCaster`:
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\PrimitiveCaster;
 
-class Product extends ImmutableDTO
+class Product extends Data
 {
     public function __construct(
         public string $name,
@@ -94,7 +94,7 @@ The `EnumCaster` allows you to cast values to native PHP enums (both backed and 
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\EnumCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
 // Define your enums
 enum Status: string
@@ -112,7 +112,7 @@ enum Color
 }
 
 // Use EnumCaster in your DTO
-class Task extends ImmutableDTO
+class Task extends Data
 {
     public function __construct(
         public string $title,
@@ -156,9 +156,9 @@ The `DateTimeCaster` allows you to automatically cast values to PHP's native `Da
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\DateTimeCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class Event extends ImmutableDTO
+class Event extends Data
 {
     public function __construct(
         public string $name,

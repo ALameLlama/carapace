@@ -24,6 +24,8 @@ use function is_array;
  */
 trait SerializationTrait
 {
+    use GetParentAttributesTrait;
+
     /**
      * Converts the object into an associative array.
      *
@@ -57,7 +59,7 @@ trait SerializationTrait
                 }
             }
 
-            foreach ($reflection->getAttributes() as $classAttr) {
+            foreach (self::getParentAttributes($reflection) as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
                 if ($classAttrInstance instanceof Contracts\ClassTransformationInterface) {
                     $originalName = $name;

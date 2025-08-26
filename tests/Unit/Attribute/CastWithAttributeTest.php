@@ -6,7 +6,7 @@ namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\DateTimeCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use InvalidArgumentException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
@@ -32,7 +32,7 @@ it('can cast caster interface', function (): void {
         ->toBeInstanceOf(DateTimeCaster::class);
 });
 
-class CastWithUsersDTO extends ImmutableDTO
+class CastWithUsersDTO extends Data
 {
     public function __construct(
         #[CastWith(User::class)]
@@ -41,7 +41,7 @@ class CastWithUsersDTO extends ImmutableDTO
     ) {}
 }
 
-class CastWithUserDTO extends ImmutableDTO
+class CastWithUserDTO extends Data
 {
     public function __construct(
         #[CastWith(User::class)]
