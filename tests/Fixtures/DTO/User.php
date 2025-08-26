@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\Attributes\MapFrom;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,

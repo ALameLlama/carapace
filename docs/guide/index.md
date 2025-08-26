@@ -10,7 +10,7 @@ It leverages PHP attributes for casting, property mapping, and serialization, wh
 
 ### Immutable DTOs
 
-- Define immutable data objects by extending the `ImmutableDTO` base class.
+- Define immutable data objects by extending the `Data` base class.
 - Properties are initialized via constructor promotion.
 - Enforces strict immutability for data integrity.
 

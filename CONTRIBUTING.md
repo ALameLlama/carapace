@@ -120,9 +120,9 @@ declare(strict_types=1);
 
 namespace Tests\Demo;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class SimpleDTO extends ImmutableDTO
+class SimpleDTO extends Data
 {
     public function __construct(
         public string $name,

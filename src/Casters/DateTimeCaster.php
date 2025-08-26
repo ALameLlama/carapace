@@ -20,7 +20,7 @@ use function is_string;
  * This class handles casting values to DateTime objects.
  * It implements the CasterInterface and provides flexible DateTime conversion.
  */
-final readonly class DateTimeCaster implements CasterInterface
+class DateTimeCaster implements CasterInterface
 {
     /**
      * Create a new DateTime caster.
@@ -28,7 +28,7 @@ final readonly class DateTimeCaster implements CasterInterface
      * @param  string  $format  The format to use when parsing date strings (default: 'Y-m-d H:i:s')
      */
     public function __construct(
-        private string $format = 'Y-m-d H:i:s'
+        private readonly string $format = 'Y-m-d H:i:s'
     ) {}
 
     /**

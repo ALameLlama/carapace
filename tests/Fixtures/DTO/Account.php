@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Fixtures\DTO;
 
 use Alamellama\Carapace\Attributes\CastWith;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class Account extends ImmutableDTO
+class Account extends Data
 {
     public function __construct(
         public string $name,

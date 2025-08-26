@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Alamellama\Carapace\Contracts;
+
+use Alamellama\Carapace\Support\Data;
+use ReflectionProperty;
+
+/**
+ * Interface for attributes that handle modifications to hydration data before it is applied to the object from the class.
+ *
+ * This enables custom handling of properties before the hydration process.
+ * e.g. SnakeCase,
+ */
+interface ClassPreHydrationInterface
+{
+    /**
+     * Allows attributes to modify hydration data as needed.
+     */
+    public function classPreHydrate(ReflectionProperty $property, Data $data): void;
+}

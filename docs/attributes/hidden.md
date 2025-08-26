@@ -6,9 +6,9 @@ The `Hidden` attribute allows you to exclude specific properties from serializat
 
 ```php
 use Alamellama\Carapace\Attributes\Hidden;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,

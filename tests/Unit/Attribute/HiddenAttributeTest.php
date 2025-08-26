@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\Hidden;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class HiddenPropertyDTO extends ImmutableDTO
+class HiddenPropertyDTO extends Data
 {
     public function __construct(
         public string $visible,
@@ -44,4 +44,22 @@ it('excludes properties marked with Hidden attribute when serializing to JSON', 
         ->toContain('This should be visible')
         ->not->toContain('hidden')
         ->not->toContain('This should be hidden');
+});
+
+#[Hidden]
+class HiddenByClassDTO extends Data
+{
+    public function __construct(
+        public string $field,
+    ) {}
+}
+
+it('class-level Hidden can hide all properties using a class attribute', function (): void {
+    $dto = HiddenByClassDTO::from([
+        'field' => 'value',
+    ]);
+
+    expect($dto->toArray())
+        ->toBeArray()
+        ->toBeEmpty();
 });
