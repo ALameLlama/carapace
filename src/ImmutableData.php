@@ -7,9 +7,9 @@ namespace Alamellama\Carapace;
 use Alamellama\Carapace\Traits\DTOTrait;
 
 /**
- * Data Transfer Object (DTO) Base Class.
+ * Immutable Data Transfer Object (DTO) Base Class.
  */
-abstract class Data
+abstract readonly class ImmutableData
 {
     use DTOTrait;
 }
