@@ -6,6 +6,7 @@ namespace Alamellama\Carapace\Support;
 
 use const JSON_THROW_ON_ERROR;
 
+use Alamellama\Carapace\ImmutableData;
 use ErrorException;
 use Throwable;
 use Traversable;
@@ -129,6 +130,12 @@ class Data
     {
         if (is_array($this->data)) {
             $this->data[$key] = $value;
+
+            return;
+        }
+
+        if ($this->data instanceof ImmutableData) {
+            $this->data = $this->data->with([$key => $value]);
 
             return;
         }
