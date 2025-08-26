@@ -22,9 +22,9 @@ use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Attributes\MapFrom;
 use Alamellama\Carapace\Attributes\MapTo;
 use Alamellama\Carapace\Attributes\Hidden;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class User extends ImmutableDTO
+readonly class User extends Data
 {
     public function __construct(
         #[MapFrom('display_name')]
@@ -53,7 +53,7 @@ In this example:
 Combine `MapFrom` with `CastWith` to both map and transform data:
 
 ```php
-class Order extends ImmutableDTO
+readonly class Order extends Data
 {
     public function __construct(
         public string $id,

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\GroupFrom;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use Tests\Fixtures\DTO\Address;
 
-class UserWithAddressDTO extends ImmutableDTO
+readonly class UserWithAddressDTO extends Data
 {
     public function __construct(
         public string $name,
@@ -17,7 +17,7 @@ class UserWithAddressDTO extends ImmutableDTO
     ) {}
 }
 
-class UserWithOptionalAddressDTO extends ImmutableDTO
+readonly class UserWithOptionalAddressDTO extends Data
 {
     public function __construct(
         public string $name,

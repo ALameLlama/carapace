@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\DTO;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class RequiredOnly extends ImmutableDTO
+readonly class RequiredOnly extends Data
 {
     public function __construct(
         public string $required,

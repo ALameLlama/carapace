@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
+use Error;
 use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\User;
 
@@ -162,7 +163,7 @@ it('can handle empty array', function (): void {
     expect($dto)->not->toBe($dto2);
 });
 
-class emptyDTO extends ImmutableDTO
+readonly class emptyDTO extends Data
 {
     public function __construct(
     ) {}
@@ -207,3 +208,17 @@ it('can return a new instance with overridden values when using an object for ov
 
     expect($dto)->not->toBe($dto2);
 });
+
+it('throws when you update the properties directly', function (): void {
+    $dto = User::from([
+        'name' => 'Nick',
+        'email' => 'nick@example.com',
+        'address' => [
+            'street' => '123 Main St',
+            'city' => 'Melbourne',
+            'postcode' => '3000',
+        ],
+    ]);
+
+    $dto->name = 'Mick';
+})->throws(Error::class, 'Cannot modify readonly property');

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\DTO;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class Car extends ImmutableDTO
+readonly class Car extends Data
 {
     public function __construct(
         public string $make,

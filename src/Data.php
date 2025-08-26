@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace;
 
-use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Support\Data as DataWrapper;
 use Alamellama\Carapace\Traits\GetParentAttributesTrait;
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
@@ -15,7 +15,7 @@ use ReflectionParameter;
 /**
  * Immutable Data Transfer Object (DTO) Base Class.
  */
-abstract class ImmutableDTO
+abstract readonly class Data
 {
     use GetParentAttributesTrait;
     use SerializationTrait;
@@ -28,7 +28,7 @@ abstract class ImmutableDTO
      */
     public static function from(string|array|object $data): static
     {
-        $data = Data::wrap($data);
+        $data = DataWrapper::wrap($data);
         $reflection = new ReflectionClass(static::class);
 
         // Run all Contracts\ClassPreHydrationInterface attributes
@@ -100,7 +100,7 @@ abstract class ImmutableDTO
 
             $typeName = $type->getName();
 
-            if (is_subclass_of($typeName, self::class) && Data::isArrayOrObject($value)) {
+            if (is_subclass_of($typeName, self::class) && DataWrapper::isArrayOrObject($value)) {
                 /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
@@ -119,7 +119,7 @@ abstract class ImmutableDTO
      */
     public static function collect(string|array|object $data): array
     {
-        $items = Data::wrap($data)->items();
+        $items = DataWrapper::wrap($data)->items();
 
         /** @var array<int, array<mixed, mixed>|object> $items */
         return array_map(static fn (array|object $dto): static => static::from($dto), $items);
@@ -136,7 +136,7 @@ abstract class ImmutableDTO
      */
     public function with(array|object $overrides = [], ...$namedOverrides): static
     {
-        $baseOverrides = Data::wrap($overrides)->toArray();
+        $baseOverrides = DataWrapper::wrap($overrides)->toArray();
         $combined = array_merge($baseOverrides, $namedOverrides);
 
         $reflection = new ReflectionClass($this);

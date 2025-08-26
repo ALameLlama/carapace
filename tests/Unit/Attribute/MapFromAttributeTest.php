@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\MapFrom;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class EmailFromSingleKeyDTO extends ImmutableDTO
+readonly class EmailFromSingleKeyDTO extends Data
 {
     public function __construct(
         #[MapFrom('email_address')]
@@ -15,7 +15,7 @@ class EmailFromSingleKeyDTO extends ImmutableDTO
     ) {}
 }
 
-class EmailFromEitherKeyDTO extends ImmutableDTO
+readonly class EmailFromEitherKeyDTO extends Data
 {
     public function __construct(
         #[MapFrom('contact_email')]
@@ -24,7 +24,7 @@ class EmailFromEitherKeyDTO extends ImmutableDTO
     ) {}
 }
 
-class EmailFromEitherKeyReverseDTO extends ImmutableDTO
+readonly class EmailFromEitherKeyReverseDTO extends Data
 {
     public function __construct(
         #[MapFrom('email_address')]
@@ -33,7 +33,7 @@ class EmailFromEitherKeyReverseDTO extends ImmutableDTO
     ) {}
 }
 
-class OptionalEmailDTO extends ImmutableDTO
+readonly class OptionalEmailDTO extends Data
 {
     public function __construct(
         #[MapFrom]

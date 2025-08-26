@@ -72,9 +72,9 @@ Use your custom caster with the `CastWith` attribute:
 
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class Event extends ImmutableDTO
+readonly class Event extends Data
 {
     public function __construct(
         public string $name,

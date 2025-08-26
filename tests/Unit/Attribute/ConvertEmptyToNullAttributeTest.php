@@ -6,9 +6,9 @@ namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\ConvertEmptyToNull;
 use Alamellama\Carapace\Attributes\MapFrom;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class ConvertEmptyPropertyDTO extends ImmutableDTO
+readonly class ConvertEmptyPropertyDTO extends Data
 {
     public function __construct(
         #[ConvertEmptyToNull]
@@ -46,7 +46,7 @@ it('does not convert empties when property is non-nullable', function (): void {
 });
 
 #[ConvertEmptyToNull]
-class ConvertEmptyClassDTO extends ImmutableDTO
+readonly class ConvertEmptyClassDTO extends Data
 {
     public function __construct(
         public ?string $name,
@@ -68,7 +68,7 @@ it('applies class-level ConvertEmptyToNull to all nullable properties', function
         ->required->toBeTrue();
 });
 
-class ConvertEmptyMapFromDTO extends ImmutableDTO
+readonly class ConvertEmptyMapFromDTO extends Data
 {
     public function __construct(
         #[MapFrom('source_name')]
@@ -85,7 +85,7 @@ it('works with MapFrom before conversion', function (): void {
     expect($dto->name)->toBeNull();
 });
 
-class OptionalPropertyConvertEmptyDTO extends ImmutableDTO
+readonly class OptionalPropertyConvertEmptyDTO extends Data
 {
     public function __construct(
         #[ConvertEmptyToNull]
@@ -101,7 +101,7 @@ it('leaves default null on property-level when key is missing', function (): voi
 });
 
 #[ConvertEmptyToNull]
-class OptionalClassConvertEmptyDTO extends ImmutableDTO
+readonly class OptionalClassConvertEmptyDTO extends Data
 {
     public function __construct(
         public ?string $name = null,

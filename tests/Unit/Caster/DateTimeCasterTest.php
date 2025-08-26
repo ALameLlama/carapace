@@ -6,12 +6,12 @@ namespace Tests\Unit\Caster;
 
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\DateTimeCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 
-class WithDateTimeCasting extends ImmutableDTO
+readonly class WithDateTimeCasting extends Data
 {
     public function __construct(
         #[CastWith(new DateTimeCaster)]

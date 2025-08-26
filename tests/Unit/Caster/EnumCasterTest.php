@@ -6,13 +6,13 @@ namespace Tests\Unit\Caster;
 
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\EnumCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use InvalidArgumentException;
 use Tests\Fixtures\Enums\Color;
 use Tests\Fixtures\Enums\Status;
 use Tests\Fixtures\Enums\StatusCode;
 
-class StatusDto extends ImmutableDTO
+readonly class StatusDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
@@ -20,7 +20,7 @@ class StatusDto extends ImmutableDTO
     ) {}
 }
 
-class ColorDto extends ImmutableDTO
+readonly class ColorDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Color::class))]
@@ -28,7 +28,7 @@ class ColorDto extends ImmutableDTO
     ) {}
 }
 
-class StatusCodeDto extends ImmutableDTO
+readonly class StatusCodeDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(StatusCode::class))]
@@ -36,7 +36,7 @@ class StatusCodeDto extends ImmutableDTO
     ) {}
 }
 
-class CombinedDto extends ImmutableDTO
+readonly class CombinedDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]

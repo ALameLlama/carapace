@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Alamellama\Carapace\Attributes\SnakeCase;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
 #[SnakeCase]
-class BaseDTO extends ImmutableDTO {}
+readonly class BaseDTO extends Data {}
 
-class FirstNameDTO extends BaseDTO
+readonly class FirstNameDTO extends BaseDTO
 {
     public function __construct(
         public string $firstName

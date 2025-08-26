@@ -6,10 +6,10 @@ namespace Tests\Unit\Caster;
 
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\PrimitiveCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use InvalidArgumentException;
 
-class WithPrimitiveCasting extends ImmutableDTO
+readonly class WithPrimitiveCasting extends Data
 {
     public function __construct(
         #[CastWith(new PrimitiveCaster('int'))]
