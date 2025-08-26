@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace;
 
 use Alamellama\Carapace\Support\Data;
-use Alamellama\Carapace\Traits\GetParentAttributes;
+use Alamellama\Carapace\Traits\GetParentAttributesTrait;
 use Alamellama\Carapace\Traits\SerializationTrait;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -17,7 +17,7 @@ use ReflectionParameter;
  */
 abstract class ImmutableDTO
 {
-    use GetParentAttributes;
+    use GetParentAttributesTrait;
     use SerializationTrait;
 
     /**

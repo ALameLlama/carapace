@@ -6,7 +6,7 @@ namespace Alamellama\Carapace\Traits;
 
 use ReflectionProperty;
 
-trait PropertyHasAttribute
+trait PropertyHasAttributeTrait
 {
     /**
      * Helper to check if a property has a specific attribute attached.

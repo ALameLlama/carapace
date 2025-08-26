@@ -6,6 +6,7 @@ namespace Alamellama\Carapace\Support;
 
 use const JSON_THROW_ON_ERROR;
 
+use ErrorException;
 use Throwable;
 use Traversable;
 
@@ -87,11 +88,19 @@ class Data
         }
 
         if (method_exists($this->data, '__get')) {
+            // ->__get() can return a warning, we want to make this an exception.
+            set_error_handler(function ($errno, $errstr, $errfile, $errline): void {
+                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            });
+
             try {
-                $this->data->__get($key);
+                @$this->data->__get($key);
+                restore_error_handler();
 
                 return true;
             } catch (Throwable) {
+                restore_error_handler();
+
                 return false;
             }
         }

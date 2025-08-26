@@ -7,7 +7,7 @@ namespace Alamellama\Carapace\Traits;
 use ReflectionAttribute;
 use ReflectionClass;
 
-trait GetParentAttributes
+trait GetParentAttributesTrait
 {
     /**
      * Helper to get attributes from the class and all its parents (closest first).
