@@ -114,3 +114,12 @@ it('leaves default null on class-level when key is missing', function (): void {
     expect($dto->toArray())
         ->toHaveKey('name', null);
 });
+
+it('works when passing in null', function (): void {
+    $dto = OptionalClassConvertEmptyDTO::from([
+        'name' => null,
+    ]);
+
+    expect($dto->toArray())
+        ->toHaveKey('name', null);
+});

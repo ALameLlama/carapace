@@ -49,8 +49,14 @@ class ConvertEmptyToNull implements ClassPreHydrationInterface, PropertyPreHydra
 
         $value = $data->get($name);
 
-        if (empty($value)) {
-            $data->set($name, null);
+        if (is_null($value)) {
+            return;
         }
+
+        if (! empty($value)) {
+            return;
+        }
+
+        $data->set($name, null);
     }
 }

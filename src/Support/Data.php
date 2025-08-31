@@ -6,6 +6,7 @@ namespace Alamellama\Carapace\Support;
 
 use const JSON_THROW_ON_ERROR;
 
+use Alamellama\Carapace\ImmutableData;
 use ErrorException;
 use Throwable;
 use Traversable;
@@ -133,6 +134,17 @@ class Data
             return;
         }
 
+        if ($this->data instanceof ImmutableData) {
+            $this->data = $this->data->with([$key => $value]);
+
+            return;
+        }
+
+        // TODO: this can cause issues with other read only objects.
+        // I'll need to see what I can do here?
+        // I might have to do some reflect cloning when we construct?
+        // Or maybe instead we have a "dataOriginal"
+        // and we just get and set on our data and only fetch from the original?
         $this->data->{$key} = $value;
     }
 
