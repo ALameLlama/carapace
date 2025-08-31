@@ -22,7 +22,7 @@ $user = User::from('{"name": "John Doe", "email": "john.doe@example.com"}');
 Carapace automatically handles nested DTOs:
 
 ```php
-final class Address extends ImmutableDTO
+class Address extends Data
 {
     public function __construct(
         public string $street,
@@ -31,7 +31,7 @@ final class Address extends ImmutableDTO
     ) {}
 }
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -60,7 +60,7 @@ echo $user->address->city; // Outputs: Anytown
 You can also work with collections of DTOs:
 
 ```php
-final class Team extends ImmutableDTO
+class Team extends Data
 {
     public function __construct(
         public string $name,

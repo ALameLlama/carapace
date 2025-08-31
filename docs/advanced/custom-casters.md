@@ -9,7 +9,7 @@ To create a custom caster, implement the `CasterInterface` which requires a sing
 ```php
 use Alamellama\Carapace\Contracts\CasterInterface;
 
-final readonly class MyCaster implements CasterInterface
+class MyCaster implements CasterInterface
 {
     public function cast(mixed $value): mixed
     {
@@ -29,7 +29,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTimeInterface;
 
-final readonly class CarbonCaster implements CasterInterface
+class CarbonCaster implements CasterInterface
 {
     public function __construct(
         private string $format = 'Y-m-d H:i:s'
@@ -72,9 +72,9 @@ Use your custom caster with the `CastWith` attribute:
 
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class Event extends ImmutableDTO
+class Event extends Data
 {
     public function __construct(
         public string $name,

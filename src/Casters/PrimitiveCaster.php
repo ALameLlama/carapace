@@ -19,7 +19,7 @@ use function is_string;
  * This class handles casting values to primitive PHP types (int, float, string, bool, array).
  * It implements the CasterInterface and provides type conversion with error handling.
  */
-final readonly class PrimitiveCaster implements CasterInterface
+class PrimitiveCaster implements CasterInterface
 {
     /**
      * Create a new primitive type caster.
@@ -27,7 +27,7 @@ final readonly class PrimitiveCaster implements CasterInterface
      * @param  string  $type  The primitive type to cast to ('int', 'float', 'string', 'bool', 'array')
      */
     public function __construct(
-        private string $type
+        private readonly string $type
     ) {}
 
     /**

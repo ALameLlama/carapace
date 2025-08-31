@@ -7,10 +7,12 @@ namespace Tests\Unit;
 use const FILTER_FLAG_IPV4;
 use const FILTER_VALIDATE_IP;
 
-use Alamellama\Carapace\Contracts\HydrationInterface;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Contracts\PropertyHydrationInterface;
+use Alamellama\Carapace\Data;
+use Alamellama\Carapace\Support\Data as DataWrapper;
 use Attribute;
 use InvalidArgumentException;
+use ReflectionProperty;
 
 use function is_string;
 
@@ -18,15 +20,17 @@ use function is_string;
  * An attribute that validates IPv4 addresses during hydration.
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ValidateIPv4 implements HydrationInterface
+class ValidateIPv4 implements PropertyHydrationInterface
 {
-    public function handle(string $propertyName, array &$data): void
+    public function propertyHydrate(ReflectionProperty $property, DataWrapper $data): void
     {
-        if (! isset($data[$propertyName])) {
+        $propertyName = $property->getName();
+
+        if (! $data->has($propertyName)) {
             return;
         }
 
-        $value = $data[$propertyName];
+        $value = $data->get($propertyName);
 
         if (! is_string($value) || ! filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             throw new InvalidArgumentException("Invalid IPv4 address for property '{$propertyName}': {$value}");
@@ -34,7 +38,7 @@ final class ValidateIPv4 implements HydrationInterface
     }
 }
 
-final class ServerDTO extends ImmutableDTO
+class ServerDTO extends Data
 {
     public function __construct(
         #[ValidateIPv4]
