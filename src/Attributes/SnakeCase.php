@@ -9,7 +9,7 @@ use Alamellama\Carapace\Contracts\ClassTransformationInterface;
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Contracts\PropertyTransformationInterface;
 use Alamellama\Carapace\Support\Data;
-use Alamellama\Carapace\Traits\PropertyHasAttribute;
+use Alamellama\Carapace\Traits\PropertyHasAttributeTrait;
 use Attribute;
 use ReflectionProperty;
 
@@ -25,7 +25,7 @@ use ReflectionProperty;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterface, PropertyPreHydrationInterface, PropertyTransformationInterface
 {
-    use PropertyHasAttribute;
+    use PropertyHasAttributeTrait;
 
     /**
      * Class-level pre-hydration: remap snake_case keys to property names unless the property
@@ -38,17 +38,7 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
             return;
         }
 
-        $camel = $property->getName();
-        if ($data->has($camel)) {
-            return;
-        }
-
-        $snake = $this->toSnake($camel);
-
-        if ($data->has($snake)) {
-            $data->set($camel, $data->get($snake));
-            $data->unset($snake);
-        }
+        $this->handle($property, $data);
     }
 
     /**
@@ -71,16 +61,7 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
      */
     public function propertyPreHydrate(ReflectionProperty $property, Data $data): void
     {
-        $camel = $property->getName();
-        if ($data->has($camel)) {
-            return;
-        }
-
-        $snake = $this->toSnake($camel);
-        if ($data->has($snake)) {
-            $data->set($camel, $data->get($snake));
-            $data->unset($snake);
-        }
+        $this->handle($property, $data);
     }
 
     /**
@@ -102,5 +83,20 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
         $snake = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 
         return strtolower((string) $snake);
+    }
+
+    private function handle(ReflectionProperty $property, Data $data): void
+    {
+        $camel = $property->getName();
+        if ($data->has($camel)) {
+            return;
+        }
+
+        $snake = $this->toSnake($camel);
+
+        if ($data->has($snake)) {
+            $data->set($camel, $data->get($snake));
+            $data->unset($snake);
+        }
     }
 }

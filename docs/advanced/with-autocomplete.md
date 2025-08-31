@@ -12,7 +12,7 @@ For example, if you have a DTO with properties `name`, `email`, and `address`, y
 /**
  * @method self with(array $overrides = [], string $name = null, string $email = null, Address $address = null)
  */
-class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,

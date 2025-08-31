@@ -7,8 +7,8 @@ namespace Alamellama\Carapace\Attributes;
 use Alamellama\Carapace\Casters\DTOCaster;
 use Alamellama\Carapace\Contracts\CasterInterface;
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
-use Alamellama\Carapace\ImmutableDTO;
-use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Data;
+use Alamellama\Carapace\Support\Data as DataWrapper;
 use Attribute;
 use InvalidArgumentException;
 use JsonException;
@@ -18,7 +18,7 @@ use function is_null;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
- * Casts a property using either a class-string of ImmutableDTO/CasterInterface class or a CasterInterface implementation.
+ * Casts a property using either a class-string of Data/CasterInterface class or a CasterInterface implementation.
  *
  * This ensures the property is properly cast to the desired type during hydration.
  */
@@ -27,7 +27,7 @@ class CastWith implements PropertyPreHydrationInterface
     public CasterInterface $caster;
 
     /**
-     * @param  class-string<ImmutableDTO>|class-string<CasterInterface>|CasterInterface  $caster  Either a class-string of ImmutableDTO/CasterInterface class or a CasterInterface implementation.
+     * @param  class-string<Data>|class-string<CasterInterface>|CasterInterface  $caster  Either a class-string of Data/CasterInterface class or a CasterInterface implementation.
      */
     public function __construct(
         string|CasterInterface $caster
@@ -44,7 +44,7 @@ class CastWith implements PropertyPreHydrationInterface
             return;
         }
 
-        if (class_exists($caster) && is_subclass_of($caster, ImmutableDTO::class)) {
+        if (class_exists($caster) && is_subclass_of($caster, Data::class)) {
             $this->caster = new DTOCaster($caster);
 
             return;
@@ -54,11 +54,11 @@ class CastWith implements PropertyPreHydrationInterface
     }
 
     /**
-     * Handles the casting of a property using either a class-string of ImmutableDTO/CasterInterface class or a CasterInterface implementation.
+     * Handles the casting of a property using either a class-string of Data/CasterInterface class or a CasterInterface implementation.
      *
      * @throws InvalidArgumentException If the value cannot be cast properly.
      */
-    public function propertyPreHydrate(ReflectionProperty $property, Data $data): void
+    public function propertyPreHydrate(ReflectionProperty $property, DataWrapper $data): void
     {
         $propertyName = $property->getName();
 
@@ -71,7 +71,7 @@ class CastWith implements PropertyPreHydrationInterface
         $type = $property->getType();
 
         // Only return early if we allow null otherwise the caster might handle this
-        if (is_null($type) || ($type->allowsNull() && is_null($value))) {
+        if (is_null($type) || $type->allowsNull() && is_null($value)) {
             return;
         }
 

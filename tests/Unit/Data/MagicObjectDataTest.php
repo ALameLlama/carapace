@@ -102,3 +102,17 @@ it('ignores exceptions from __isset and still tries __get', function (): void {
         ->and($data->get('ok'))->toBe(42)
         ->and($data->has('bad'))->toBeFalse();
 });
+
+it('has will return false if __get is accessing undefined key', function (): void {
+    $obj = new class
+    {
+        public function __get(string $name): mixed
+        {
+            return $this->{$name};
+        }
+    };
+
+    $data = Data::wrap($obj);
+
+    expect($data->has('random'))->toBeFalse();
+});

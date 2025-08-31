@@ -6,9 +6,9 @@ The `MapFrom` attribute allows you to map a DTO property from a different input 
 
 ```php
 use Alamellama\Carapace\Attributes\MapFrom;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -33,7 +33,7 @@ In this example, the `email` property will be populated from the `email_address`
 You can specify multiple source keys in a single `MapFrom` attribute:
 
 ```php
-class UserProfile extends ImmutableDTO
+class UserProfile extends Data
 {
     public function __construct(
         public string $name,
@@ -47,7 +47,7 @@ class UserProfile extends ImmutableDTO
 You can also use multiple `MapFrom` attributes on the same property:
 
 ```php
-class UserProfile extends ImmutableDTO
+class UserProfile extends Data
 {
     public function __construct(
         #[MapFrom('display_name')]

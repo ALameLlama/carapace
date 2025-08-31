@@ -7,12 +7,12 @@ namespace Tests\Unit\Attribute;
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Attributes\EnumSerialize;
 use Alamellama\Carapace\Casters\EnumCaster;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use Tests\Fixtures\Enums\Color;
 use Tests\Fixtures\Enums\Status;
 use Tests\Fixtures\Enums\StatusCode;
 
-class EnumNameDto extends ImmutableDTO
+class EnumNameDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
@@ -25,7 +25,7 @@ class EnumNameDto extends ImmutableDTO
     ) {}
 }
 
-class EnumValueDto extends ImmutableDTO
+class EnumValueDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
@@ -38,7 +38,7 @@ class EnumValueDto extends ImmutableDTO
     ) {}
 }
 
-class EnumMethodDto extends ImmutableDTO
+class EnumMethodDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Status::class))]
@@ -47,7 +47,7 @@ class EnumMethodDto extends ImmutableDTO
     ) {}
 }
 
-class EnumUnitWithValueDto extends ImmutableDTO
+class EnumUnitWithValueDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Color::class))]
@@ -56,7 +56,7 @@ class EnumUnitWithValueDto extends ImmutableDTO
     ) {}
 }
 
-class EnumNonExistingMethodDto extends ImmutableDTO
+class EnumNonExistingMethodDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Color::class))]
@@ -129,7 +129,7 @@ it('ignores non-existing custom method and uses default', function (): void {
         ]);
 });
 
-class EnumUnitMethodDto extends ImmutableDTO
+class EnumUnitMethodDto extends Data
 {
     public function __construct(
         #[CastWith(new EnumCaster(Color::class))]

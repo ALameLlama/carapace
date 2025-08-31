@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Tests\Unit\Contracts;
 
 use Alamellama\Carapace\Contracts\ClassHydrationInterface;
-use Alamellama\Carapace\ImmutableDTO;
-use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Data;
+use Alamellama\Carapace\Support\Data as DataWrapper;
 use Attribute;
 use ReflectionProperty;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class EnsureNonEmpty implements ClassHydrationInterface
 {
-    public function classHydrate(ReflectionProperty $property, Data $data): void
+    public function classHydrate(ReflectionProperty $property, DataWrapper $data): void
     {
         $name = $property->getName();
 
@@ -29,7 +29,7 @@ class EnsureNonEmpty implements ClassHydrationInterface
 }
 
 #[EnsureNonEmpty]
-class Server2DTO extends ImmutableDTO
+class Server2DTO extends Data
 {
     public function __construct(
         public string $host,

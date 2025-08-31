@@ -6,6 +6,8 @@ namespace Alamellama\Carapace\Support;
 
 use const JSON_THROW_ON_ERROR;
 
+use Alamellama\Carapace\ImmutableData;
+use ErrorException;
 use Throwable;
 use Traversable;
 
@@ -87,11 +89,19 @@ class Data
         }
 
         if (method_exists($this->data, '__get')) {
+            // ->__get() can return a warning, we want to make this an exception.
+            set_error_handler(function ($errno, $errstr, $errfile, $errline): void {
+                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            });
+
             try {
-                $this->data->__get($key);
+                @$this->data->__get($key);
+                restore_error_handler();
 
                 return true;
             } catch (Throwable) {
+                restore_error_handler();
+
                 return false;
             }
         }
@@ -124,6 +134,17 @@ class Data
             return;
         }
 
+        if ($this->data instanceof ImmutableData) {
+            $this->data = $this->data->with([$key => $value]);
+
+            return;
+        }
+
+        // TODO: this can cause issues with other read only objects.
+        // I'll need to see what I can do here?
+        // I might have to do some reflect cloning when we construct?
+        // Or maybe instead we have a "dataOriginal"
+        // and we just get and set on our data and only fetch from the original?
         $this->data->{$key} = $value;
     }
 

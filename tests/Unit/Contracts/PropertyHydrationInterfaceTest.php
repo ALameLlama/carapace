@@ -8,8 +8,8 @@ use const FILTER_FLAG_IPV4;
 use const FILTER_VALIDATE_IP;
 
 use Alamellama\Carapace\Contracts\PropertyHydrationInterface;
-use Alamellama\Carapace\ImmutableDTO;
-use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Data;
+use Alamellama\Carapace\Support\Data as DataWrapper;
 use Attribute;
 use InvalidArgumentException;
 use ReflectionProperty;
@@ -22,7 +22,7 @@ use function is_string;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class ValidateIPv4 implements PropertyHydrationInterface
 {
-    public function propertyHydrate(ReflectionProperty $property, Data $data): void
+    public function propertyHydrate(ReflectionProperty $property, DataWrapper $data): void
     {
         $propertyName = $property->getName();
 
@@ -38,7 +38,7 @@ class ValidateIPv4 implements PropertyHydrationInterface
     }
 }
 
-class ServerDTO extends ImmutableDTO
+class ServerDTO extends Data
 {
     public function __construct(
         #[ValidateIPv4]

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\DTO;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-class Address extends ImmutableDTO
+class Address extends Data
 {
     public function __construct(
         public string $street,
