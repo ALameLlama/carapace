@@ -145,7 +145,6 @@ it('can create a simple DTO', function (): void {
 
 ## Code Style Guidelines
 
-- All classes should be final (enforced by Pint)
 - Strict types must be declared in all files
 - Follow PSR-12 coding standards with Laravel-style modifications
 - Class elements should follow the order defined in `pint.json`
