@@ -2,11 +2,11 @@ name: 🤖 Tests
 
 on:
   pull_request:
-    branches: [main, master]
+    branches: [main, master, 'v[0-9]*']
     paths-ignore:
       - "CHANGELOG.md"
   push:
-    branches: [main, master]
+    branches: [main, master, 'v[0-9]*']
     paths-ignore:
       - "CHANGELOG.md"
 
