@@ -16,7 +16,7 @@ hero:
 
 features:
   - title: Immutable DTOs
-    details: Define immutable data objects by extending the ImmutableDTO base class. Properties are initialized via constructor promotion.
+    details: Define immutable data objects by extending the Data base class. Properties are initialized via constructor promotion.
   - title: Attribute-Driven Mapping
     details: Use PHP attributes like CastWith, MapFrom, MapTo, and Hidden to control how data is hydrated, transformed, and serialized with minimal boilerplate.
   - title: Framework-Agnostic

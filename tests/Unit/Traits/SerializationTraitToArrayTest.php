@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit\Traits;
 
 use Alamellama\Carapace\Traits\SerializationTrait;
 use Tests\Fixtures\DTO\Account;

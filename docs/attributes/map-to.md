@@ -6,9 +6,9 @@ The `MapTo` attribute allows you to customize the output key for a property duri
 
 ```php
 use Alamellama\Carapace\Attributes\MapTo;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         #[MapTo('full_name')]

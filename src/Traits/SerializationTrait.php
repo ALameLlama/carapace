@@ -6,6 +6,7 @@ namespace Alamellama\Carapace\Traits;
 
 use const JSON_THROW_ON_ERROR;
 
+use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\Contracts;
 use JsonException;
 use ReflectionClass;
@@ -23,6 +24,8 @@ use function is_array;
  */
 trait SerializationTrait
 {
+    use GetParentAttributesTrait;
+
     /**
      * Converts the object into an associative array.
      *
@@ -39,22 +42,40 @@ trait SerializationTrait
             return $result;
         }
 
-        // Only public properties are considered for serialization
         foreach ($properties as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
 
             foreach ($property->getAttributes() as $attr) {
                 $attrInstance = $attr->newInstance();
-
-                // Run all TransformationInterface attributes
+                // Run all PropertyTransformationInterface attributes
                 // Such as MapTo, Hidden, etc.
-                if ($attrInstance instanceof Contracts\TransformationInterface) {
-                    [$name, $value] = $attrInstance->handle($name, $value);
+                if ($attrInstance instanceof Contracts\PropertyTransformationInterface) {
+                    [$name, $value] = $attrInstance->propertyTransform($property, $value);
+                }
 
-                    if ($name === '__hidden__') {
+                if ($name === Hidden::SIGNAL) {
+                    continue 2;
+                }
+            }
+
+            foreach (self::getParentAttributes($reflection) as $classAttr) {
+                $classAttrInstance = $classAttr->newInstance();
+                if ($classAttrInstance instanceof Contracts\ClassTransformationInterface) {
+                    $originalName = $name;
+                    // Run all ClassTransformationInterface attributes
+                    // Such as SnakeCase, etc.
+                    [$proposedName, $value] = $classAttrInstance->classTransform($property, $value);
+                    if ($proposedName === Hidden::SIGNAL) {
+                        $name = $proposedName;
+
                         continue 2;
                     }
+
+                    // TODO: I need to see if I am happy with this, might need to scope this better instead of it being global.
+                    // If the class-level transform returns the original property name,
+                    // preserve the name produced by property-level transforms (if any).
+                    $name = $proposedName === $property->getName() ? $originalName : $proposedName;
                 }
             }
 
@@ -84,17 +105,14 @@ trait SerializationTrait
      */
     private function recursiveToArray(mixed $value): mixed
     {
-        // Early return for arrays
         if (is_array($value)) {
             return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
         }
 
-        // Early return for self instances
         if ($value instanceof self) {
             return $value->toArray();
         }
 
-        // Default return for all other types
         return $value;
     }
 }
