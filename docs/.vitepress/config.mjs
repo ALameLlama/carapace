@@ -1,68 +1,54 @@
-import { defineConfig } from "vitepress";
+import defineVersionedConfig from "vitepress-versioning-plugin";
+import sidebars from "./sidebars";
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
-  title: "Carapace",
-  description: "Framework-agnostic DTOs for PHP",
-  themeConfig: {
-    search: {
-      provider: "local",
+export default defineVersionedConfig(
+  {
+    title: "Carapace",
+    description: "Framework-agnostic DTOs for PHP",
+    themeConfig: {
+      search: {
+        provider: "local",
+        options: {
+          miniSearch: {
+            searchOptions: {
+              // Filter results for the current version
+              filter: (result) => {
+                const id = result.id;
+                const currentPath = window.location.pathname;
+
+                // Match the first segment in the path, e.g. "1.x", "2.x", etc.
+                const versionMatch = currentPath.split("/")[1]; // "" or "1.x"
+                const entryPrefix = id.split("/")[1]; // "" or "1.x"
+
+                if (versionMatch && versionMatch.match(/^\d+(\.x|\.\d+)?$/)) {
+                  // User is inside a versioned docs section (e.g. /1.x/)
+                  return entryPrefix === versionMatch;
+                } else {
+                  // User is in root (non-versioned docs)
+                  return !entryPrefix.match(/^\d+(\.x|\.\d+)?$/);
+                }
+              },
+            },
+          },
+        },
+      },
+      // https://vitepress.dev/reference/default-theme-config
+      nav: [{ text: "Getting Started", link: "/guide/" }],
+
+      sidebar: sidebars,
+
+      socialLinks: [
+        { icon: "github", link: "https://github.com/alamellama/carapace" },
+      ],
     },
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: "Home", link: "/" },
-      { text: "Getting Started", link: "/guide/" },
-      { text: "Attributes", link: "/attributes/" },
-      { text: "Advanced", link: "/advanced/" },
-    ],
+    versioning: {
+      latestVersion: "2.x",
+    },
 
-    sidebar: [
-      {
-        text: "Guide",
-        items: [
-          { text: "Getting Started", link: "/guide/" },
-          { text: "Creating DTOs", link: "/guide/from" },
-          { text: "Collecting DTOs", link: "/guide/collect" },
-          { text: "Updating DTOs", link: "/guide/with" },
-        ],
-      },
-      {
-        text: "Attributes",
-        items: [
-          { text: "CastWith", link: "/attributes/cast-with" },
-          { text: "MapFrom", link: "/attributes/map-from" },
-          { text: "MapTo", link: "/attributes/map-to" },
-          { text: "Hidden", link: "/attributes/hidden" },
-        ],
-      },
-      {
-        text: "Advanced",
-        items: [
-          { text: "Custom Casters", link: "/advanced/custom-casters" },
-          {
-            text: "Combining Attributes",
-            link: "/advanced/combining-attributes",
-          },
-          {
-            text: "With() Auto Completion",
-            link: "/advanced/with-autocomplete",
-          },
-        ],
-      },
-      {
-        text: "Contributing",
-        items: [
-          { text: "Local Setup", link: "/contributing/local-setup" },
-          { text: "Testing", link: "/contributing/testing" },
-        ],
-      },
-    ],
-
-    socialLinks: [
-      { icon: "github", link: "https://github.com/alamellama/carapace" },
-    ],
+    // base: '/carapace/',
+    cleanUrls: true,
+    lastUpdated: true,
   },
-  // base: '/carapace/',
-  cleanUrls: true,
-  lastUpdated: true,
-});
+  __dirname,
+);
