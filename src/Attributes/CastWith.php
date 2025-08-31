@@ -44,7 +44,7 @@ class CastWith implements PropertyPreHydrationInterface
             return;
         }
 
-        if (class_exists($caster) && is_subclass_of($caster, Data::class)) {
+        if (is_subclass_of($caster, Data::class)) {
             $this->caster = new DTOCaster($caster);
 
             return;
@@ -71,7 +71,7 @@ class CastWith implements PropertyPreHydrationInterface
         $type = $property->getType();
 
         // Only return early if we allow null otherwise the caster might handle this
-        if (is_null($type) || $type->allowsNull() && is_null($value)) {
+        if (is_null($type) || ($type->allowsNull() && is_null($value))) {
             return;
         }
 

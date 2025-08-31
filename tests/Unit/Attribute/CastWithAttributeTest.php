@@ -7,8 +7,10 @@ namespace Tests\Unit\Attribute;
 use Alamellama\Carapace\Attributes\CastWith;
 use Alamellama\Carapace\Casters\DateTimeCaster;
 use Alamellama\Carapace\Casters\DTOCaster;
+use Alamellama\Carapace\Contracts\CasterInterface;
 use Alamellama\Carapace\Data;
 use InvalidArgumentException;
+use JsonException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\User;
 
@@ -145,6 +147,37 @@ it('handles empty array without throwing exception', function (): void {
         ->toHaveCount(0);
 });
 
+it('skips casting when value is null for a nullable property', function (): void {
+    $dto = CastWithUserDTO::from([
+        'user' => null,
+    ]);
+
+    expect($dto->user)->toBeNull();
+});
+
 it('throws if invalid caster provided', function (): void {
     new CastWith('not-real');
 })->throws(InvalidArgumentException::class, 'Invalid caster type: not-real');
+
+class JsonThrowingCaster implements CasterInterface
+{
+    public function cast(mixed $value): mixed
+    {
+        // Simulate a JSON parsing error from underlying DTO::from
+        throw new JsonException('bad json');
+    }
+}
+
+class CastWithJsonThrowDTO extends Data
+{
+    public function __construct(
+        #[CastWith(new JsonThrowingCaster)]
+        public ?User $user = null,
+    ) {}
+}
+
+it('rethrows JsonException as InvalidArgumentException when caster does not expose targetClass()', function (): void {
+    CastWithJsonThrowDTO::from([
+        'user' => 'not json',
+    ]);
+})->throws(InvalidArgumentException::class, "Unable to cast property 'user' to " . JsonThrowingCaster::class);

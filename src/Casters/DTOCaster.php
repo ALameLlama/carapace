@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Casters;
 
 use Alamellama\Carapace\Contracts\CasterInterface;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 use InvalidArgumentException;
 
 use function array_is_list;
@@ -23,13 +23,13 @@ use function is_string;
  */
 final readonly class DTOCaster implements CasterInterface
 {
-    /** @param class-string<ImmutableDTO> $dtoClass */
+    /** @param class-string<Data> $dtoClass */
     public function __construct(public string $dtoClass) {}
 
     /**
      * Exposes the target DTO class-string for error context.
      *
-     * @return class-string<ImmutableDTO>
+     * @return class-string<Data>
      */
     public function targetClass(): string
     {
@@ -37,7 +37,7 @@ final readonly class DTOCaster implements CasterInterface
     }
 
     /**
-     * @return ImmutableDTO|array<int, ImmutableDTO>
+     * @return Data|array<int, Data>
      */
     public function cast(mixed $value): mixed
     {
