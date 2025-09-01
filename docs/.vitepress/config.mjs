@@ -1,11 +1,24 @@
 import defineVersionedConfig from "vitepress-versioning-plugin";
 import sidebars from "./sidebars";
+import taskLists from "markdown-it-task-lists";
 
 // https://vitepress.dev/reference/site-config
 export default defineVersionedConfig(
   {
     title: "Carapace",
     description: "Framework-agnostic DTOs for PHP",
+    head: [
+      [
+        "link",
+        {
+          rel: "preload",
+          as: "font",
+          type: "font/woff2",
+          crossorigin: "",
+          href: "https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff2",
+        },
+      ],
+    ],
     themeConfig: {
       search: {
         provider: "local",
@@ -42,10 +55,14 @@ export default defineVersionedConfig(
         { icon: "github", link: "https://github.com/alamellama/carapace" },
       ],
     },
+    markdown: {
+      config: (md) => {
+        md.use(taskLists, { enabled: true });
+      },
+    },
     versioning: {
       latestVersion: "2.x",
     },
-
     // base: '/carapace/',
     cleanUrls: true,
     lastUpdated: true,

@@ -89,6 +89,10 @@ const sidebars = {
       ],
     },
     {
+      text: "Migrate 1.x to 2.x",
+      link: "/migrate",
+    },
+    {
       text: "Change log",
       link: "https://github.com/ALameLlama/carapace/blob/master/CHANGELOG.md",
     },

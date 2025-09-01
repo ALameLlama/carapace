@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "markdown-it-task-lists": "^2.1.1",
     "vitepress": "^1.6.3",
     "vitepress-versioning-plugin": "github:IMB11/vitepress-versioning-plugin#bc32ee29f615a6b537b391838dd831493945dd12"
   },
