@@ -2,11 +2,6 @@
 
 The `CastWith` attribute allows you to automatically cast values during DTO hydration. It supports casting to DTOs, primitive types, enums, and custom types.
 
-CastWith accepts any of the following:
-- A DTO class-string (e.g. `User::class`) to auto-cast arrays/collections to that DTO
-- A caster class-string (e.g. `PrimitiveCaster::class`)
-- A caster instance (e.g. `new PrimitiveCaster('int')`)
-
 ## Casting to DTOs
 
 Automatically cast a property into a specific DTO (or array of DTOs):
@@ -36,8 +31,7 @@ $account = Account::from([
 ]);
 ```
 
-> [!tip]
-> The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the `CastWith` item in the array to the specified DTO type.
+> **Important**: The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.
 
 ## Primitive Type Casting
 

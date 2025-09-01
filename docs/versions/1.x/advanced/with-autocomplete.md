@@ -37,5 +37,4 @@ $dto = User::from([
 $dto2 = $dto->with(name: 'Nicholas', email: 'nicholas@example.com');
 ```
 
-> [!WARNING]
-> I am working on creating a tool to automatically generate these in the future
+> **Important**: I am working on creating a tool to automatically generate these in the future

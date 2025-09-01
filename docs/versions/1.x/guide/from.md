@@ -82,5 +82,4 @@ $team = Team::from([
 echo $team->members[0]->name; // Outputs: John
 ```
 
-> [!important]
-> The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.
+> **Important**: The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.

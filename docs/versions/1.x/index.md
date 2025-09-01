@@ -9,14 +9,14 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /guide/
+      link: ./guide/
     - theme: alt
       text: View on GitHub
       link: https://github.com/alamellama/carapace
 
 features:
   - title: Immutable DTOs
-    details: Define data objects by extending the Data base class, or use ImmutableData for readonly DTOs. Properties are initialized via constructor promotion.
+    details: Define immutable data objects by extending the Data base class. Properties are initialized via constructor promotion.
   - title: Attribute-Driven Mapping
     details: Use PHP attributes like CastWith, MapFrom, MapTo, and Hidden to control how data is hydrated, transformed, and serialized with minimal boilerplate.
   - title: Framework-Agnostic
