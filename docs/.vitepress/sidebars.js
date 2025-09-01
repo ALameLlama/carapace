@@ -50,6 +50,7 @@ const sidebars = {
     {
       text: "Guide",
       link: "/guide",
+      collapsed: false,
       items: [
         { text: "Creating DTOs", link: "/guide/from" },
         { text: "Collecting DTOs", link: "/guide/collect" },
@@ -59,16 +60,22 @@ const sidebars = {
     {
       text: "Attributes",
       link: "/attributes",
+      collapsed: false,
       items: [
         { text: "CastWith", link: "/attributes/cast-with" },
+        { text: "ConvertEmptyToNull", link: "/attributes/convert-empty-to-null" },
+        { text: "EnumSerialize", link: "/attributes/enum-serialize" },
+        { text: "GroupFrom", link: "/attributes/group-from" },
+        { text: "Hidden", link: "/attributes/hidden" },
         { text: "MapFrom", link: "/attributes/map-from" },
         { text: "MapTo", link: "/attributes/map-to" },
-        { text: "Hidden", link: "/attributes/hidden" },
+        { text: "SnakeCase", link: "/attributes/snake-case" },
       ],
     },
     {
       text: "Advanced",
       link: "/advanced",
+      collapsed: true,
       items: [
         { text: "Custom Casters", link: "/advanced/custom-casters" },
         {
@@ -83,6 +90,7 @@ const sidebars = {
     },
     {
       text: "Contributing",
+      collapsed: true,
       items: [
         { text: "Local Setup", link: "/contributing/local-setup" },
         { text: "Testing", link: "/contributing/testing" },

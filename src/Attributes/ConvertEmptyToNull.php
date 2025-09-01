@@ -10,6 +10,7 @@ use Alamellama\Carapace\Support\Data;
 use Attribute;
 use ReflectionProperty;
 
+use function is_bool;
 use function is_null;
 
 /**
@@ -49,14 +50,11 @@ class ConvertEmptyToNull implements ClassPreHydrationInterface, PropertyPreHydra
 
         $value = $data->get($name);
 
-        if (is_null($value)) {
-            return;
-        }
-
-        if (! empty($value)) {
-            return;
-        }
-
-        $data->set($name, null);
+        match (true) {
+            is_null($value),
+            is_bool($value),
+            ! empty($value) => null,
+            default => $data->set($name, null)
+        };
     }
 }

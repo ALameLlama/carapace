@@ -2,4 +2,16 @@
 :root {
   --vp-font-family-base: "Maple Mono", monospace;
   --vp-font-family-mono: "Maple Mono", monospace;
+
+  /* brand tokens */
+  --vp-c-brand-1: var(--vp-c-cara-1);
+  --vp-c-brand-2: var(--vp-c-cara-2);
+  --vp-c-brand-3: var(--vp-c-cara-3);
+  --vp-c-brand-soft: var(--vp-c-cara-soft);
+
+  /* custom greens */
+  --vp-c-cara-1: #388e3c;
+  --vp-c-cara-2: #43a047;
+  --vp-c-cara-3: #4caf50;
+  --vp-c-cara-soft: rgba(67, 160, 71, 0.14);
 }
