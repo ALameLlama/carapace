@@ -8,8 +8,7 @@ When multiple attributes are applied to a property, they are processed in a spec
 
 1. **Pre-hydration** (`MapFrom`, etc.)
 2. **Hydration** (value assignment)
-3. **Post-hydration** (not currently implemented)
-4. **Serialization** (`MapTo`, `Hidden`, etc.)
+3. **Serialization** (`MapTo`, `Hidden`, etc.)
 
 Understanding this order is important when combining attributes, as it determines how they interact.
 

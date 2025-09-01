@@ -38,4 +38,4 @@ $dto2 = $dto->with(name: 'Nicholas', email: 'nicholas@example.com');
 ```
 
 > [!WARNING]
-> I am working on creating a tool to automatically generate these in the future
+> In the future, I am hoping to add a script to generate this PHPDoc annotation automatically. similar to laravel/ide-helper.

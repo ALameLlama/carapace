@@ -9,7 +9,7 @@ Before you begin, ensure you have the following installed:
 - PHP 8.2 or higher
 - [Composer](https://getcomposer.org/)
 - [Git](https://git-scm.com/)
-- [Yarn](https://yarnpkg.com/) (for documentation)
+- [NPM](https://www.npmjs.com/) (for documentation)
 
 ## Clone the Repository
 
@@ -30,7 +30,7 @@ composer install
 Install documentation dependencies using Yarn:
 
 ```bash
-yarn install
+npm install
 ```
 
 ## Code Quality Tools
@@ -91,16 +91,17 @@ The documentation is built using [VitePress](https://vitepress.dev/). To work wi
 
 ```bash
 # Start a local development server
-yarn docs:dev
+npm run docs:dev
 
 # Build the documentation
-yarn docs:build
+npm run docs:build
 
 # Preview the built documentation
-yarn docs:preview
+npm run docs:preview
 ```
 
-When running `yarn docs:dev`, you can access the documentation at `http://localhost:5173/` and see your changes in real-time.
+When running `npm run docs:dev`,
+you can access the documentation at `http://localhost:5173/` and see your changes in real-time.
 
 ## Workflow
 

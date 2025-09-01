@@ -1,10 +1,10 @@
 # Hydrating DTOs
 
-The `from` method allows you to create DTO instances from arrays or JSON.
+The `from` method allows you to create DTO instances from arrays, JSON or objects.
 
 ## Basic Usage
 
-Use the static `from` method to hydrate the DTO from an array or JSON:
+Use the static `from` method to hydrate the DTO:
 
 ```php
 // From an array
@@ -15,6 +15,10 @@ $user = User::from([
 
 // From a JSON string
 $user = User::from('{"name": "John Doe", "email": "john.doe@example.com"}');
+
+// From Objects like frameworks like Phalcon or Laravel
+$userModel = UserModel::findFirst(1);
+$user = User::from($userModel);
 ```
 
 ## Nested DTOs

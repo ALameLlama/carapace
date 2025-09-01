@@ -1,6 +1,8 @@
+<AttributeBadges scope="both" stage="serialization" />
+
 # Hidden
 
-The `Hidden` attribute allows you to exclude specific properties from serialization.
+`Hidden` allows you to exclude properties from serialization.
 
 ## Basic Usage
 
@@ -18,25 +20,40 @@ class User extends Data
         public string $password,
     ) {}
 }
-```
 
-```php
 $user = User::from([
     'name' => 'John Doe',
     'email' => 'john.doe@example.com',
     'password' => 'secret123',
 ]);
 
-print_r($user->toArray());
+$user->toArray();
+// [
+//     'name' => 'John Doe',
+//     'email' => 'john.doe@example.com',
+//     // password is excluded from serialization
+// ]
 ```
+
+You can hide all properties by default at the class level.
 
 ```php
-// Output:
-[
+#[Hidden]
+class SecureUser extends Data
+{
+    public function __construct(
+        public string $name,
+        public string $email,
+        public string $password,
+    ) {}
+}
+
+$secure = SecureUser::from([
     'name' => 'John Doe',
     'email' => 'john.doe@example.com',
-    // password is excluded from serialization
-]
-```
+    'password' => 'secret123',
+]);
 
-The `Hidden` attribute works with both `toArray()` and `toJson()` methods, ensuring sensitive data is never included in serialized output.
+$secure->toArray();
+// []
+```

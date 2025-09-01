@@ -1,7 +1,10 @@
-import DefaultTheme from "vitepress/theme"
-import "./custom.css"
+import DefaultTheme from "vitepress/theme";
+import AttributeBadges from "./components/AttributeBadges.vue";
+import "./custom.css";
 
 export default {
-  ...DefaultTheme,
-}
-
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    app.component("AttributeBadges", AttributeBadges);
+  },
+};
