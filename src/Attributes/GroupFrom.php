@@ -37,7 +37,6 @@ class GroupFrom implements PropertyPreHydrationInterface
     {
         $propertyName = $property->getName();
 
-        // Do not override if the property value is already present.
         if ($data->has($propertyName)) {
             return;
         }

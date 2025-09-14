@@ -1,0 +1,21 @@
+* text=auto eol=lf
+
+.git* export-ignore
+.phpactor.json export-ignore
+CHANGELOG.md export-ignore
+CONTRIBUTING.md export-ignore
+flake.* export-ignore
+peck.json export-ignore
+phpstan.neon export-ignore
+phpunit.xml export-ignore
+pint.json export-ignore
+rector.php export-ignore
+
+.art export-ignore
+.art/** export-ignore
+.junie export-ignore
+.junie/** export-ignore
+docs export-ignore
+docs/** export-ignore
+tests export-ignore
+tests/** export-ignore

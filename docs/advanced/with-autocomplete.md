@@ -37,4 +37,5 @@ $dto = User::from([
 $dto2 = $dto->with(name: 'Nicholas', email: 'nicholas@example.com');
 ```
 
-> **Important**: I am working on creating a tool to automatically generate these in the future
+> [!WARNING]
+> In the future, I am hoping to add a script to generate this PHPDoc annotation automatically. similar to laravel/ide-helper.

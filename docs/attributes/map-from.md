@@ -1,6 +1,8 @@
+<AttributeBadges scope="property" stage="hydration" />
+
 # MapFrom
 
-The `MapFrom` attribute allows you to map a DTO property from a different input key.
+`MapFrom` allows you to map a DTO property from a different input key.
 
 ## Basic Usage
 
@@ -17,16 +19,14 @@ class User extends Data
         public string $email,
     ) {}
 }
-```
 
-```php
 $user = User::from([
     'name' => 'John Doe',
-    'email_address' => 'john.doe@example.com', // Will be mapped to $email
+    'email_address' => 'john.doe@example.com',
 ]);
-```
 
-In this example, the `email` property will be populated from the `email_address` key in the input array.
+echo $user->email; // Outputs: john.doe@example.com
+```
 
 ## Multiple Sources
 

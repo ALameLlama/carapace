@@ -1,15 +1,7 @@
 {
   "preset": "base",
   "ignore": {
-    "words": [
-      "php",
-      "dto",
-      "img",
-      "fn",
-      "dt"
-    ],
-    "paths": [
-      "tests"
-    ]
+    "words": ["dt", "dto", "favicon", "fn", "img", "php"],
+    "paths": ["tests"]
   }
 }

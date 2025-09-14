@@ -1,6 +1,8 @@
+<AttributeBadges scope="property" stage="serialization" />
+
 # MapTo
 
-The `MapTo` attribute allows you to customize the output key for a property during serialization.
+`MapTo` allows you to customize the output key for a property during serialization.
 
 ## Basic Usage
 
@@ -18,21 +20,15 @@ class User extends Data
         public string $email,
     ) {}
 }
-```
 
-```php
 $user = User::from([
     'name' => 'John Doe',
     'email' => 'john.doe@example.com',
 ]);
 
-print_r($user->toArray());
-```
-
-```php
-// Output:
-[
-    'full_name' => 'John Doe',
-    'email_address' => 'john.doe@example.com',
-]
+$user->toArray();
+// [
+//    'full_name' => 'John Doe',
+//    'email_address' => 'john.doe@example.com',
+// ]
 ```
