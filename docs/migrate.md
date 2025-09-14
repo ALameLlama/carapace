@@ -230,11 +230,11 @@ class User extends Data
 $user = User::from([
     'first_name' => 'Jane',
     'last_name' => 'Doe',
-    'status' => Status::Active,
+    'status' => Status::ACTIVE,
     'nickname' => '', // becomes null
 ]);
 
-$user->toArray(); // ['first_name' => 'Jane', 'last_name' => 'Doe', 'status' => 'Active', 'nickname' => null]
+$user->toArray(); // ['first_name' => 'Jane', 'last_name' => 'Doe', 'status' => 'ACTIVE', 'nickname' => null]
 ```
 
 > [!WARNING]

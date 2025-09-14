@@ -39,13 +39,13 @@ $account = Account::from([
 ```
 
 > [!tip]
-> The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the `CastWith` item in the array to the specified DTO type.
+> The `@var` annotation helps IDEs understand the type of the `users` property. Carapace will automatically cast each array item to the specified DTO type via `CastWith`.
 
 ## Built-in casters
 
-- Date and time: [DateTime Caster](/attributes/cast-with/datetime)
-- Enums: [Enum Caster](/attributes/cast-with/enum)
-- Primitive types: [Primitive Caster](/attributes/cast-with/primitive)
+- Date and time: [DateTime Caster](./cast-with/datetime)
+- Enums: [Enum Caster](./cast-with/enum)
+- Primitive types: [Primitive Caster](./cast-with/primitive)
 
 ## Custom Casters
 

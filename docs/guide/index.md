@@ -11,27 +11,27 @@ It leverages PHP attributes for casting, property mapping, and serialization, wh
 ### DTO Base Classes
 
 - Extend `Alamellama\Carapace\Data` for standard DTOs.
-- Extend `Alamellama\Carapace\ImmutableData` for readonly DTOs.
+- Extend `Alamellama\Carapace\ImmutableData` for read-only DTOs.
 
 ### Attribute-Driven Mapping
 
-- **`CastWith`**
+- [CastWith](../attributes/cast-with.md)
   - Accepts a DTO class-string, a caster class-string, or a caster instance
   - Supports nested DTOs and collections, primitives, enums, and custom types
-- **`MapFrom`**
+- [MapFrom](../attributes/map-from.md)
   - Map properties from custom keys in the input array
-- **`MapTo`**
+- [MapTo](../attributes/map-to.md)
   - Control output keys when serializing the DTO
-- **`Hidden`**
+- [Hidden](../attributes/hidden.md)
   - Exclude properties from serialization (can be used on the class or property)
-- **`ConvertEmptyToNull`**
-  -  Convert empty strings/arrays to null during pre-hydration
-- **`EnumSerialize`**
+- [ConvertEmptyToNull](../attributes/convert-empty-to-null.md)
+  - Convert empty strings/arrays to null during pre-hydration
+- [EnumSerialize](../attributes/enum-serialize.md)
   - Control how enums are serialized (value vs name) or custom methods 
-- **`GroupFrom`**
+- [GroupFrom](../attributes/group-from.md)
   - Group multiple input keys into one array property
-- **`SnakeCase`**
-  - Serialize property names as snake_case (`MapFrom` and `MapTo`)
+- [SnakeCase](../attributes/snake-case.md)
+  - Serialize property names as snake_case ([MapFrom](../attributes/map-from.md) and [MapTo](../attributes/map-to.md))
 
 ### Serialization
 

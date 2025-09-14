@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "Carapace"
-  text: "Framework-agnostic DTOs for PHP"
-  tagline: Lightweight, immutable, strictly typed Data Transfer Objects with attribute-driven mapping
+  text: "Framework-agnostic DTOs"
+  tagline: Lightweight, strictly typed DTOs with attribute‑driven mapping for mutable and immutable data
   actions:
     - theme: brand
       text: Get Started
@@ -13,14 +13,16 @@ hero:
     - theme: alt
       text: View on GitHub
       link: https://github.com/alamellama/carapace
-
+  image:
+    src: "/art/cara.webp"
+    alt: Project logo
 features:
-  - title: Immutable DTOs
+  - title: Mutable + Immutable DTOs
     details: Define data objects by extending the Data base class, or use ImmutableData for readonly DTOs. Properties are initialized via constructor promotion.
   - title: Attribute-Driven Mapping
     details: Use PHP attributes like CastWith, MapFrom, MapTo, and Hidden to control how data is hydrated, transformed, and serialized with minimal boilerplate.
   - title: Framework-Agnostic
-    details: Works in Laravel, Symfony, or plain PHP projects. Carapace is a lightweight library with no external dependencies, making it easy to integrate into any PHP 8.2+ project.
+    details: Works in Laravel, Symfony, or plain PHP projects. Carapace is a lightweight library with no external dependencies, making it easy to integrate into any PHP project.
   - title: Strictly Typed
     details: Leverage PHP's type system to create well-defined, predictable data structures. Carapace encourages type safety.
   - title: Simple, Expressive API

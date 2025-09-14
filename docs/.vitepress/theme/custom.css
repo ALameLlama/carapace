@@ -14,4 +14,25 @@
   --vp-c-cara-2: #43a047;
   --vp-c-cara-3: #4caf50;
   --vp-c-cara-soft: rgba(67, 160, 71, 0.14);
+
+  /* --vp-home-hero-name-color: var(--vp-c-brand-3); */
+  /* --vp-home-hero-name-color: transparent; */
+  /* --vp-home-hero-name-background: -webkit-linear-gradient( */
+  /*   120deg, */
+  /*   var(--vp-c-brand-1), */
+  /*   var(--vp-c-brand-3) */
+  /* ); */
+
+  /* .VPHero .name { */
+  /*   font-family: "Inter var", "Inter", system-ui; */
+  /* } */
+
+  .VPHero .name {
+    font-size: 0;
+    background: url("/art/text.webp") no-repeat center;
+    background-size: contain;
+    width: 300px;
+    height: 70px;
+    display: inline-block;
+  }
 }

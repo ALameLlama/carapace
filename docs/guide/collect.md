@@ -79,4 +79,4 @@ $users = User::collect([
 > [!tip]
 > If you need to represent a property in another DTO that holds an array of DTOs, consider using the `CastWith` attribute on that property. See Creating DTOs for more details.
 
-See also: [Hydrating DTOs with from()](/guide/from)
+See also: [Hydrating DTOs with from()](./from)

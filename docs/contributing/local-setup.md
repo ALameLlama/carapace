@@ -27,7 +27,7 @@ Install PHP dependencies using Composer:
 composer install
 ```
 
-Install documentation dependencies using Yarn:
+Install documentation dependencies using NPM:
 
 ```bash
 npm install

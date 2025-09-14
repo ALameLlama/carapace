@@ -5,7 +5,8 @@
     "vitepress-versioning-plugin": "github:IMB11/vitepress-versioning-plugin#bc32ee29f615a6b537b391838dd831493945dd12"
   },
   "scripts": {
-    "docs:dev": "vitepress dev docs",
+    "prebuild": "rm -rf docs/public/art && cp -r .art docs/public/art",
+    "docs:dev": "npm run prebuild && vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   }

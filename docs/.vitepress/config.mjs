@@ -18,8 +18,17 @@ export default defineVersionedConfig(
           href: "https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff2",
         },
       ],
+      [
+        "link",
+        {
+          rel: "icon",
+          href: "/art/favicon.ico",
+        },
+      ],
     ],
     themeConfig: {
+      siteTitle: false,
+      logo: { src: "/art/logo.webp", alt: "Carapace Logo" },
       search: {
         provider: "local",
         options: {
