@@ -5,6 +5,8 @@
 CHANGELOG.md export-ignore
 CONTRIBUTING.md export-ignore
 flake.* export-ignore
+package-lock.json export-ignore
+package.json export-ignore
 peck.json export-ignore
 phpstan.neon export-ignore
 phpunit.xml export-ignore

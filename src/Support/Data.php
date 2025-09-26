@@ -6,7 +6,6 @@ namespace Alamellama\Carapace\Support;
 
 use const JSON_THROW_ON_ERROR;
 
-use Alamellama\Carapace\ImmutableData;
 use ErrorException;
 use Throwable;
 use Traversable;
@@ -21,26 +20,36 @@ use function method_exists;
 use function property_exists;
 
 /**
- * Unified accessor for array/object/model-like data sources.
- *
- * - JSON strings: wrap() accepts a JSON string and decodes it to use as an array (without mutating the caller).
- *
- * - Arrays: has() uses array_key_exists
- *           get() returns value.
- *
- * - Objects: has() prefers property_exists, then any magic-based existence check provided by the object, then a standard existence check, and finally __get() as a fallback.
- *            get() prefers direct property access or __get if available.
- *
- * - Mutations: set()/unset() will affect only the internal array state;
- *              for objects, set() assigns the property on the underlying object;
- *              unset() is a no-op for objects to avoid side-effects on models.
+ * Unified accessor for data sources.
  */
 class Data
 {
     /**
-     * @param  array<mixed,mixed>|object  $data
+     * Current data state used for reads and mutations.
+     * - If wrapping an array: this is a copy of the original array that can be modified freely.
+     * - If wrapping an object: this stores overrides as an associative array.
+     *
+     * @var array<string|int, mixed>
      */
-    private function __construct(private array|object $data) {}
+    private array $data;
+
+    /**
+     * Tracks keys explicitly unset on object wrappers to mask original properties.
+     * Ignored for array wrappers.
+     *
+     * @var array<string, true>
+     */
+    private array $masked = [];
+
+    /**
+     * The original immutable reference/value provided to wrap().
+     *
+     * @param  array<mixed,mixed>|object  $originalData
+     */
+    private function __construct(private readonly array|object $originalData)
+    {
+        $this->data = is_array($originalData) ? $originalData : [];
+    }
 
     /**
      * @param  string|array<mixed,mixed>|object  $data
@@ -54,33 +63,31 @@ class Data
         return new self($data);
     }
 
-    public static function isArrayOrObject(mixed $value): bool
-    {
-        return is_array($value) || is_object($value);
-    }
-
-    // TODO: see if we can use a more specific return type here using phpstan
-    /**
-     * @return array<mixed,mixed>|object
-     */
-    public function raw(): array|object
-    {
-        return $this->data;
-    }
-
     public function has(string $key): bool
     {
-        if (is_array($this->data)) {
+        // Arrays: consult only the mutable copy
+        if (is_array($this->originalData)) {
             return array_key_exists($key, $this->data);
         }
 
-        if (property_exists($this->data, $key)) {
+        // Objects: if a key is masked (explicitly unset), it's considered absent
+        if (isset($this->masked[$key])) {
+            return false;
+        }
+
+        // Objects: check current overrides
+        if (array_key_exists($key, $this->data)) {
             return true;
         }
 
-        if (method_exists($this->data, '__isset')) {
+        // Then check the original object
+        if (property_exists($this->originalData, $key)) {
+            return true;
+        }
+
+        if (method_exists($this->originalData, '__isset')) {
             try {
-                if ($this->data->__isset($key)) {
+                if ($this->originalData->__isset($key)) {
                     return true;
                 }
             } catch (Throwable) {
@@ -88,14 +95,14 @@ class Data
             }
         }
 
-        if (method_exists($this->data, '__get')) {
+        if (method_exists($this->originalData, '__get')) {
             // ->__get() can return a warning, we want to make this an exception.
-            set_error_handler(function ($errno, $errstr, $errfile, $errline): void {
+            set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
                 throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
             });
 
             try {
-                @$this->data->__get($key);
+                @$this->originalData->__get($key);
                 restore_error_handler();
 
                 return true;
@@ -111,93 +118,109 @@ class Data
 
     public function get(string $key): mixed
     {
-        if (is_array($this->data)) {
+        // Arrays: read from the mutable copy only
+        if (is_array($this->originalData)) {
             return $this->data[$key] ?? null;
         }
 
-        if (property_exists($this->data, $key)) {
-            return $this->data->{$key};
+        // Objects: if masked, treat as absent/null
+        if (isset($this->masked[$key])) {
+            return null;
         }
 
-        if (method_exists($this->data, '__get')) {
-            return $this->data->__get($key);
+        // Objects: prefer current overrides
+        if (array_key_exists($key, $this->data)) {
+            return $this->data[$key];
         }
 
-        return $this->data->{$key} ?? null;
+        if (property_exists($this->originalData, $key)) {
+            return $this->originalData->{$key};
+        }
+
+        if (method_exists($this->originalData, '__get')) {
+            return $this->originalData->__get($key);
+        }
+
+        return $this->originalData->{$key} ?? null;
     }
 
     public function set(string $key, mixed $value): void
     {
-        if (is_array($this->data)) {
-            $this->data[$key] = $value;
-
-            return;
+        if (is_object($this->originalData) && isset($this->masked[$key])) {
+            unset($this->masked[$key]);
         }
 
-        if ($this->data instanceof ImmutableData) {
-            $this->data = $this->data->with([$key => $value]);
-
-            return;
-        }
-
-        // TODO: this can cause issues with other read only objects.
-        // I'll need to see what I can do here?
-        // I might have to do some reflect cloning when we construct?
-        // Or maybe instead we have a "dataOriginal"
-        // and we just get and set on our data and only fetch from the original?
-        $this->data->{$key} = $value;
+        $this->data[$key] = $value;
     }
 
+    /**
+     * Unset the value causing subsequent reads to return null and has() to be false.
+     *  - Arrays: removes the key from the wrapper's mutable copy only (original array unchanged)
+     *  - Objects: masks the key within the wrapper (without mutating the original object)
+     */
     public function unset(string $key): void
     {
-        if (is_array($this->data)) {
+        if (is_array($this->originalData)) {
             unset($this->data[$key]);
+
+            return;
         }
 
-        // For objects/models we avoid unsetting to prevent unintended side-effects.
+        $this->masked[$key] = true;
+        unset($this->data[$key]);
     }
 
     public function isArray(): bool
     {
-        return is_array($this->data);
+        return is_array($this->originalData);
     }
 
     public function isObject(): bool
     {
-        return is_object($this->data);
+        return is_object($this->originalData);
     }
 
     /**
      * Normalizes wrapped array|object into an array.
      *
-     * - Arrays: returned as-is
-     * - Objects: public properties via get_object_vars
+     * - Arrays: return the current mutable copy ($this->data)
+     * - Objects: public properties of the original merged with overrides ($this->data)
      *
      * @return array<mixed, mixed>
      */
     public function toArray(): array
     {
-        if (is_array($this->data)) {
+        if (is_array($this->originalData)) {
             return $this->data;
         }
 
-        return get_object_vars($this->data);
+        $base = get_object_vars($this->originalData);
+
+        foreach (array_keys($this->masked) as $k) {
+            unset($base[$k]);
+        }
+
+        foreach ($this->data as $k => $v) {
+            $base[$k] = $v;
+        }
+
+        return $base;
     }
 
     /**
      * Returns a list of items contained in a wrapped array, iterator, or plain object.
-     * - Arrays: returned as-is (numeric or string keys)
-     * - Iterators: iterated into a plain array
-     * - Objects: iterated over public properties via get_object_vars
+     * - Arrays: return current array values
+     * - Iterators: iterated into a plain array (from originalData)
+     * - Objects: iterated over public properties via get_object_vars, then merge with overrides ($this->data), then values()
      *
      * @return array<int|string, mixed>
      */
     public function items(): array
     {
-        $raw = $this->data;
+        $raw = $this->originalData;
 
         if (is_array($raw)) {
-            return $raw;
+            return $this->data;
         }
 
         if ($raw instanceof Traversable) {
@@ -209,6 +232,16 @@ class Data
             return $items;
         }
 
-        return array_values(get_object_vars($raw));
+        $vars = get_object_vars($raw);
+
+        foreach (array_keys($this->masked) as $k) {
+            unset($vars[$k]);
+        }
+
+        foreach ($this->data as $k => $v) {
+            $vars[$k] = $v;
+        }
+
+        return array_values($vars);
     }
 }

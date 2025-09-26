@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Alamellama\Carapace\Data;
-use Error;
 use Tests\Fixtures\DTO\Account;
 use Tests\Fixtures\DTO\User;
 
@@ -139,7 +138,7 @@ it('can return a new instance with overridden values using a CastWith attribute'
         ->name->toBe('Nicholas');
 });
 
-it('can handle empty array', function (): void {
+it('returns a new instance when overrides array is empty', function (): void {
     $dto = User::from([
         'name' => 'Nick',
         'email' => 'nick@example.com',
@@ -169,7 +168,7 @@ class emptyDTO extends Data
     ) {}
 }
 
-it('can handle empty dto', function (): void {
+it('returns a new instance when applying empty overrides to an empty DTO', function (): void {
     $dto = emptyDTO::from([]);
 
     $dto2 = $dto->with([]);
@@ -208,17 +207,3 @@ it('can return a new instance with overridden values when using an object for ov
 
     expect($dto)->not->toBe($dto2);
 });
-
-it('throws when you update the properties directly', function (): void {
-    $dto = User::from([
-        'name' => 'Nick',
-        'email' => 'nick@example.com',
-        'address' => [
-            'street' => '123 Main St',
-            'city' => 'Melbourne',
-            'postcode' => '3000',
-        ],
-    ]);
-
-    $dto->name = 'Mick';
-})->throws(Error::class, 'Cannot modify readonly property')->skip('Currently setting this as ready only has unintended effects');

@@ -83,7 +83,7 @@ it('can cast int backed enum using string value', function (): void {
         ->toBe(StatusCode::INACTIVE);
 });
 
-it('can handle existing enum instances', function (): void {
+it('handles existing enum instances without casting', function (): void {
     $dto1 = StatusDto::from([
         'status' => Status::PENDING,
     ]);
@@ -139,7 +139,7 @@ it('throws exception for unsupported value type with unit enum', function (): vo
     $caster->cast(123);
 })->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Color: no matching case found');
 
-it('can handle optional property', function (): void {
+it('treats missing optional enum property as null', function (): void {
     $dto = CombinedDto::from([
         'status' => Status::PENDING,
     ]);
@@ -151,7 +151,7 @@ it('can handle optional property', function (): void {
         ->toBeNull();
 });
 
-it('can handle null property', function (): void {
+it('handles explicit null for optional enum property', function (): void {
     $dto = CombinedDto::from([
         'status' => Status::PENDING,
         'statusCode' => null,

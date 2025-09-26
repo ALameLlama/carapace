@@ -8,7 +8,7 @@ use Alamellama\Carapace\Support\Data;
 
 use function array_key_exists;
 
-it('can detect wrap array', function (): void {
+it('wraps arrays and identifies type correctly', function (): void {
     $data = Data::wrap(['a' => 1]);
 
     expect($data->isArray())->toBeTrue()
@@ -32,15 +32,6 @@ it('can set values on an array without mutating the original array', function ()
 
     expect($data->get('b'))->toBe(2)
         ->and(array_key_exists('b', $input))->toBeFalse();
-});
-
-it('can return array raw snapshot by value', function (): void {
-    $data = Data::wrap(['a' => 1]);
-
-    $raw = $data->raw();
-    $raw['c'] = 3;
-
-    expect($data->has('c'))->toBeFalse();
 });
 
 it('can unset array keys only within the wrapper', function (): void {

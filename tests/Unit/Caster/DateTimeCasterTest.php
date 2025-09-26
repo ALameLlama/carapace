@@ -60,7 +60,7 @@ it('can cast timestamp to DateTime', function (): void {
         ->toBe('2025-08-03 07:09:00');
 });
 
-it('can handle existing DateTime objects', function (): void {
+it('accepts existing DateTime instances without re-parsing', function (): void {
     $dateTime = new DateTime('2025-08-03 07:09:00');
 
     $dto = WithDateTimeCasting::from([

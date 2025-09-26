@@ -42,6 +42,8 @@ trait SerializationTrait
             return $result;
         }
 
+        $classAttributes = self::getParentAttributes($reflection);
+
         foreach ($properties as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
@@ -59,7 +61,7 @@ trait SerializationTrait
                 }
             }
 
-            foreach (self::getParentAttributes($reflection) as $classAttr) {
+            foreach ($classAttributes as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
                 if ($classAttrInstance instanceof Contracts\ClassTransformationInterface) {
                     $originalName = $name;
