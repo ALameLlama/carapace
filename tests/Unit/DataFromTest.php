@@ -75,7 +75,7 @@ it('can construct a DTO using a constructor parameter but without a declared pro
     expect($dto)->not->toHaveProperty('foo');
 });
 
-it('can handle JSON encoded data', function (): void {
+it('parses JSON-encoded data into a DTO', function (): void {
     $json = json_encode([
         'make' => 'Toyota',
         'model' => 'Corolla',

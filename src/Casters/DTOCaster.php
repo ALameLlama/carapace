@@ -17,7 +17,7 @@ use function is_string;
  * Caster that converts arrays/objects into DTO instances (or arrays of DTOs).
  *
  * It supports:
- * - Passing through if value is already an instance of the target DTO
+ * - Passing through if the value is already an instance of the target DTO
  * - Casting an associative array/object via TargetDTO::from
  * - Casting a list (array_is_list) of items, mapping each via TargetDTO::from
  */

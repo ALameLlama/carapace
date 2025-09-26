@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Traits;
 
 use Alamellama\Carapace\Contracts;
-use Alamellama\Carapace\Support\Data as DataWrapper;
+use Alamellama\Carapace\Support\Data;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
+
+use function is_array;
+use function is_object;
 
 trait DTOTrait
 {
@@ -24,7 +27,7 @@ trait DTOTrait
      */
     public static function from(string|array|object $data): static
     {
-        $data = DataWrapper::wrap($data);
+        $data = Data::wrap($data);
         $reflection = new ReflectionClass(static::class);
 
         // Run all Contracts\ClassPreHydrationInterface attributes
@@ -96,7 +99,7 @@ trait DTOTrait
 
             $typeName = $type->getName();
 
-            if (is_subclass_of($typeName, self::class) && DataWrapper::isArrayOrObject($value)) {
+            if ((is_array($value) || is_object($value)) && self::isDTOClass($typeName)) {
                 /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
@@ -115,7 +118,7 @@ trait DTOTrait
      */
     public static function collect(string|array|object $data): array
     {
-        $items = DataWrapper::wrap($data)->items();
+        $items = Data::wrap($data)->items();
 
         /** @var array<int, array<mixed, mixed>|object> $items */
         return array_map(static fn (array|object $dto): static => static::from($dto), $items);
@@ -132,7 +135,7 @@ trait DTOTrait
      */
     public function with(array|object $overrides = [], ...$namedOverrides): static
     {
-        $baseOverrides = DataWrapper::wrap($overrides)->toArray();
+        $baseOverrides = Data::wrap($overrides)->toArray();
         $combined = array_merge($baseOverrides, $namedOverrides);
 
         $reflection = new ReflectionClass($this);
@@ -150,5 +153,12 @@ trait DTOTrait
         }
 
         return static::from($data);
+    }
+
+    private static function isDTOClass(string $object): bool
+    {
+        return
+            is_a($object, \Alamellama\Carapace\Data::class, true) ||
+            is_a($object, \Alamellama\Carapace\ImmutableData::class, true);
     }
 }

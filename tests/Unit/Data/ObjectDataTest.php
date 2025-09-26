@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Data;
 
 use Alamellama\Carapace\Support\Data;
+use stdClass;
 
-it('can wrap object', function (): void {
+it('wraps objects and identifies type correctly', function (): void {
     $obj = new class {};
 
     $data = Data::wrap($obj);
@@ -29,7 +30,7 @@ it('can read public properties from objects using has and get', function (): voi
         ->and($data->get('missing'))->toBeNull();
 });
 
-it('can set values on the underlying object property', function (): void {
+it('stores object updates as non-destructive overrides without mutating the original object', function (): void {
     $obj = new class
     {
         public mixed $b = null;
@@ -38,7 +39,8 @@ it('can set values on the underlying object property', function (): void {
     $data = Data::wrap($obj);
     $data->set('b', 2);
 
-    expect($obj->b)->toBe(2);
+    expect($data->get('b'))->toBe(2)
+        ->and($obj->b)->toBeNull();
 });
 
 it('does not unset properties on objects (no-op)', function (): void {
@@ -53,15 +55,16 @@ it('does not unset properties on objects (no-op)', function (): void {
     expect(isset($obj->a))->toBeTrue();
 });
 
-it('can return the same object handle from raw so mutations are visible', function (): void {
-    $obj = new class
-    {
-        public mixed $c = null;
-    };
+it('applies non-destructive overrides to pre-existing dynamic property without mutating the original object', function (): void {
+    $obj = new stdClass;
+    $obj->dyn = 1;
 
-    $data = Data::wrap($obj);
-    $raw = $data->raw();
-    $raw->c = 3;
+    $wrapped = Data::wrap($obj);
 
-    expect($obj->c)->toBe(3);
+    $wrapped->set('dyn', 2);
+
+    expect($obj->dyn)
+        ->toBe(1)
+        ->and($wrapped->get('dyn'))
+        ->toBe(2);
 });
