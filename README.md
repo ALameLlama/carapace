@@ -13,8 +13,8 @@ It leverages PHP attributes for casting, property mapping, and serialization, wh
 
 ## Features
 
-- **Immutable DTOs**: Define immutable data objects with constructor promotion.
-- **Attribute-Driven Mapping**: Use attributes for casting, mapping, and serialization.
+- **Mutable + Immutable DTOs**: Define data objects by extending the Data base class, or use ImmutableData for readonly DTOs.
+- **Attribute-Driven Mapping**: Use PHP attributes like CastWith, MapFrom, MapTo, and Hidden to control how data is hydrated, transformed, and serialized with minimal boilerplate.
 - **Strictly Typed**: Leverage PHP's type system for predictable data structures.
 - **Framework-Agnostic**: Works in Laravel, Symfony, or plain PHP projects.
 - **Simple API**: Create, hydrate, and transform DTOs with minimal boilerplate.
