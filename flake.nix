@@ -41,34 +41,33 @@
             ))
 
             # Run GitHub Actions locally
-            act
+            # act
 
             # Docker CLI & daemon
-            docker
-            rootlesskit
+            # docker
+            # rootlesskit
 
             nodejs_22
-            yarn-berry
           ];
 
           # Optional: expose Docker socket from nix
           # This lets you run `docker …` without extra permissions
           shellHook = ''
-            echo "🐘 PHP $(php -v | head -n1) ready"
-            echo "📦 Node.js: $(node --version)"
-            echo "📦 Yarn: $(yarn --version)"
-            echo "📦 Composer: $(composer --version)"
-            echo "📝 Aspell: $(aspell --version)"
-            echo "🎡 act: $(act --version)"
-            echo "🐳 docker: $(docker --version)"
+            echo "🐘 PHP $(php -v | head -n1)"
+            echo "📦 Node.js: $(node --version | head -n1)"
+            echo "📦 NPM: $(npm --version | head -n1)"
+            echo "📦 Composer: $(composer --version | head -n1)"
+            echo "📝 Aspell: $(aspell --version | head -n1)"
+            # echo "🎡 act: $(act --version | head -n1)"
+            # echo "🐳 docker: $(docker --version | head -n1)"
 
-            export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
-
-            # If you included dockerd, spin it up in the background:
-            if ! pgrep -x dockerd > /dev/null; then
-              echo "🚀 Starting rootless Docker daemon..."
-              (dockerd-rootless > /dev/null 2>&1) &
-            fi
+            # export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
+            #
+            # # If you included dockerd, spin it up in the background:
+            # if ! pgrep -x dockerd > /dev/null; then
+            #   echo "🚀 Starting rootless Docker daemon..."
+            #   (dockerd-rootless > /dev/null 2>&1) &
+            # fi
           '';
         };
       }

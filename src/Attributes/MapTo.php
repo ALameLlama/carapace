@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Attributes;
 
-use Alamellama\Carapace\Contracts\TransformationInterface;
+use Alamellama\Carapace\Contracts\PropertyTransformationInterface;
 use Attribute;
+use ReflectionProperty;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
@@ -14,7 +15,7 @@ use Attribute;
  * This is useful for ensuring that the property is always represented with a specific key.
  * For instance, you might have properties using PascalCase while array keys use snake_case.
  */
-final class MapTo implements TransformationInterface
+class MapTo implements PropertyTransformationInterface
 {
     /**
      * @param  string  $destinationKey  The key to use in the output array
@@ -26,11 +27,9 @@ final class MapTo implements TransformationInterface
     /**
      * Handles the mapping of a property to a specific key in the array.
      *
-     * @param  string  $propertyName  The name of the property being handled.
-     * @param  mixed  $value  The value of the property.
      * @return array{string, mixed} The key-value pair to be used in the array.
      */
-    public function handle(string $propertyName, mixed $value): array
+    public function propertyTransform(ReflectionProperty $property, mixed $value): array
     {
         return [$this->destinationKey, $value];
     }

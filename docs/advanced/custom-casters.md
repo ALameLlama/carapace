@@ -1,35 +1,47 @@
 # Custom Casters
 
-While Carapace provides several built-in casters, you can also create your own custom casters by implementing the `CasterInterface`. This allows you to handle specialized data types or complex conversion logic.
+Carapace ships with several built‑in casters and also lets you provide your own by implementing `CasterInterface`.
+Custom casters are used via the CastWith attribute during the hydration stage.
 
 ## Creating a Custom Caster
 
-To create a custom caster, implement the `CasterInterface` which requires a single `cast` method:
+Implement the `CasterInterface` from `Alamellama\Carapace\Contracts`.
 
 ```php
 use Alamellama\Carapace\Contracts\CasterInterface;
 
-final readonly class MyCaster implements CasterInterface
+class MyCaster implements CasterInterface
 {
     public function cast(mixed $value): mixed
     {
-        // Your casting logic here
-        return $transformedValue;
+        // Validate input and transform
+        if ($value === null) {
+            // Let CastWith handle nulls based on property type; usually return null as-is
+            return null;
+        }
+
+        // ... your casting logic
+        $transformed = $value; // replace with real logic
+
+        return $transformed;
     }
 }
 ```
+> [!tip]
+> Throw `InvalidArgumentException` for unsupported inputs. CastWith will surface helpful error messages.
 
-## Example: Carbon Date Caster
+## Example: Carbon date caster
 
-Here's an example of a custom caster for Carbon dates (a popular date/time library for PHP):
+Here's an example of a custom caster for Carbon dates:
 
 ```php
 use Alamellama\Carapace\Contracts\CasterInterface;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTimeInterface;
+use InvalidArgumentException;
 
-final readonly class CarbonCaster implements CasterInterface
+final class CarbonCaster implements CasterInterface
 {
     public function __construct(
         private string $format = 'Y-m-d H:i:s'
@@ -46,39 +58,43 @@ final readonly class CarbonCaster implements CasterInterface
         }
 
         if (is_string($value)) {
-            try {
-                $carbon = Carbon::createFromFormat($this->format, $value);
-                if ($carbon !== false) {
-                    return $carbon;
-                }
-            } catch (\Exception $e) {
-                // If format parsing fails, try the flexible parser
-                return Carbon::parse($value);
+            // Try explicit format first
+            $carbon = Carbon::createFromFormat($this->format, $value);
+            if ($carbon !== false) {
+                return $carbon;
             }
+
+            // Fallback to flexible parser
+            return Carbon::parse($value);
         }
 
         if (is_int($value)) {
             return Carbon::createFromTimestamp($value);
         }
 
-        throw new \InvalidArgumentException('Cannot cast to Carbon: unsupported type ' . gettype($value));
+        throw new InvalidArgumentException('Cannot cast to Carbon: unsupported type ' . gettype($value));
     }
 }
 ```
 
-## Using Custom Casters
+## Using your caster with CastWith
 
-Use your custom caster with the `CastWith` attribute:
+CastWith accepts one of the following:
+- A DTO class‑string (e.g. User::class) — arrays/objects/JSON will be cast to that DTO, lists to arrays of DTOs
+- A caster class‑string (e.g. PrimitiveCaster::class) — CastWith will instantiate it with no arguments
+- A caster instance (e.g. new PrimitiveCaster('int'))
 
 ```php
 use Alamellama\Carapace\Attributes\CastWith;
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
+use Carbon\CarbonInterface;
 
-final class Event extends ImmutableDTO
+final class Event extends Data
 {
     public function __construct(
         public string $name,
 
+        // Pass an instance when your caster has constructor args
         #[CastWith(new CarbonCaster('Y-m-d'))]
         public CarbonInterface $date,
     ) {}

@@ -12,7 +12,7 @@ For example, if you have a DTO with properties `name`, `email`, and `address`, y
 /**
  * @method self with(array $overrides = [], string $name = null, string $email = null, Address $address = null)
  */
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -37,4 +37,5 @@ $dto = User::from([
 $dto2 = $dto->with(name: 'Nicholas', email: 'nicholas@example.com');
 ```
 
-> **Important**: I am working on creating a tool to automatically generate these in the future
+> [!WARNING]
+> In the future, I am hoping to add a script to generate this PHPDoc annotation automatically. similar to laravel/ide-helper.

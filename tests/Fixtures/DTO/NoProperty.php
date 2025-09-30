@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures\DTO;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class NoProperty extends ImmutableDTO
+class NoProperty extends Data
 {
     public function __construct(string $foo) {}
 }

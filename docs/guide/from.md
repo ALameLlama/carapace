@@ -1,10 +1,10 @@
 # Hydrating DTOs
 
-The `from` method allows you to create DTO instances from arrays or JSON.
+The `from` method allows you to create DTO instances from arrays, JSON or objects.
 
 ## Basic Usage
 
-Use the static `from` method to hydrate the DTO from an array or JSON:
+Use the static `from` method to hydrate the DTO:
 
 ```php
 // From an array
@@ -15,6 +15,10 @@ $user = User::from([
 
 // From a JSON string
 $user = User::from('{"name": "John Doe", "email": "john.doe@example.com"}');
+
+// From Objects like frameworks like Phalcon or Laravel
+$userModel = UserModel::findFirst(1);
+$user = User::from($userModel);
 ```
 
 ## Nested DTOs
@@ -22,7 +26,7 @@ $user = User::from('{"name": "John Doe", "email": "john.doe@example.com"}');
 Carapace automatically handles nested DTOs:
 
 ```php
-final class Address extends ImmutableDTO
+class Address extends Data
 {
     public function __construct(
         public string $street,
@@ -31,7 +35,7 @@ final class Address extends ImmutableDTO
     ) {}
 }
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -60,7 +64,7 @@ echo $user->address->city; // Outputs: Anytown
 You can also work with collections of DTOs:
 
 ```php
-final class Team extends ImmutableDTO
+class Team extends Data
 {
     public function __construct(
         public string $name,
@@ -82,4 +86,5 @@ $team = Team::from([
 echo $team->members[0]->name; // Outputs: John
 ```
 
-> **Important**: The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.
+> [!important]
+> The `@var` is to help IDEs understand the type of the `members` property. Carapace will automatically cast each using the`CastWith` item in the array to the specified DTO type.

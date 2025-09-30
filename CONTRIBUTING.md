@@ -120,9 +120,9 @@ declare(strict_types=1);
 
 namespace Tests\Demo;
 
-use Alamellama\Carapace\ImmutableDTO;
+use Alamellama\Carapace\Data;
 
-final class SimpleDTO extends ImmutableDTO
+class SimpleDTO extends Data
 {
     public function __construct(
         public string $name,
@@ -145,12 +145,11 @@ it('can create a simple DTO', function (): void {
 
 ## Code Style Guidelines
 
-- All classes should be final (enforced by Pint)
 - Strict types must be declared in all files
 - Follow PSR-12 coding standards with Laravel-style modifications
 - Class elements should follow the order defined in `pint.json`
 - Use type declarations for all properties, parameters, and return types
-- All customer-facing functions must have PHP doc blocks information about usage
+- All public, user-facing functions must include PHPDoc blocks with usage information
 
 ## Pull Request Process
 

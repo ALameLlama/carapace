@@ -7,7 +7,7 @@
       "spacing": "one"
     },
     "declare_strict_types": true,
-    "final_class": true,
+    "final_class": false,
     "fully_qualified_strict_types": true,
     "global_namespace_import": {
       "import_classes": true,
@@ -15,12 +15,16 @@
       "import_functions": true
     },
     "native_function_invocation": {
-      "include": ["@compiler_optimized"],
+      "include": [
+        "@compiler_optimized"
+      ],
       "scope": "namespaced",
       "strict": true
     },
     "native_constant_invocation": {
-      "include": ["@compiler_optimized"],
+      "include": [
+        "@compiler_optimized"
+      ],
       "scope": "namespaced",
       "strict": true
     },

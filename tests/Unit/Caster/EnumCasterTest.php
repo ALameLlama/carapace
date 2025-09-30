@@ -1,0 +1,165 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Caster;
+
+use Alamellama\Carapace\Attributes\CastWith;
+use Alamellama\Carapace\Casters\EnumCaster;
+use Alamellama\Carapace\Data;
+use InvalidArgumentException;
+use Tests\Fixtures\Enums\Color;
+use Tests\Fixtures\Enums\Status;
+use Tests\Fixtures\Enums\StatusCode;
+
+class StatusDto extends Data
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(Status::class))]
+        public Status $status,
+    ) {}
+}
+
+class ColorDto extends Data
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(Color::class))]
+        public Color $color,
+    ) {}
+}
+
+class StatusCodeDto extends Data
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(StatusCode::class))]
+        public StatusCode $statusCode,
+    ) {}
+}
+
+class CombinedDto extends Data
+{
+    public function __construct(
+        #[CastWith(new EnumCaster(Status::class))]
+        public Status $status,
+
+        #[CastWith(new EnumCaster(StatusCode::class))]
+        public ?StatusCode $statusCode,
+    ) {}
+}
+
+it('can cast string to backed enum using exact value', function (): void {
+    $dto = StatusDto::from([
+        'status' => 'active',
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::ACTIVE);
+});
+
+it('can cast string to backed enum using case-insensitive value', function (): void {
+    $dto = StatusDto::from([
+        'status' => 'ACTIVE',
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::ACTIVE);
+});
+
+it('can cast int backed enum using int value', function (): void {
+    $dto = StatusCodeDto::from([
+        'statusCode' => 100,
+    ]);
+
+    expect($dto->statusCode)
+        ->toBe(StatusCode::PENDING);
+});
+
+it('can cast int backed enum using string value', function (): void {
+    $dto = StatusCodeDto::from([
+        'statusCode' => '300',
+    ]);
+
+    expect($dto->statusCode)
+        ->toBe(StatusCode::INACTIVE);
+});
+
+it('handles existing enum instances without casting', function (): void {
+    $dto1 = StatusDto::from([
+        'status' => Status::PENDING,
+    ]);
+
+    $dto2 = ColorDto::from([
+        'color' => Color::GREEN,
+    ]);
+
+    expect($dto1->status)
+        ->toBe(Status::PENDING)
+        ->and($dto2->color)
+        ->toBe(Color::GREEN);
+});
+
+it('can cast string to unit enum using case name', function (): void {
+    $dto = ColorDto::from([
+        'status' => 'active',
+        'color' => 'BLUE',
+    ]);
+
+    expect($dto->color)
+        ->toBe(Color::BLUE);
+});
+
+it('can cast string to unit enum using case-insensitive name', function (): void {
+    $dto = ColorDto::from([
+        'color' => 'blue',
+    ]);
+
+    expect($dto->color)
+        ->toBe(Color::BLUE);
+});
+
+it('throws exception for invalid backed enum value', function (): void {
+    StatusDto::from([
+        'status' => 'unknown',
+    ]);
+})->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Status');
+
+it('throws exception for invalid unit enum name', function (): void {
+    ColorDto::from([
+        'color' => 'YELLOW',
+    ]);
+})->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Color: no matching case found');
+
+it('throws exception for invalid enum class', function (): void {
+    $caster = new EnumCaster('NonExistentEnum');
+    $caster->cast('test');
+})->throws(InvalidArgumentException::class, 'Invalid enum class: NonExistentEnum');
+
+it('throws exception for unsupported value type with unit enum', function (): void {
+    $caster = new EnumCaster(Color::class);
+    $caster->cast(123);
+})->throws(InvalidArgumentException::class, 'Cannot cast value to enum Tests\Fixtures\Enums\Color: no matching case found');
+
+it('treats missing optional enum property as null', function (): void {
+    $dto = CombinedDto::from([
+        'status' => Status::PENDING,
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::PENDING);
+
+    expect($dto->statusCode)
+        ->toBeNull();
+});
+
+it('handles explicit null for optional enum property', function (): void {
+    $dto = CombinedDto::from([
+        'status' => Status::PENDING,
+        'statusCode' => null,
+    ]);
+
+    expect($dto->status)
+        ->toBe(Status::PENDING);
+
+    expect($dto->statusCode)
+        ->toBeNull();
+});

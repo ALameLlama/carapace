@@ -1,13 +1,13 @@
 # Collecting DTOs
 
-The `collect` method allows you to hydrate an array of DTO instances from an array of arrays or a JSON string representing an array.
+The `collect` method allows you to hydrate an array of DTO instances.
 
 ## Basic Usage
 
 Use the static `collect` method to create multiple DTOs at once:
 
 ```php
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -27,20 +27,19 @@ $users = User::collect('[
   {"name": "Jane", "email": "jane@example.com"}
 ]');
 
+$userModels = UserModel::all();
+
+$users = User::collect($userModels);
+
 // $users is an array of User instances
 ```
-
-## Return Type
-
-- Returns: `array<static>`
-- Each element in the returned array is the same DTO type on which you called `collect`.
 
 ## Nested DTOs
 
 Nested DTOs are handled the same way as with `from()` — if your DTO contains a property that is another DTO, pass the nested structure and it will be properly hydrated.
 
 ```php
-final class Address extends ImmutableDTO
+class Address extends Data
 {
     public function __construct(
         public string $street,
@@ -48,7 +47,7 @@ final class Address extends ImmutableDTO
     ) {}
 }
 
-final class User extends ImmutableDTO
+class User extends Data
 {
     public function __construct(
         public string $name,
@@ -72,16 +71,12 @@ $users = User::collect([
 ]);
 ```
 
-## Error Handling
-
-- JSON input is decoded with `JSON_THROW_ON_ERROR`; invalid JSON will throw a `JsonException`.
-- Each item must be compatible with the DTO's constructor. Missing required parameters will result in an `InvalidArgumentException` from `from()`.
-
 ## When to use `collect()` vs `from()`
 
 - Use `from()` to hydrate a single DTO from an array or JSON object.
-- Use `collect()` to hydrate an array of DTOs from an array of arrays or a JSON array.
+- Use `collect()` to hydrate an array of DTOs.
 
-> Tip: If you need to represent a property in another DTO that holds an array of DTOs, consider using the `CastWith` attribute on that property. See Creating DTOs for more details.
+> [!tip]
+> If you need to represent a property in another DTO that holds an array of DTOs, consider using the `CastWith` attribute on that property. See Creating DTOs for more details.
 
-See also: [Hydrating DTOs with from()](/guide/from)
+See also: [Hydrating DTOs with from()](./from)

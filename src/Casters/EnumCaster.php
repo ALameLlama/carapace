@@ -19,7 +19,7 @@ use function is_string;
  * This class handles casting values to PHP enum types.
  * It implements the CasterInterface and provides conversion for both backed and unit enums.
  */
-final readonly class EnumCaster implements CasterInterface
+class EnumCaster implements CasterInterface
 {
     /**
      * Create a new enum caster.
@@ -27,7 +27,7 @@ final readonly class EnumCaster implements CasterInterface
      * @param  string  $enumClass  The fully qualified name of the enum class
      */
     public function __construct(
-        private string $enumClass
+        private readonly string $enumClass
     ) {}
 
     /**
@@ -52,6 +52,7 @@ final readonly class EnumCaster implements CasterInterface
             try {
                 $reflectedEnum = new ReflectionEnum($this->enumClass);
 
+                // If the backing type is int, cast to int, otherwise cast to string
                 // @phpstan-ignore-next-line
                 $value = $reflectedEnum->getBackingType()?->getName() === 'int' ? (int) $value : (string) $value;
 
