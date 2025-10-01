@@ -1,8 +1,9 @@
-vendor
-.phpunit.cache
-.php-cs-fixer.cache
 .idea
-node_modules
+.php-cs-fixer.cache
+.phpunit.cache
+.yarn
+composer.lock
 docs/.vitepress/cache
 docs/.vitepress/dist
-.yarn
+node_modules
+vendor
