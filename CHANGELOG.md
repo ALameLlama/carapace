@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.1](https://github.com/ALameLlama/carapace/compare/v2.0.0...v2.0.1) (2025-10-01)
+
+
+### Bug Fixes
+
+* remove-composer-lock ([#35](https://github.com/ALameLlama/carapace/issues/35)) ([068fa5f](https://github.com/ALameLlama/carapace/commit/068fa5f3a600d948c2ef45e8cd2625cfc53477a8))
+
+
+### Miscellaneous Chores
+
+* update readme ([51e862a](https://github.com/ALameLlama/carapace/commit/51e862af8523ba6ec9a79258e229bb8b993a0dd5))
+
 ## [2.0.0](https://github.com/ALameLlama/carapace/compare/v1.2.1...v2.0.0) (2025-09-30)
 
 
