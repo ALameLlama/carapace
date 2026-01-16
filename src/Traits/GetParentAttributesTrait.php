@@ -28,6 +28,7 @@ trait GetParentAttributesTrait
             foreach ($current->getAttributes() as $attr) {
                 $attributes[] = $attr;
             }
+
             $current = $current->getParentClass();
         }
 

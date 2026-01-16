@@ -52,6 +52,7 @@ final readonly class DTOCaster implements CasterInterface
                     if ($item instanceof $this->dtoClass) {
                         return $item;
                     }
+
                     if (is_array($item) || is_object($item) || is_string($item)) {
                         /** @var array<mixed,mixed>|object|string $item */
                         return $this->dtoClass::from($item);

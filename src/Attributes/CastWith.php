@@ -78,14 +78,14 @@ class CastWith implements PropertyPreHydrationInterface
         // Always delegate to the caster, but standardize error context
         try {
             $casted = $this->caster->cast($value);
-        } catch (JsonException $e) {
+        } catch (JsonException $jsonException) {
             if (method_exists($this->caster, 'targetClass')) {
                 /** @var DTOCaster $caster */
                 $caster = $this->caster;
-                throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $caster->targetClass(), $e->getCode(), previous: $e);
+                throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $caster->targetClass(), $jsonException->getCode(), previous: $jsonException);
             }
 
-            throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $this->caster::class, $e->getCode(), previous: $e);
+            throw new InvalidArgumentException("Unable to cast property '{$propertyName}' to " . $this->caster::class, $jsonException->getCode(), previous: $jsonException);
         }
 
         $data->set($propertyName, $casted);

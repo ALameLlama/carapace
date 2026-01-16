@@ -19,10 +19,17 @@
         pkgs = import nixpkgs { inherit system; };
 
         phpWithExtensions = pkgs.php.buildEnv {
-          extensions = { enabled, all }: enabled ++ (with all; [ pcov ]);
-          # extraConfig = ''
-          #   xdebug.mode=debug
-          # '';
+          extensions =
+            { enabled, all }:
+            enabled
+            ++ (with all; [
+              pcov
+              curl
+            ]);
+          extraConfig = ''
+            memory_limit = 512M
+            ; xdebug.mode=debug
+          '';
         };
       in
       {

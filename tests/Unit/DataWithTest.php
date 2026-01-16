@@ -162,11 +162,7 @@ it('returns a new instance when overrides array is empty', function (): void {
     expect($dto)->not->toBe($dto2);
 });
 
-class emptyDTO extends Data
-{
-    public function __construct(
-    ) {}
-}
+class emptyDTO extends Data {}
 
 it('returns a new instance when applying empty overrides to an empty DTO', function (): void {
     $dto = emptyDTO::from([]);
