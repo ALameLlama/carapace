@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.2](https://github.com/ALameLlama/carapace/compare/v2.0.1...v2.0.2) (2026-01-16)
+
+
+### Features
+
+* update rector rules to remove old rule ([#38](https://github.com/ALameLlama/carapace/issues/38)) ([9c41f96](https://github.com/ALameLlama/carapace/commit/9c41f964c45c4f48a9e5175a19a584bc95849f34))
+
+
+### Miscellaneous Chores
+
+* release 2.0.2 ([ec5c204](https://github.com/ALameLlama/carapace/commit/ec5c20415f963adff3497d607b38ef8c936cd838))
+
 ## [2.0.1](https://github.com/ALameLlama/carapace/compare/v2.0.0...v2.0.1) (2025-10-01)
 
 
