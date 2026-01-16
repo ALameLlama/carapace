@@ -65,7 +65,7 @@ trait DTOTrait
                     return null;
                 }
 
-                throw new InvalidArgumentException("Missing required parameter: $name");
+                throw new InvalidArgumentException("Missing required parameter: {$name}");
             }
 
             // Run all Contracts\ClassHydrationInterface attributes
@@ -77,6 +77,7 @@ trait DTOTrait
                         if ($property->getName() !== $name) {
                             continue;
                         }
+
                         $classAttrInstance->classHydrate($property, $data);
                     }
                 }
@@ -89,6 +90,7 @@ trait DTOTrait
                 if ($property->getName() !== $name) {
                     continue;
                 }
+
                 foreach ($property->getAttributes() as $attr) {
                     $attrInstance = $attr->newInstance();
                     if ($attrInstance instanceof Contracts\PropertyHydrationInterface) {
@@ -129,7 +131,7 @@ trait DTOTrait
         $items = Data::wrap($data)->items();
 
         /** @var array<int, array<mixed, mixed>|object> $items */
-        return array_map(static fn (array|object $dto): static => static::from($dto), $items);
+        return array_map(static::from(...), $items);
     }
 
     /**

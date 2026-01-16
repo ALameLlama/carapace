@@ -66,6 +66,7 @@ class EnumCaster implements CasterInterface
                         }
                     }
                 }
+
                 // Use tryFrom as a fallback
                 $result = $this->enumClass::tryFrom($value);
                 if ($result !== null) {
