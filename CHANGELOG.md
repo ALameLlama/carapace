@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/ALameLlama/carapace/compare/v2.0.2...v2.0.3) (2026-04-22)
+
+
+### Bug Fixes
+
+* `::with()` not allowing nulls ([#45](https://github.com/ALameLlama/carapace/issues/45)) ([9728c22](https://github.com/ALameLlama/carapace/commit/9728c226e0e5398d66c1f2a9cc0420ab770ad8bf))
+
 ## [2.0.2](https://github.com/ALameLlama/carapace/compare/v2.0.1...v2.0.2) (2026-01-16)
 
 
