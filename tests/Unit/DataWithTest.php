@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use Alamellama\Carapace\Data;
 use Tests\Fixtures\DTO\Account;
+use Tests\Fixtures\DTO\Car;
 use Tests\Fixtures\DTO\User;
 
 it('can return a new instance with overridden values when using named parameters', function (): void {
@@ -200,6 +201,25 @@ it('can return a new instance with overridden values when using an object for ov
     expect($dto2)
         ->name->toBe('Nicholas')
         ->email->toBe('nick@example.com');
+
+    expect($dto)->not->toBe($dto2);
+});
+
+it('can override a value with null', function (): void {
+    $dto = Car::from([
+        'make' => 'Ford',
+        'model' => 'Ranger',
+        'year' => 2024,
+        'color' => 'Blue',
+    ]);
+
+    $dto2 = $dto->with(color: null);
+
+    expect($dto)
+        ->color->toBe('Blue');
+
+    expect($dto2)
+        ->color->toBeNull();
 
     expect($dto)->not->toBe($dto2);
 });

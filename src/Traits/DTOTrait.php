@@ -11,6 +11,7 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 
+use function array_key_exists;
 use function is_array;
 use function is_object;
 
@@ -158,7 +159,14 @@ trait DTOTrait
 
         foreach ($params as $param) {
             $name = $param->getName();
-            $data[$name] = $combined[$name] ?? $this->{$name} ?? null;
+
+            if (array_key_exists($name, $combined)) {
+                $data[$name] = $combined[$name];
+
+                continue;
+            }
+
+            $data[$name] = $this->{$name} ?? null;
         }
 
         return static::from($data);
