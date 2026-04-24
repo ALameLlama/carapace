@@ -15,6 +15,9 @@ use function array_key_exists;
 use function is_array;
 use function is_object;
 
+/**
+ * @template TDTO of object
+ */
 trait DTOTrait
 {
     use GetParentAttributesTrait;
@@ -24,7 +27,7 @@ trait DTOTrait
      * Creates a new instance of the DTO from the provided data.
      *
      * @param  string|array<mixed, mixed>|object  $data  The input data, either as JSON, associative array, or model-like object.
-     * @return static A fully hydrated DTO instance.
+     * @return TDTO A fully hydrated DTO instance.
      */
     public static function from(string|array|object $data): static
     {
@@ -125,13 +128,13 @@ trait DTOTrait
      * Creates an array of DTOs from the provided data.
      *
      * @param  string|array<array<mixed, mixed>|object>|object  $data  The input data, either as JSON, array, or object containing items.
-     * @return static[] A fully hydrated array of DTO instances.
+     * @return array<int|string, TDTO> A fully hydrated array of DTO instances.
      */
     public static function collect(string|array|object $data): array
     {
         $items = Data::wrap($data)->items();
 
-        /** @var array<int, array<mixed, mixed>|object> $items */
+        /** @var array<int|string, array<mixed, mixed>|object> $items */
         return array_map(static::from(...), $items);
     }
 
@@ -141,7 +144,7 @@ trait DTOTrait
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
      * @param  mixed  ...$namedOverrides  Additional named overrides as variadic arguments.
      *                                    Each argument should be an array of key-value pairs to override properties.
-     * @return static A new DTO instance with updated values.
+     * @return TDTO A new DTO instance with updated values.
      */
     public function with(array|object $overrides = [], ...$namedOverrides): static
     {

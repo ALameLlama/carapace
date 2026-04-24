@@ -11,5 +11,6 @@ use Alamellama\Carapace\Traits\DTOTrait;
  */
 abstract readonly class ImmutableData
 {
+    /** @use DTOTrait<static> */
     use DTOTrait;
 }

@@ -11,5 +11,6 @@ use Alamellama\Carapace\Traits\DTOTrait;
  */
 abstract class Data
 {
+    /** @use DTOTrait<static> */
     use DTOTrait;
 }
