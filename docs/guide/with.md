@@ -40,7 +40,11 @@ $updatedUser = $user->with(
 
 ## Updating Nested DTOs
 
-When working with nested DTOs, you need to provide the complete nested structure:
+When working with nested DTOs, `with` supports two approaches: providing the complete nested structure, or passing a partial diff that gets merged into the existing DTO.
+
+### Complete Structure
+
+You can replace an entire nested DTO by providing the full structure:
 
 ```php
 $user = User::from([
@@ -68,4 +72,19 @@ $updatedUser = $user->with(
 echo $user->name;                // Outputs: John Doe
 echo $user->address->street;     // Outputs: 123 Main St
 echo $updatedUser->address->city; // Outputs: Newtown (if address was updated)
+```
+
+### Partial Update
+
+You can also pass a partial array for a nested DTO property, only the specified keys are merged into the existing DTO, and all other keys are preserved:
+
+```php
+$updatedUser = $user->with([
+    'address' => [
+        'city' => 'Newtown',
+    ],
+]);
+
+echo $updatedUser->address->street; // Outputs: 123 Main St (preserved)
+echo $updatedUser->address->city;   // Outputs: Newtown (updated)
 ```

@@ -138,6 +138,10 @@ trait DTOTrait
     /**
      * Creates a modified copy of the DTO with overridden values.
      *
+     * When a property is a DTO and the override value is an array, the array is
+     * recursively merged into the existing DTO. Otherwise the value
+     * replaces the property entirely.
+     *
      * @param  array<mixed, mixed>  $overrides  Key-value pairs to override properties.
      * @param  mixed  ...$namedOverrides  Additional named overrides as variadic arguments.
      *                                    Each argument should be an array of key-value pairs to override properties.
@@ -161,7 +165,29 @@ trait DTOTrait
             $name = $param->getName();
 
             if (array_key_exists($name, $combined)) {
-                $data[$name] = $combined[$name];
+                $type = $param->getType();
+                $value = $combined[$name];
+                $existingValue = $this->{$name} ?? null;
+
+                if (! ($type instanceof ReflectionNamedType) || $type->isBuiltin()) {
+                    $data[$name] = $value;
+
+                    continue;
+                }
+
+                // If the property is a DTO type and the override is an array,
+                // recursively merge the diff into the existing DTO.
+                if (
+                    is_array($value) &&
+                    is_object($existingValue) &&
+                    self::isDTOClass($type->getName()) &&
+                    self::isDTOClass($existingValue::class)
+                ) {
+                    /** @var \Alamellama\Carapace\Data|\Alamellama\Carapace\ImmutableData $existingValue */
+                    $value = $existingValue->with($value);
+                }
+
+                $data[$name] = $value;
 
                 continue;
             }
@@ -172,7 +198,7 @@ trait DTOTrait
         return static::from($data);
     }
 
-    private static function isDTOClass(string $object): bool
+    private static function isDTOClass(object|string $object): bool
     {
         return
             is_a($object, \Alamellama\Carapace\Data::class, true) ||
