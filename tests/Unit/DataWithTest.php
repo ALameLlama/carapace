@@ -223,3 +223,32 @@ it('can override a value with null', function (): void {
 
     expect($dto)->not->toBe($dto2);
 });
+
+it('can merge nested DTO properties via diff-style array', function (): void {
+    $dto = User::from([
+        'name' => 'Nick',
+        'email' => 'nick@example.com',
+        'address' => [
+            'street' => '123 Main St',
+            'city' => 'Melbourne',
+            'postcode' => '3000',
+        ],
+    ]);
+
+    $dto2 = $dto->with([
+        'address' => [
+            'city' => 'Sydney',
+        ],
+    ]);
+
+    expect($dto)
+        ->address->city->toBe('Melbourne');
+
+    expect($dto2)
+        ->name->toBe('Nick')
+        ->address->city->toBe('Sydney')
+        ->address->street->toBe('123 Main St')
+        ->address->postcode->toBe('3000');
+
+    expect($dto)->not->toBe($dto2);
+});
