@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/ALameLlama/carapace/compare/v2.0.3...v2.1.0) (2026-07-20)
+
+
+### Features
+
+* update `with` to make nested dto updates nice to use ([#47](https://github.com/ALameLlama/carapace/issues/47)) ([2e2a7f9](https://github.com/ALameLlama/carapace/commit/2e2a7f937eef8208aea9aa76acf5d4bb11476111))
+
 ## [2.0.3](https://github.com/ALameLlama/carapace/compare/v2.0.2...v2.0.3) (2026-04-22)
 
 
