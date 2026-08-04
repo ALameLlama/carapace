@@ -18,6 +18,7 @@ use function is_string;
 use function json_decode;
 use function method_exists;
 use function property_exists;
+use function str_contains;
 
 /**
  * Unified accessor for data sources.
@@ -65,6 +66,27 @@ class Data
 
     public function has(string $key): bool
     {
+        if (str_contains($key, '.')) {
+            $source = is_array($this->originalData) ? $this->data : $this->originalData;
+            foreach (explode('.', $key) as $part) {
+                if (is_array($source) && array_key_exists($part, $source)) {
+                    $source = $source[$part];
+                } elseif (is_object($source) && property_exists($source, $part)) {
+                    $source = $source->{$part};
+                } elseif (is_object($source) && method_exists($source, '__get')) {
+                    try {
+                        $source = $source->__get($part);
+                    } catch (Throwable) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         // Arrays: consult only the mutable copy
         if (is_array($this->originalData)) {
             return array_key_exists($key, $this->data);
@@ -118,6 +140,27 @@ class Data
 
     public function get(string $key): mixed
     {
+        if (str_contains($key, '.')) {
+            $source = is_array($this->originalData) ? $this->data : $this->originalData;
+            foreach (explode('.', $key) as $part) {
+                if (is_array($source) && array_key_exists($part, $source)) {
+                    $source = $source[$part];
+                } elseif (is_object($source) && property_exists($source, $part)) {
+                    $source = $source->{$part};
+                } elseif (is_object($source) && method_exists($source, '__get')) {
+                    try {
+                        $source = $source->__get($part);
+                    } catch (Throwable) {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            }
+
+            return $source;
+        }
+
         // Arrays: read from the mutable copy only
         if (is_array($this->originalData)) {
             return $this->data[$key] ?? null;
