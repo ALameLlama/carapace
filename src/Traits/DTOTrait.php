@@ -55,8 +55,9 @@ trait DTOTrait
         }
 
         $params = $reflection->getConstructor()?->getParameters() ?? [];
+        $classHydrationAttributes = self::getParentAttributes($reflection, ClassHydrationInterface::class);
 
-        $args = array_map(static function (ReflectionParameter $param) use ($reflection, $data) {
+        $args = array_map(static function (ReflectionParameter $param) use ($reflection, $data, $classHydrationAttributes) {
             $name = $param->getName();
 
             if (! $data->has($name)) {
@@ -72,7 +73,7 @@ trait DTOTrait
             }
 
             // Run all Contracts\ClassHydrationInterface attributes
-            foreach (self::getParentAttributes($reflection, ClassHydrationInterface::class) as $classAttr) {
+            foreach ($classHydrationAttributes as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
                 foreach ($reflection->getProperties() as $property) {
                     // Only hydrate the property that matches the current parameter
