@@ -8,6 +8,7 @@ use const JSON_THROW_ON_ERROR;
 
 use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\Contracts;
+use Alamellama\Carapace\Contracts\DTOInterface;
 use JsonException;
 use ReflectionClass;
 use ReflectionProperty;
@@ -111,7 +112,7 @@ trait SerializationTrait
             return array_map(fn ($item): mixed => $this->recursiveToArray($item), $value);
         }
 
-        if ($value instanceof self) {
+        if ($value instanceof DTOInterface) {
             return $value->toArray();
         }
 

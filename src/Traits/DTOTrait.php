@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Traits;
 
 use Alamellama\Carapace\Contracts;
+use Alamellama\Carapace\Contracts\DTOInterface;
 use Alamellama\Carapace\Support\Data;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -110,7 +111,7 @@ trait DTOTrait
 
             $typeName = $type->getName();
 
-            if ((is_array($value) || is_object($value)) && self::isDTOClass($typeName)) {
+            if ((is_array($value) || is_object($value)) && is_a($typeName, DTOInterface::class, true)) {
                 /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
@@ -180,10 +181,10 @@ trait DTOTrait
                 if (
                     is_array($value) &&
                     is_object($existingValue) &&
-                    self::isDTOClass($type->getName()) &&
-                    self::isDTOClass($existingValue::class)
+                    is_a($type->getName(), DTOInterface::class, true) &&
+                    is_a($existingValue::class, DTOInterface::class, true)
                 ) {
-                    /** @var \Alamellama\Carapace\Data|\Alamellama\Carapace\ImmutableData $existingValue */
+                    /** @var DTOInterface $existingValue */
                     $value = $existingValue->with($value);
                 }
 
@@ -196,12 +197,5 @@ trait DTOTrait
         }
 
         return static::from($data);
-    }
-
-    private static function isDTOClass(object|string $object): bool
-    {
-        return
-            is_a($object, \Alamellama\Carapace\Data::class, true) ||
-            is_a($object, \Alamellama\Carapace\ImmutableData::class, true);
     }
 }
