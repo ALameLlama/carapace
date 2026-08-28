@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Traits;
 
-use Alamellama\Carapace\Contracts;
 use Alamellama\Carapace\Contracts\ClassHydrationInterface;
 use Alamellama\Carapace\Contracts\ClassPreHydrationInterface;
 use Alamellama\Carapace\Contracts\DTOInterface;
