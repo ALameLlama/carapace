@@ -6,8 +6,8 @@ namespace Alamellama\Carapace\Attributes;
 
 use Alamellama\Carapace\Casters\DTOCaster;
 use Alamellama\Carapace\Contracts\CasterInterface;
+use Alamellama\Carapace\Contracts\DTOInterface;
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
-use Alamellama\Carapace\Data;
 use Alamellama\Carapace\Support\Data as DataWrapper;
 use Attribute;
 use InvalidArgumentException;
@@ -18,7 +18,7 @@ use function is_null;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 /**
- * Casts a property using either a class-string of Data/CasterInterface class or a CasterInterface implementation.
+ * Casts a property using either a class-string of DTOInterface/CasterInterface class or a CasterInterface implementation.
  *
  * This ensures the property is properly cast to the desired type during hydration.
  */
@@ -27,7 +27,7 @@ class CastWith implements PropertyPreHydrationInterface
     public CasterInterface $caster;
 
     /**
-     * @param  class-string<Data>|class-string<CasterInterface>|CasterInterface  $caster  Either a class-string of Data/CasterInterface class or a CasterInterface implementation.
+     * @param  class-string<DTOInterface>|class-string<CasterInterface>|CasterInterface  $caster  Either a class-string of DTOInterface/CasterInterface class or a CasterInterface implementation.
      */
     public function __construct(
         string|CasterInterface $caster
@@ -44,7 +44,7 @@ class CastWith implements PropertyPreHydrationInterface
             return;
         }
 
-        if (is_subclass_of($caster, Data::class)) {
+        if (is_subclass_of($caster, DTOInterface::class)) {
             $this->caster = new DTOCaster($caster);
 
             return;
@@ -54,7 +54,7 @@ class CastWith implements PropertyPreHydrationInterface
     }
 
     /**
-     * Handles the casting of a property using either a class-string of Data/CasterInterface class or a CasterInterface implementation.
+     * Handles the casting of a property using either a class-string of DTOInterface/CasterInterface class or a CasterInterface implementation.
      *
      * @throws InvalidArgumentException If the value cannot be cast properly.
      */
