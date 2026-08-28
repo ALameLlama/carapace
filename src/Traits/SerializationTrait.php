@@ -7,9 +7,11 @@ namespace Alamellama\Carapace\Traits;
 use const JSON_THROW_ON_ERROR;
 
 use Alamellama\Carapace\Attributes\Hidden;
-use Alamellama\Carapace\Contracts;
+use Alamellama\Carapace\Contracts\ClassTransformationInterface;
 use Alamellama\Carapace\Contracts\DTOInterface;
+use Alamellama\Carapace\Contracts\PropertyTransformationInterface;
 use JsonException;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -43,43 +45,39 @@ trait SerializationTrait
             return $result;
         }
 
-        $classAttributes = self::getParentAttributes($reflection);
+        $classTransformationAttributes = self::getParentAttributes($reflection, ClassTransformationInterface::class);
 
         foreach ($properties as $property) {
             $name = $property->getName();
             $value = $property->getValue($this);
 
-            foreach ($property->getAttributes() as $attr) {
+            // Run all PropertyTransformationInterface attributes
+            // Such as MapTo, Hidden, etc.
+            foreach ($property->getAttributes(PropertyTransformationInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attr) {
                 $attrInstance = $attr->newInstance();
-                // Run all PropertyTransformationInterface attributes
-                // Such as MapTo, Hidden, etc.
-                if ($attrInstance instanceof Contracts\PropertyTransformationInterface) {
-                    [$name, $value] = $attrInstance->propertyTransform($property, $value);
-                }
+                [$name, $value] = $attrInstance->propertyTransform($property, $value);
 
                 if ($name === Hidden::SIGNAL) {
                     continue 2;
                 }
             }
 
-            foreach ($classAttributes as $classAttr) {
+            foreach ($classTransformationAttributes as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
-                if ($classAttrInstance instanceof Contracts\ClassTransformationInterface) {
-                    $originalName = $name;
-                    // Run all ClassTransformationInterface attributes
-                    // Such as SnakeCase, etc.
-                    [$proposedName, $value] = $classAttrInstance->classTransform($property, $value);
-                    if ($proposedName === Hidden::SIGNAL) {
-                        $name = $proposedName;
+                $originalName = $name;
+                // Run all ClassTransformationInterface attributes
+                // Such as SnakeCase, etc.
+                [$proposedName, $value] = $classAttrInstance->classTransform($property, $value);
+                if ($proposedName === Hidden::SIGNAL) {
+                    $name = $proposedName;
 
-                        continue 2;
-                    }
-
-                    // TODO: I need to see if I am happy with this, might need to scope this better instead of it being global.
-                    // If the class-level transform returns the original property name,
-                    // preserve the name produced by property-level transforms (if any).
-                    $name = $proposedName === $property->getName() ? $originalName : $proposedName;
+                    continue 2;
                 }
+
+                // TODO: I need to see if I am happy with this, might need to scope this better instead of it being global.
+                // If the class-level transform returns the original property name,
+                // preserve the name produced by property-level transforms (if any).
+                $name = $proposedName === $property->getName() ? $originalName : $proposedName;
             }
 
             $result[$name] = $this->recursiveToArray($value);

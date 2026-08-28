@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Traits;
 
 use Alamellama\Carapace\Contracts;
+use Alamellama\Carapace\Contracts\ClassHydrationInterface;
+use Alamellama\Carapace\Contracts\ClassPreHydrationInterface;
 use Alamellama\Carapace\Contracts\DTOInterface;
+use Alamellama\Carapace\Contracts\PropertyHydrationInterface;
+use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Support\Data;
 use InvalidArgumentException;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -33,23 +38,19 @@ trait DTOTrait
         $reflection = new ReflectionClass(static::class);
 
         // Run all Contracts\ClassPreHydrationInterface attributes
-        foreach (self::getParentAttributes($reflection) as $classAttr) {
+        foreach (self::getParentAttributes($reflection, ClassPreHydrationInterface::class) as $classAttr) {
             $classAttrInstance = $classAttr->newInstance();
-            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
-                foreach ($reflection->getProperties() as $property) {
-                    $classAttrInstance->classPreHydrate($property, $data);
-                }
+            foreach ($reflection->getProperties() as $property) {
+                $classAttrInstance->classPreHydrate($property, $data);
             }
         }
 
-        // Run all Contracts\PreHydrationHandler attributes
+        // Run all Contracts\PropertyPreHydrationInterface attributes
         // Such as CastWith, MapFrom, etc.
         foreach ($reflection->getProperties() as $property) {
-            foreach ($property->getAttributes() as $attr) {
+            foreach ($property->getAttributes(PropertyPreHydrationInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Contracts\PropertyPreHydrationInterface) {
-                    $attrInstance->propertyPreHydrate($property, $data);
-                }
+                $attrInstance->propertyPreHydrate($property, $data);
             }
         }
 
@@ -71,21 +72,19 @@ trait DTOTrait
             }
 
             // Run all Contracts\ClassHydrationInterface attributes
-            foreach ($reflection->getAttributes() as $classAttr) {
+            foreach (self::getParentAttributes($reflection, ClassHydrationInterface::class) as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
-                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
-                    foreach ($reflection->getProperties() as $property) {
-                        // Only hydrate the property that matches the current parameter
-                        if ($property->getName() !== $name) {
-                            continue;
-                        }
-
-                        $classAttrInstance->classHydrate($property, $data);
+                foreach ($reflection->getProperties() as $property) {
+                    // Only hydrate the property that matches the current parameter
+                    if ($property->getName() !== $name) {
+                        continue;
                     }
+
+                    $classAttrInstance->classHydrate($property, $data);
                 }
             }
 
-            // Run all Contracts\HydrationHandler attributes
+            // Run all Contracts\PropertyHydrationInterface attributes
             // This can be used for validators or other custom handlers.
             foreach ($reflection->getProperties() as $property) {
                 // Only run handlers for the property that matches the current parameter
@@ -93,11 +92,9 @@ trait DTOTrait
                     continue;
                 }
 
-                foreach ($property->getAttributes() as $attr) {
+                foreach ($property->getAttributes(PropertyHydrationInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attr) {
                     $attrInstance = $attr->newInstance();
-                    if ($attrInstance instanceof Contracts\PropertyHydrationInterface) {
-                        $attrInstance->propertyHydrate($property, $data);
-                    }
+                    $attrInstance->propertyHydrate($property, $data);
                 }
             }
 
