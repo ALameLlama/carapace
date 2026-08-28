@@ -28,4 +28,7 @@ return RectorConfig::configure()
     ->withRules([
         DeclareStrictTypesRector::class,
     ])
+    ->withImportNames(
+        removeUnusedImports: true,
+    )
     ->withPhpSets();
