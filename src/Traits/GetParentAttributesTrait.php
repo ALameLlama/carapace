@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Traits;
 
 use Alamellama\Carapace\Contracts\AttributeInterface;
-use Alamellama\Carapace\Contracts\DTOInterface;
 use ReflectionAttribute;
 use ReflectionClass;
 
@@ -14,10 +13,10 @@ trait GetParentAttributesTrait
     /**
      * Helper to get attributes from the class and all its parents (closest first).
      *
-     * @template TDTO of DTOInterface
+     * @template TObject of object
      * @template TAttribute of AttributeInterface
      *
-     * @param  ReflectionClass<TDTO>  $reflection
+     * @param  ReflectionClass<TObject>  $reflection
      * @param  class-string<TAttribute>  $interface
      * @return list<ReflectionAttribute<TAttribute>>
      */
