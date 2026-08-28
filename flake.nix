@@ -2,7 +2,7 @@
   description = "PHP Dev Shell";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -18,7 +18,7 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
-        phpWithExtensions = pkgs.php.buildEnv {
+        phpWithExtensions = pkgs.php82.buildEnv {
           extensions =
             { enabled, all }:
             enabled
