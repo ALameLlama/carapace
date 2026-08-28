@@ -66,7 +66,7 @@ final readonly class DTOCaster implements CasterInterface
 
         // Single DTO payload (assoc array, object, or JSON string)
         if (is_array($value) || is_object($value) || is_string($value)) {
-            /** @var array<mixed,mixed>|object|string $value */
+            /** @var non-empty-array<mixed,mixed>|object|string $value */
             return $this->dtoClass::from($value);
         }
 
