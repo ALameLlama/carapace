@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Alamellama\Carapace\Casters;
 
 use Alamellama\Carapace\Contracts\CasterInterface;
-use Alamellama\Carapace\Data;
+use Alamellama\Carapace\Contracts\DTOInterface;
 use InvalidArgumentException;
 
 use function array_is_list;
@@ -23,13 +23,13 @@ use function is_string;
  */
 final readonly class DTOCaster implements CasterInterface
 {
-    /** @param class-string<Data> $dtoClass */
+    /** @param class-string<DTOInterface> $dtoClass */
     public function __construct(public string $dtoClass) {}
 
     /**
      * Exposes the target DTO class-string for error context.
      *
-     * @return class-string<Data>
+     * @return class-string<DTOInterface>
      */
     public function targetClass(): string
     {
@@ -37,7 +37,7 @@ final readonly class DTOCaster implements CasterInterface
     }
 
     /**
-     * @return Data|array<int, Data>
+     * @return DTOInterface|array<int, DTOInterface>
      */
     public function cast(mixed $value): mixed
     {
@@ -66,7 +66,7 @@ final readonly class DTOCaster implements CasterInterface
 
         // Single DTO payload (assoc array, object, or JSON string)
         if (is_array($value) || is_object($value) || is_string($value)) {
-            /** @var array<mixed,mixed>|object|string $value */
+            /** @var non-empty-array<mixed,mixed>|object|string $value */
             return $this->dtoClass::from($value);
         }
 

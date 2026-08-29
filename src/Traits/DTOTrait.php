@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Alamellama\Carapace\Traits;
 
-use Alamellama\Carapace\Contracts;
+use Alamellama\Carapace\Contracts\ClassHydrationInterface;
+use Alamellama\Carapace\Contracts\ClassPreHydrationInterface;
+use Alamellama\Carapace\Contracts\DTOInterface;
+use Alamellama\Carapace\Contracts\PropertyHydrationInterface;
+use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Support\ReflectionCache;
 use InvalidArgumentException;
-use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionProperty;
 
 use function array_key_exists;
 use function is_array;
@@ -17,7 +22,6 @@ use function is_object;
 
 trait DTOTrait
 {
-    use GetParentAttributesTrait;
     use SerializationTrait;
 
     /**
@@ -29,32 +33,31 @@ trait DTOTrait
     public static function from(string|array|object $data): static
     {
         $data = Data::wrap($data);
-        $reflection = new ReflectionClass(static::class);
+        $class = static::class;
+        $reflection = ReflectionCache::reflection($class);
+        $properties = ReflectionCache::properties($class);
 
         // Run all Contracts\ClassPreHydrationInterface attributes
-        foreach (self::getParentAttributes($reflection) as $classAttr) {
+        foreach (ReflectionCache::parentAttributes($class, ClassPreHydrationInterface::class) as $classAttr) {
             $classAttrInstance = $classAttr->newInstance();
-            if ($classAttrInstance instanceof Contracts\ClassPreHydrationInterface) {
-                foreach ($reflection->getProperties() as $property) {
-                    $classAttrInstance->classPreHydrate($property, $data);
-                }
+            foreach ($properties as $property) {
+                $classAttrInstance->classPreHydrate($property, $data);
             }
         }
 
-        // Run all Contracts\PreHydrationHandler attributes
+        // Run all Contracts\PropertyPreHydrationInterface attributes
         // Such as CastWith, MapFrom, etc.
-        foreach ($reflection->getProperties() as $property) {
-            foreach ($property->getAttributes() as $attr) {
+        foreach ($properties as $property) {
+            foreach (ReflectionCache::propertyAttributes($property, PropertyPreHydrationInterface::class) as $attr) {
                 $attrInstance = $attr->newInstance();
-                if ($attrInstance instanceof Contracts\PropertyPreHydrationInterface) {
-                    $attrInstance->propertyPreHydrate($property, $data);
-                }
+                $attrInstance->propertyPreHydrate($property, $data);
             }
         }
 
-        $params = $reflection->getConstructor()?->getParameters() ?? [];
+        $params = ReflectionCache::constructorParameters($class);
+        $classHydrationAttributes = ReflectionCache::parentAttributes($class, ClassHydrationInterface::class);
 
-        $args = array_map(static function (ReflectionParameter $param) use ($reflection, $data) {
+        $args = array_map(static function (ReflectionParameter $param) use ($class, $data, $classHydrationAttributes) {
             $name = $param->getName();
 
             if (! $data->has($name)) {
@@ -69,36 +72,26 @@ trait DTOTrait
                 throw new InvalidArgumentException("Missing required parameter: {$name}");
             }
 
+            $property = ReflectionCache::parameterProperty($class, $name);
+
+            if (! $property instanceof ReflectionProperty) {
+                goto skipPropertyHydration;
+            }
+
             // Run all Contracts\ClassHydrationInterface attributes
-            foreach ($reflection->getAttributes() as $classAttr) {
+            foreach ($classHydrationAttributes as $classAttr) {
                 $classAttrInstance = $classAttr->newInstance();
-                if ($classAttrInstance instanceof Contracts\ClassHydrationInterface) {
-                    foreach ($reflection->getProperties() as $property) {
-                        // Only hydrate the property that matches the current parameter
-                        if ($property->getName() !== $name) {
-                            continue;
-                        }
-
-                        $classAttrInstance->classHydrate($property, $data);
-                    }
-                }
+                $classAttrInstance->classHydrate($property, $data);
             }
 
-            // Run all Contracts\HydrationHandler attributes
+            // Run all Contracts\PropertyHydrationInterface attributes
             // This can be used for validators or other custom handlers.
-            foreach ($reflection->getProperties() as $property) {
-                // Only run handlers for the property that matches the current parameter
-                if ($property->getName() !== $name) {
-                    continue;
-                }
-
-                foreach ($property->getAttributes() as $attr) {
-                    $attrInstance = $attr->newInstance();
-                    if ($attrInstance instanceof Contracts\PropertyHydrationInterface) {
-                        $attrInstance->propertyHydrate($property, $data);
-                    }
-                }
+            foreach (ReflectionCache::propertyAttributes($property, PropertyHydrationInterface::class) as $attr) {
+                $attrInstance = $attr->newInstance();
+                $attrInstance->propertyHydrate($property, $data);
             }
+
+            skipPropertyHydration:
 
             $value = $data->get($name);
 
@@ -110,7 +103,7 @@ trait DTOTrait
 
             $typeName = $type->getName();
 
-            if ((is_array($value) || is_object($value)) && self::isDTOClass($typeName)) {
+            if ((is_array($value) || is_object($value)) && is_a($typeName, DTOInterface::class, true)) {
                 /** @var array<mixed, mixed>|object $value */
                 return $typeName::from($value);
             }
@@ -152,10 +145,9 @@ trait DTOTrait
         $baseOverrides = Data::wrap($overrides)->toArray();
         $combined = array_merge($baseOverrides, $namedOverrides);
 
-        $reflection = new ReflectionClass($this);
-        $params = $reflection->getConstructor()?->getParameters() ?? [];
+        $params = ReflectionCache::constructorParameters(static::class);
 
-        if (empty($params)) {
+        if ($params === []) {
             return static::from([]);
         }
 
@@ -180,10 +172,10 @@ trait DTOTrait
                 if (
                     is_array($value) &&
                     is_object($existingValue) &&
-                    self::isDTOClass($type->getName()) &&
-                    self::isDTOClass($existingValue::class)
+                    is_a($type->getName(), DTOInterface::class, true) &&
+                    is_a($existingValue::class, DTOInterface::class, true)
                 ) {
-                    /** @var \Alamellama\Carapace\Data|\Alamellama\Carapace\ImmutableData $existingValue */
+                    /** @var DTOInterface $existingValue */
                     $value = $existingValue->with($value);
                 }
 
@@ -196,12 +188,5 @@ trait DTOTrait
         }
 
         return static::from($data);
-    }
-
-    private static function isDTOClass(object|string $object): bool
-    {
-        return
-            is_a($object, \Alamellama\Carapace\Data::class, true) ||
-            is_a($object, \Alamellama\Carapace\ImmutableData::class, true);
     }
 }

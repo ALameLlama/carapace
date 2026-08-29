@@ -2,11 +2,11 @@ name: 🧹 Formats
 
 on:
   pull_request:
-    branches: [main, master, 'v[0-9]*']
+    branches: [main, master, "v[0-9]+", "[0-9]+\\.x"]
     paths-ignore:
       - "CHANGELOG.md"
   push:
-    branches: [main, master, 'v[0-9]*']
+    branches: [main, master, "v[0-9]+", "[0-9]+\\.x"]
     paths-ignore:
       - "CHANGELOG.md"
 
@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: ⚙️ Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -49,7 +49,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: 💾 Cache Composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-version-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}

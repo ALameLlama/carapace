@@ -13,7 +13,7 @@ use ReflectionProperty;
  * This enables custom handling of properties before the hydration process.
  * e.g. CastWith, MapFrom
  */
-interface PropertyPreHydrationInterface
+interface PropertyPreHydrationInterface extends AttributeInterface
 {
     /**
      * Allows attributes to modify hydration data as needed.
