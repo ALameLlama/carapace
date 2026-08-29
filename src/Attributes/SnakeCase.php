@@ -9,7 +9,7 @@ use Alamellama\Carapace\Contracts\ClassTransformationInterface;
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Contracts\PropertyTransformationInterface;
 use Alamellama\Carapace\Support\Data;
-use Alamellama\Carapace\Traits\PropertyHasAttributeTrait;
+use Alamellama\Carapace\Support\ReflectionCache;
 use Attribute;
 use ReflectionProperty;
 
@@ -25,8 +25,6 @@ use ReflectionProperty;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterface, PropertyPreHydrationInterface, PropertyTransformationInterface
 {
-    use PropertyHasAttributeTrait;
-
     /**
      * Class-level pre-hydration: remap snake_case keys to property names unless the property
      * already defines its own MapFrom attribute or the camelCase key is present.
@@ -34,7 +32,7 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
     public function classPreHydrate(ReflectionProperty $property, Data $data): void
     {
         // If a property already has its own MapFrom attribute, don't interfere
-        if ($this->propertyHasAttribute($property, MapFrom::class)) {
+        if (ReflectionCache::propertyHasAttribute($property, MapFrom::class)) {
             return;
         }
 
@@ -47,7 +45,7 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
     public function classTransform(ReflectionProperty $property, mixed $value): array
     {
         // Respect explicit MapTo on the property
-        if ($this->propertyHasAttribute($property, MapTo::class)) {
+        if (ReflectionCache::propertyHasAttribute($property, MapFrom::class)) {
             return [$property->getName(), $value];
         }
 

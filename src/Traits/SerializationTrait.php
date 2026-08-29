@@ -10,10 +10,8 @@ use Alamellama\Carapace\Attributes\Hidden;
 use Alamellama\Carapace\Contracts\ClassTransformationInterface;
 use Alamellama\Carapace\Contracts\DTOInterface;
 use Alamellama\Carapace\Contracts\PropertyTransformationInterface;
+use Alamellama\Carapace\Support\ReflectionCache;
 use JsonException;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionProperty;
 
 use function is_array;
 
@@ -27,8 +25,6 @@ use function is_array;
  */
 trait SerializationTrait
 {
-    use GetParentAttributesTrait;
-
     /**
      * Converts the object into an associative array.
      *
@@ -38,14 +34,14 @@ trait SerializationTrait
     {
         $result = [];
 
-        $reflection = new ReflectionClass($this);
-        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $class = static::class;
+        $properties = ReflectionCache::publicProperties($class);
 
-        if (empty($properties)) {
+        if ($properties === []) {
             return $result;
         }
 
-        $classTransformationAttributes = self::getParentAttributes($reflection, ClassTransformationInterface::class);
+        $classTransformationAttributes = ReflectionCache::parentAttributes($class, ClassTransformationInterface::class);
 
         foreach ($properties as $property) {
             $name = $property->getName();
@@ -53,7 +49,7 @@ trait SerializationTrait
 
             // Run all PropertyTransformationInterface attributes
             // Such as MapTo, Hidden, etc.
-            foreach ($property->getAttributes(PropertyTransformationInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attr) {
+            foreach (ReflectionCache::propertyAttributes($property, PropertyTransformationInterface::class) as $attr) {
                 $attrInstance = $attr->newInstance();
                 [$name, $value] = $attrInstance->propertyTransform($property, $value);
 

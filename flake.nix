@@ -54,7 +54,9 @@
             # docker
             # rootlesskit
 
-            nodejs_22
+            nodejs_24
+
+            hyperfine
           ];
 
           # Optional: expose Docker socket from nix
