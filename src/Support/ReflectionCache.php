@@ -81,6 +81,8 @@ final class ReflectionCache
     public static function parameterProperty(string $class, string $parameter): ?ReflectionProperty
     {
         if (! isset(self::$parameterProperties[$class])) {
+            self::$parameterProperties[$class] = [];
+
             foreach (self::properties($class) as $property) {
                 self::$parameterProperties[$class][$property->getName()] = $property;
             }
