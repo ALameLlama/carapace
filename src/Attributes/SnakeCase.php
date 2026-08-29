@@ -45,7 +45,7 @@ class SnakeCase implements ClassPreHydrationInterface, ClassTransformationInterf
     public function classTransform(ReflectionProperty $property, mixed $value): array
     {
         // Respect explicit MapTo on the property
-        if (ReflectionCache::propertyHasAttribute($property, MapFrom::class)) {
+        if (ReflectionCache::propertyHasAttribute($property, MapTo::class)) {
             return [$property->getName(), $value];
         }
 
