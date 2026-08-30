@@ -8,6 +8,7 @@ use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Support\Data;
 use Alamellama\Carapace\Support\DataPath;
 use Attribute;
+use InvalidArgumentException;
 use ReflectionProperty;
 
 /**
@@ -31,6 +32,18 @@ class GroupFrom implements PropertyPreHydrationInterface
 
     public function __construct(string ...$sourceKeys)
     {
+        $fields = [];
+
+        foreach ($sourceKeys as $sourceKey) {
+            $field = DataPath::parse($sourceKey)->fieldName();
+
+            if (isset($fields[$field])) {
+                throw new InvalidArgumentException("Duplicate GroupFrom field: {$field}");
+            }
+
+            $fields[$field] = true;
+        }
+
         $this->sourceKeys = $sourceKeys;
     }
 

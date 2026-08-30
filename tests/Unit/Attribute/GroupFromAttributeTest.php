@@ -6,6 +6,7 @@ namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\GroupFrom;
 use Alamellama\Carapace\Data;
+use InvalidArgumentException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\AddressReadonly;
 
@@ -57,6 +58,14 @@ class RootWildcardGroupDTO extends Data
     public function __construct(
         #[GroupFrom('*')]
         public array $group,
+    ) {}
+}
+
+class DuplicateGroupFieldsDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('billing.city', 'shipping.city')]
+        public array $address,
     ) {}
 }
 
@@ -150,4 +159,21 @@ it('can group a root wildcard', function (): void {
     $dto = RootWildcardGroupDTO::from(['first' => 1, 'second' => 2]);
 
     expect($dto->group)->toBe(['*' => [1, 2]]);
+});
+
+it('rejects duplicate derived fields during construction', function (array $sources, string $field): void {
+    expect(fn (): GroupFrom => new GroupFrom(...$sources))
+        ->toThrow(InvalidArgumentException::class, "Duplicate GroupFrom field: {$field}");
+})->with([
+    'nested' => [['billing.city', 'shipping.city'], 'city'],
+    'wildcard' => [['products.*.name', 'contacts.*.name'], 'name'],
+    'escaped' => [['billing.city', 'shipping.c\\ity'], 'city'],
+    'identical' => [['city', 'city'], 'city'],
+]);
+
+it('rejects duplicate derived fields before attribute hydration mutates data', function (): void {
+    expect(fn (): DuplicateGroupFieldsDTO => DuplicateGroupFieldsDTO::from([
+        'billing' => ['city' => 'London'],
+        'shipping' => ['city' => 'Paris'],
+    ]))->toThrow(InvalidArgumentException::class, 'Duplicate GroupFrom field: city');
 });
