@@ -9,6 +9,9 @@ use Alamellama\Carapace\Support\Data;
 use Attribute;
 use ReflectionProperty;
 
+use function strrpos;
+use function substr;
+
 /**
  * Groups multiple flat input keys into a nested structure for a property.
  *
@@ -48,7 +51,8 @@ class GroupFrom implements PropertyPreHydrationInterface
                 continue;
             }
 
-            $group[$key] = $data->get($key);
+            $separator = strrpos($key, '.');
+            $group[$separator === false ? $key : substr($key, $separator + 1)] = $data->get($key);
             $data->unset($key);
         }
 

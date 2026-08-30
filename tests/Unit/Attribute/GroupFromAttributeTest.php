@@ -36,6 +36,14 @@ class UserWithReadonlyAddressDTO extends Data
     ) {}
 }
 
+class UserWithNestedAddressSourceDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('contracts.registrant.street', 'contracts.registrant.city', 'contracts.registrant.postcode')]
+        public Address $address,
+    ) {}
+}
+
 it('groups flat keys into a nested DTO property', function (): void {
     $dto = UserWithAddressDTO::from([
         'name' => 'Jane Doe',
@@ -96,4 +104,16 @@ it('does nothing when none of the source keys are present and allows null', func
     ]);
 
     expect($dto->address)->toBeNull();
+});
+
+it('groups nested sources under their terminal names', function (): void {
+    $dto = UserWithNestedAddressSourceDTO::from(['contracts' => ['registrant' => [
+        'street' => '42 Galaxy Way',
+        'city' => 'Cosmopolis',
+        'postcode' => 'C0S M0S',
+    ]]]);
+
+    expect($dto->address->street)->toBe('42 Galaxy Way')
+        ->and($dto->address->city)->toBe('Cosmopolis')
+        ->and($dto->address->postcode)->toBe('C0S M0S');
 });

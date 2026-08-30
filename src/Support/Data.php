@@ -18,6 +18,7 @@ use function is_string;
 use function json_decode;
 use function method_exists;
 use function property_exists;
+use function str_contains;
 
 /**
  * Unified accessor for data sources.
@@ -65,83 +66,57 @@ class Data
 
     public function has(string $key): bool
     {
-        // Arrays: consult only the mutable copy
-        if (is_array($this->originalData)) {
-            return array_key_exists($key, $this->data);
+        if ($this->hasDirect($key)) {
+            return true;
         }
 
-        // Objects: if a key is masked (explicitly unset), it's considered absent
-        if (isset($this->masked[$key])) {
+        if (isset($this->masked[$key]) || ! str_contains($key, '.')) {
             return false;
         }
 
-        // Objects: check current overrides
-        if (array_key_exists($key, $this->data)) {
-            return true;
-        }
+        $current = $this;
+        $segments = explode('.', $key);
 
-        // Then check the original object
-        if (property_exists($this->originalData, $key)) {
-            return true;
-        }
-
-        if (method_exists($this->originalData, '__isset')) {
-            try {
-                if ($this->originalData->__isset($key)) {
-                    return true;
-                }
-            } catch (Throwable) {
-                // fall through
-            }
-        }
-
-        if (method_exists($this->originalData, '__get')) {
-            // ->__get() can return a warning, we want to make this an exception.
-            set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
-                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-            });
-
-            try {
-                @$this->originalData->__get($key);
-                restore_error_handler();
-
-                return true;
-            } catch (Throwable) {
-                restore_error_handler();
-
+        foreach ($segments as $index => $segment) {
+            if (! $current->hasDirect($segment)) {
                 return false;
             }
+
+            $value = $current->getDirect($segment);
+
+            if ($index !== array_key_last($segments)) {
+                if (! is_array($value) && ! is_object($value)) {
+                    return false;
+                }
+
+                $current = self::wrap($value);
+            }
         }
 
-        return false;
+        return true;
     }
 
     public function get(string $key): mixed
     {
-        // Arrays: read from the mutable copy only
-        if (is_array($this->originalData)) {
-            return $this->data[$key] ?? null;
+        if ($this->hasDirect($key) || isset($this->masked[$key]) || ! str_contains($key, '.')) {
+            return $this->getDirect($key);
         }
 
-        // Objects: if masked, treat as absent/null
-        if (isset($this->masked[$key])) {
-            return null;
+        $current = $this;
+        $segments = explode('.', $key);
+        $terminal = array_pop($segments);
+
+        foreach ($segments as $segment) {
+            $value = $current->getDirect($segment);
+
+            if (! is_array($value) && ! is_object($value)) {
+                return null;
+            }
+
+            $current = self::wrap($value);
         }
 
-        // Objects: prefer current overrides
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
-        }
-
-        if (property_exists($this->originalData, $key)) {
-            return $this->originalData->{$key};
-        }
-
-        if (method_exists($this->originalData, '__get')) {
-            return $this->originalData->__get($key);
-        }
-
-        return $this->originalData->{$key} ?? null;
+        return $current->getDirect($terminal);
     }
 
     public function set(string $key, mixed $value): void
@@ -243,5 +218,86 @@ class Data
         }
 
         return array_values($vars);
+    }
+
+    private function hasDirect(string $key): bool
+    {
+        // Arrays: consult only the mutable copy
+        if (is_array($this->originalData)) {
+            return array_key_exists($key, $this->data);
+        }
+
+        // Objects: if a key is masked (explicitly unset), it's considered absent
+        if (isset($this->masked[$key])) {
+            return false;
+        }
+
+        // Objects: check current overrides
+        if (array_key_exists($key, $this->data)) {
+            return true;
+        }
+
+        // Then check the original object
+        if (property_exists($this->originalData, $key)) {
+            return true;
+        }
+
+        if (method_exists($this->originalData, '__isset')) {
+            try {
+                if ($this->originalData->__isset($key)) {
+                    return true;
+                }
+            } catch (Throwable) {
+                // fall through
+            }
+        }
+
+        if (method_exists($this->originalData, '__get')) {
+            // ->__get() can return a warning, we want to make this an exception.
+            set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
+                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            });
+
+            try {
+                @$this->originalData->__get($key);
+                restore_error_handler();
+
+                return true;
+            } catch (Throwable) {
+                restore_error_handler();
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private function getDirect(string $key): mixed
+    {
+        // Arrays: read from the mutable copy only
+        if (is_array($this->originalData)) {
+            return $this->data[$key] ?? null;
+        }
+
+        // Objects: if masked, treat as absent/null
+        if (isset($this->masked[$key])) {
+            return null;
+        }
+
+        // Objects: prefer current overrides
+        if (array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        }
+
+        if (property_exists($this->originalData, $key)) {
+            return $this->originalData->{$key};
+        }
+
+        if (method_exists($this->originalData, '__get')) {
+            return $this->originalData->__get($key);
+        }
+
+        return $this->originalData->{$key} ?? null;
     }
 }
