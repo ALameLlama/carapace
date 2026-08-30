@@ -44,6 +44,22 @@ class UserWithNestedAddressSourceDTO extends Data
     ) {}
 }
 
+class WildcardGroupsDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('products.*.name', 'contacts.*')]
+        public array $group,
+    ) {}
+}
+
+class RootWildcardGroupDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('*')]
+        public array $group,
+    ) {}
+}
+
 it('groups flat keys into a nested DTO property', function (): void {
     $dto = UserWithAddressDTO::from([
         'name' => 'Jane Doe',
@@ -116,4 +132,22 @@ it('groups nested sources under their terminal names', function (): void {
     expect($dto->address->street)->toBe('42 Galaxy Way')
         ->and($dto->address->city)->toBe('Cosmopolis')
         ->and($dto->address->postcode)->toBe('C0S M0S');
+});
+
+it('names wildcard groups from the nearest non-wildcard segment', function (): void {
+    $dto = WildcardGroupsDTO::from([
+        'products' => [['name' => 'Desk'], ['name' => 'Chair']],
+        'contacts' => ['a@example.com', 'b@example.com'],
+    ]);
+
+    expect($dto->group)->toBe([
+        'name' => ['Desk', 'Chair'],
+        'contacts' => ['a@example.com', 'b@example.com'],
+    ]);
+});
+
+it('can group a root wildcard', function (): void {
+    $dto = RootWildcardGroupDTO::from(['first' => 1, 'second' => 2]);
+
+    expect($dto->group)->toBe(['*' => [1, 2]]);
 });

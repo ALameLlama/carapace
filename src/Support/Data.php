@@ -18,7 +18,6 @@ use function is_string;
 use function json_decode;
 use function method_exists;
 use function property_exists;
-use function str_contains;
 
 /**
  * Unified accessor for data sources.
@@ -70,53 +69,20 @@ class Data
             return true;
         }
 
-        if (isset($this->masked[$key]) || ! str_contains($key, '.')) {
+        if (isset($this->masked[$key])) {
             return false;
         }
 
-        $current = $this;
-        $segments = explode('.', $key);
-
-        foreach ($segments as $index => $segment) {
-            if (! $current->hasDirect($segment)) {
-                return false;
-            }
-
-            $value = $current->getDirect($segment);
-
-            if ($index !== array_key_last($segments)) {
-                if (! is_array($value) && ! is_object($value)) {
-                    return false;
-                }
-
-                $current = self::wrap($value);
-            }
-        }
-
-        return true;
+        return $this->resolve(DataPath::parse($key)->segments)[0];
     }
 
     public function get(string $key): mixed
     {
-        if ($this->hasDirect($key) || isset($this->masked[$key]) || ! str_contains($key, '.')) {
+        if ($this->hasDirect($key) || isset($this->masked[$key])) {
             return $this->getDirect($key);
         }
 
-        $current = $this;
-        $segments = explode('.', $key);
-        $terminal = array_pop($segments);
-
-        foreach ($segments as $segment) {
-            $value = $current->getDirect($segment);
-
-            if (! is_array($value) && ! is_object($value)) {
-                return null;
-            }
-
-            $current = self::wrap($value);
-        }
-
-        return $current->getDirect($terminal);
+        return $this->resolve(DataPath::parse($key)->segments)[1];
     }
 
     public function set(string $key, mixed $value): void
@@ -218,6 +184,85 @@ class Data
         }
 
         return array_values($vars);
+    }
+
+    /**
+     * @param  non-empty-list<array{key: string, wildcard: bool}>  $segments
+     * @return array{bool, mixed}
+     */
+    private function resolve(array $segments): array
+    {
+        $segment = array_shift($segments);
+
+        if ($segment['wildcard']) {
+            $items = $this->expandableItems();
+            $values = [];
+            $exists = false;
+
+            foreach ($items as $item) {
+                if ($segments === []) {
+                    $values[] = $item;
+                    $exists = true;
+
+                    continue;
+                }
+
+                if (! is_array($item) && ! is_object($item)) {
+                    $values[] = null;
+
+                    continue;
+                }
+
+                [$branchExists, $value] = self::wrap($item)->resolve($segments);
+                $exists = $exists || $branchExists;
+
+                if ($this->containsWildcard($segments) && is_array($value)) {
+                    array_push($values, ...$value);
+                } else {
+                    $values[] = $value;
+                }
+            }
+
+            return [$exists, $values];
+        }
+
+        if (! $this->hasDirect($segment['key'])) {
+            return [false, null];
+        }
+
+        $value = $this->getDirect($segment['key']);
+
+        if ($segments === []) {
+            return [true, $value];
+        }
+
+        if (! is_array($value) && ! is_object($value)) {
+            return [false, null];
+        }
+
+        return self::wrap($value)->resolve($segments);
+    }
+
+    /** @param list<array{key: string, wildcard: bool}> $segments */
+    private function containsWildcard(array $segments): bool
+    {
+        foreach ($segments as $segment) {
+            if ($segment['wildcard']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<mixed, mixed> */
+    private function expandableItems(): array
+    {
+        if ($this->originalData instanceof Traversable) {
+            return [];
+        }
+
+        return $this->toArray();
     }
 
     private function hasDirect(string $key): bool

@@ -6,11 +6,9 @@ namespace Alamellama\Carapace\Attributes;
 
 use Alamellama\Carapace\Contracts\PropertyPreHydrationInterface;
 use Alamellama\Carapace\Support\Data;
+use Alamellama\Carapace\Support\DataPath;
 use Attribute;
 use ReflectionProperty;
-
-use function strrpos;
-use function substr;
 
 /**
  * Groups multiple flat input keys into a nested structure for a property.
@@ -51,8 +49,7 @@ class GroupFrom implements PropertyPreHydrationInterface
                 continue;
             }
 
-            $separator = strrpos($key, '.');
-            $group[$separator === false ? $key : substr($key, $separator + 1)] = $data->get($key);
+            $group[DataPath::parse($key)->fieldName()] = $data->get($key);
             $data->unset($key);
         }
 

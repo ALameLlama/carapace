@@ -49,6 +49,14 @@ class EmailFromNestedKeyDTO extends Data
     ) {}
 }
 
+class NamesFromWildcardDTO extends Data
+{
+    public function __construct(
+        #[MapFrom('contacts.*.name')]
+        public array $names,
+    ) {}
+}
+
 it('can map attributes from an array using MapFrom with a single source key', function (): void {
     $dto = EmailFromSingleKeyDTO::from([
         'name' => 'Nick',
@@ -117,4 +125,10 @@ it('maps from a nested source path', function (): void {
     $dto = EmailFromNestedKeyDTO::from(['contact' => ['details' => ['email' => 'nested@example.com']]]);
 
     expect($dto->email)->toBe('nested@example.com');
+});
+
+it('inherits wildcard reads from Data', function (): void {
+    $dto = NamesFromWildcardDTO::from(['contacts' => [['name' => 'Jane'], ['name' => 'John']]]);
+
+    expect($dto->names)->toBe(['Jane', 'John']);
 });
