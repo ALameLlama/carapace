@@ -6,6 +6,7 @@ namespace Tests\Unit\Attribute;
 
 use Alamellama\Carapace\Attributes\GroupFrom;
 use Alamellama\Carapace\Data;
+use InvalidArgumentException;
 use Tests\Fixtures\DTO\Address;
 use Tests\Fixtures\DTO\AddressReadonly;
 
@@ -33,6 +34,38 @@ class UserWithReadonlyAddressDTO extends Data
         public string $name,
         #[GroupFrom('street', 'city', 'postcode')]
         public readonly AddressReadonly $address,
+    ) {}
+}
+
+class UserWithNestedAddressSourceDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('contracts.registrant.street', 'contracts.registrant.city', 'contracts.registrant.postcode')]
+        public Address $address,
+    ) {}
+}
+
+class WildcardGroupsDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('products.*.name', 'contacts.*')]
+        public array $group,
+    ) {}
+}
+
+class RootWildcardGroupDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('*')]
+        public array $group,
+    ) {}
+}
+
+class DuplicateGroupFieldsDTO extends Data
+{
+    public function __construct(
+        #[GroupFrom('billing.city', 'shipping.city')]
+        public array $address,
     ) {}
 }
 
@@ -96,4 +129,51 @@ it('does nothing when none of the source keys are present and allows null', func
     ]);
 
     expect($dto->address)->toBeNull();
+});
+
+it('groups nested sources under their terminal names', function (): void {
+    $dto = UserWithNestedAddressSourceDTO::from(['contracts' => ['registrant' => [
+        'street' => '42 Galaxy Way',
+        'city' => 'Cosmopolis',
+        'postcode' => 'C0S M0S',
+    ]]]);
+
+    expect($dto->address->street)->toBe('42 Galaxy Way')
+        ->and($dto->address->city)->toBe('Cosmopolis')
+        ->and($dto->address->postcode)->toBe('C0S M0S');
+});
+
+it('names wildcard groups from the nearest non-wildcard segment', function (): void {
+    $dto = WildcardGroupsDTO::from([
+        'products' => [['name' => 'Desk'], ['name' => 'Chair']],
+        'contacts' => ['a@example.com', 'b@example.com'],
+    ]);
+
+    expect($dto->group)->toBe([
+        'name' => ['Desk', 'Chair'],
+        'contacts' => ['a@example.com', 'b@example.com'],
+    ]);
+});
+
+it('can group a root wildcard', function (): void {
+    $dto = RootWildcardGroupDTO::from(['first' => 1, 'second' => 2]);
+
+    expect($dto->group)->toBe(['*' => [1, 2]]);
+});
+
+it('rejects duplicate derived fields during construction', function (array $sources, string $field): void {
+    expect(fn (): GroupFrom => new GroupFrom(...$sources))
+        ->toThrow(InvalidArgumentException::class, "Duplicate GroupFrom field: {$field}");
+})->with([
+    'nested' => [['billing.city', 'shipping.city'], 'city'],
+    'wildcard' => [['products.*.name', 'contacts.*.name'], 'name'],
+    'escaped' => [['billing.city', 'shipping.c\\ity'], 'city'],
+    'identical' => [['city', 'city'], 'city'],
+]);
+
+it('rejects duplicate derived fields before attribute hydration mutates data', function (): void {
+    expect(fn (): DuplicateGroupFieldsDTO => DuplicateGroupFieldsDTO::from([
+        'billing' => ['city' => 'London'],
+        'shipping' => ['city' => 'Paris'],
+    ]))->toThrow(InvalidArgumentException::class, 'Duplicate GroupFrom field: city');
 });
