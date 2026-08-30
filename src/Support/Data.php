@@ -73,16 +73,18 @@ class Data
             return false;
         }
 
-        return $this->resolve(DataPath::parse($key)->segments)[0];
+        return $this->resolve(DataPath::parse($key)->segments, true)[0];
     }
 
     public function get(string $key): mixed
     {
-        if ($this->hasDirect($key) || isset($this->masked[$key])) {
-            return $this->getDirect($key);
+        [$exists, $value] = $this->readDirect($key);
+
+        if ($exists || isset($this->masked[$key])) {
+            return $value;
         }
 
-        return $this->resolve(DataPath::parse($key)->segments)[1];
+        return $this->resolve(DataPath::parse($key)->segments, false)[1];
     }
 
     public function set(string $key, mixed $value): void
@@ -190,7 +192,7 @@ class Data
      * @param  non-empty-list<array{key: string, wildcard: bool}>  $segments
      * @return array{bool, mixed}
      */
-    private function resolve(array $segments): array
+    private function resolve(array $segments, bool $probe): array
     {
         $segment = array_shift($segments);
 
@@ -213,7 +215,7 @@ class Data
                     continue;
                 }
 
-                [$branchExists, $value] = self::wrap($item)->resolve($segments);
+                [$branchExists, $value] = self::wrap($item)->resolve($segments, $probe);
                 $exists = $exists || $branchExists;
 
                 if ($this->containsWildcard($segments) && is_array($value)) {
@@ -226,11 +228,15 @@ class Data
             return [$exists, $values];
         }
 
-        if (! $this->hasDirect($segment['key'])) {
-            return [false, null];
+        if ($probe && $segments === []) {
+            return [$this->hasDirect($segment['key']), null];
         }
 
-        $value = $this->getDirect($segment['key']);
+        [$exists, $value] = $this->readDirect($segment['key'], $probe);
+
+        if (! $exists) {
+            return [false, null];
+        }
 
         if ($segments === []) {
             return [true, $value];
@@ -240,7 +246,7 @@ class Data
             return [false, null];
         }
 
-        return self::wrap($value)->resolve($segments);
+        return self::wrap($value)->resolve($segments, $probe);
     }
 
     /** @param list<array{key: string, wildcard: bool}> $segments */
@@ -318,31 +324,46 @@ class Data
         return false;
     }
 
-    private function getDirect(string $key): mixed
+    /** @return array{bool, mixed} */
+    private function readDirect(string $key, bool $tolerant = false): array
     {
-        // Arrays: read from the mutable copy only
         if (is_array($this->originalData)) {
-            return $this->data[$key] ?? null;
+            return [array_key_exists($key, $this->data), $this->data[$key] ?? null];
         }
 
-        // Objects: if masked, treat as absent/null
         if (isset($this->masked[$key])) {
-            return null;
+            return [false, null];
         }
 
-        // Objects: prefer current overrides
         if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+            return [true, $this->data[$key]];
         }
 
         if (property_exists($this->originalData, $key)) {
-            return $this->originalData->{$key};
+            return [true, $this->originalData->{$key}];
         }
 
-        if (method_exists($this->originalData, '__get')) {
-            return $this->originalData->__get($key);
+        if (! method_exists($this->originalData, '__get')) {
+            return [false, null];
         }
 
-        return $this->originalData->{$key} ?? null;
+        if (! $tolerant) {
+            return [true, $this->originalData->__get($key)];
+        }
+
+        set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+        });
+
+        try {
+            $value = @$this->originalData->__get($key);
+            restore_error_handler();
+
+            return [true, $value];
+        } catch (Throwable) {
+            restore_error_handler();
+
+            return [false, null];
+        }
     }
 }

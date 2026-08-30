@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Data;
 
+use const E_USER_WARNING;
+
 use Alamellama\Carapace\Support\Data;
 use ArrayIterator;
 use stdClass;
@@ -128,4 +130,89 @@ it('preserves isset-only object reads at a wildcard terminal', function (): void
 
     expect($data->has('contacts.*.name'))->toBeTrue()
         ->and($data->get('contacts.*.name'))->toBe([null]);
+});
+
+it('reads each nested magic getter once', function (): void {
+    $nested = new class
+    {
+        public int $reads = 0;
+
+        public function __get(string $name): stdClass
+        {
+            $this->reads++;
+
+            return (object) ['name' => 'first'];
+        }
+    };
+
+    expect(Data::wrap(['account' => $nested])->get('account.contact.name'))->toBe('first')
+        ->and($nested->reads)->toBe(1);
+});
+
+it('reads wildcard terminal magic getters once', function (): void {
+    $contact = new class
+    {
+        public int $reads = 0;
+
+        public function __get(string $name): string
+        {
+            return 'name-' . ++$this->reads;
+        }
+    };
+
+    expect(Data::wrap(['contacts' => [$contact]])->get('contacts.*.name'))->toBe(['name-1'])
+        ->and($contact->reads)->toBe(1);
+});
+
+it('uses terminal nested isset without invoking the getter', function (): void {
+    $contact = new class
+    {
+        public int $reads = 0;
+
+        public function __isset(string $name): bool
+        {
+            return $name === 'name';
+        }
+
+        public function __get(string $name): string
+        {
+            $this->reads++;
+
+            return 'Jane';
+        }
+    };
+
+    expect(Data::wrap(['contact' => $contact])->has('contact.name'))->toBeTrue()
+        ->and($contact->reads)->toBe(0);
+});
+
+it('keeps nested has tolerant of getter warnings', function (): void {
+    $contact = new class
+    {
+        public function __get(string $name): mixed
+        {
+            trigger_error('missing', E_USER_WARNING);
+
+            return null;
+        }
+    };
+
+    expect(Data::wrap(['contact' => $contact])->has('contact.name.value'))->toBeFalse();
+});
+
+it('reads a successful intermediate magic getter once during has', function (): void {
+    $contact = new class
+    {
+        public int $reads = 0;
+
+        public function __get(string $name): array
+        {
+            $this->reads++;
+
+            return ['value' => null];
+        }
+    };
+
+    expect(Data::wrap(['contact' => $contact])->has('contact.name.value'))->toBeTrue()
+        ->and($contact->reads)->toBe(1);
 });
