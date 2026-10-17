@@ -32,8 +32,9 @@ class SnakeOverridesDTO extends Data
 {
     public function __construct(
         #[MapFrom('custom_in')]
+        public string $inboundField,
         #[MapTo('custom_out')]
-        public string $specialField,
+        public string $outboundField,
         public string $otherField,
     ) {}
 }
@@ -73,19 +74,23 @@ it('applies snake_case at property level without affecting other properties', fu
 it('respects explicit MapFrom/MapTo over class-level SnakeCase', function (): void {
     $dto = SnakeOverridesDTO::from([
         'custom_in' => 'value',
+        'outbound_field' => 'output',
         'other_field' => 'x',
     ]);
 
     expect($dto)
-        ->specialField->toBe('value')
+        ->inboundField->toBe('value')
+        ->outboundField->toBe('output')
         ->otherField->toBe('x');
 
     $array = $dto->toArray();
 
     expect($array)
-        ->toHaveKey('custom_out', 'value') // MapTo wins
-        ->toHaveKey('other_field', 'x')    // SnakeCase for remaining field
-        ->not->toHaveKey('specialField')
+        ->toHaveKey('inbound_field', 'value')
+        ->toHaveKey('custom_out', 'output')
+        ->toHaveKey('other_field', 'x')
+        ->not->toHaveKey('inboundField')
+        ->not->toHaveKey('outboundField')
         ->not->toHaveKey('otherField');
 });
 

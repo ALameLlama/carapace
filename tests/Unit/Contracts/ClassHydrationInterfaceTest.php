@@ -29,7 +29,7 @@ class EnsureNonEmpty implements ClassHydrationInterface
 }
 
 #[EnsureNonEmpty]
-class Server2DTO extends Data
+class BaseServer2DTO extends Data
 {
     public function __construct(
         public string $host,
@@ -37,7 +37,19 @@ class Server2DTO extends Data
     ) {}
 }
 
+class Server2DTO extends BaseServer2DTO {}
+
 it('can run class-level hydration handlers to adjust values', function (): void {
+    $dto = BaseServer2DTO::from([
+        'host' => '',
+    ]);
+
+    expect($dto)
+        ->host->toBe('default')
+        ->port->toBe(80);
+});
+
+it('inherits class-level hydration handlers', function (): void {
     $dto = Server2DTO::from([
         'host' => '',
     ]);

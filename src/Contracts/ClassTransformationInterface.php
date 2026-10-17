@@ -12,7 +12,7 @@ use ReflectionProperty;
  * This enables custom handling of properties during the transformation process.
  * e.g. SnakeCase,
  */
-interface ClassTransformationInterface
+interface ClassTransformationInterface extends AttributeInterface
 {
     /**
      * Allows attributes to modify property when transforming to array.

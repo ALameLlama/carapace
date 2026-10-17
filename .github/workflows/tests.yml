@@ -2,11 +2,11 @@ name: 🤖 Tests
 
 on:
   pull_request:
-    branches: [main, master, 'v[0-9]*']
+    branches: [main, master, "v[0-9]+", "[0-9]+\\.x"]
     paths-ignore:
       - "CHANGELOG.md"
   push:
-    branches: [main, master, 'v[0-9]*']
+    branches: [main, master, "v[0-9]+", "[0-9]+\\.x"]
     paths-ignore:
       - "CHANGELOG.md"
 
@@ -25,11 +25,15 @@ jobs:
 
     steps:
       - name: 📦 Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: 📚 Install Aspell
         shell: bash
         run: |
+          if command -v aspell > /dev/null 2>&1; then
+            exit 0
+          fi
+
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update && sudo apt-get install -y aspell aspell-en
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
@@ -49,7 +53,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: 💾 Cache Composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: dependencies-php-${{ matrix.php }}-os-${{ matrix.os }}-${{ matrix.dependency-version }}-composer-${{ hashFiles('composer.json') }}

@@ -13,7 +13,7 @@ use ReflectionProperty;
  * This enables custom handling of properties before the hydration process.
  * e.g. SnakeCase,
  */
-interface ClassPreHydrationInterface
+interface ClassPreHydrationInterface extends AttributeInterface
 {
     /**
      * Allows attributes to modify hydration data as needed.

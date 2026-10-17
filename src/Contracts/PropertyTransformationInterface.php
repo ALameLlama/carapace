@@ -12,7 +12,7 @@ use ReflectionProperty;
  * This enables custom handling of properties during the transformation process.
  * e.g. MapTo
  */
-interface PropertyTransformationInterface
+interface PropertyTransformationInterface extends AttributeInterface
 {
     /**
      * Allows attributes to modify property when transforming to array.

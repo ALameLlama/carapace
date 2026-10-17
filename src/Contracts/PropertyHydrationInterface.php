@@ -14,7 +14,7 @@ use ReflectionProperty;
  * TODO: currently I don't have a use case for this, but it is here for future use.
  * so I'm not sure if the interface data is correct.
  */
-interface PropertyHydrationInterface
+interface PropertyHydrationInterface extends AttributeInterface
 {
     /**
      * Allows attributes to modify hydration data.
