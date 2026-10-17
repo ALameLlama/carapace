@@ -30,6 +30,10 @@ jobs:
       - name: 📚 Install Aspell
         shell: bash
         run: |
+          if command -v aspell > /dev/null 2>&1; then
+            exit 0
+          fi
+
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update && sudo apt-get install -y aspell aspell-en
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
