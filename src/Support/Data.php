@@ -65,83 +65,26 @@ class Data
 
     public function has(string $key): bool
     {
-        // Arrays: consult only the mutable copy
-        if (is_array($this->originalData)) {
-            return array_key_exists($key, $this->data);
+        if ($this->hasDirect($key)) {
+            return true;
         }
 
-        // Objects: if a key is masked (explicitly unset), it's considered absent
         if (isset($this->masked[$key])) {
             return false;
         }
 
-        // Objects: check current overrides
-        if (array_key_exists($key, $this->data)) {
-            return true;
-        }
-
-        // Then check the original object
-        if (property_exists($this->originalData, $key)) {
-            return true;
-        }
-
-        if (method_exists($this->originalData, '__isset')) {
-            try {
-                if ($this->originalData->__isset($key)) {
-                    return true;
-                }
-            } catch (Throwable) {
-                // fall through
-            }
-        }
-
-        if (method_exists($this->originalData, '__get')) {
-            // ->__get() can return a warning, we want to make this an exception.
-            set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
-                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-            });
-
-            try {
-                @$this->originalData->__get($key);
-                restore_error_handler();
-
-                return true;
-            } catch (Throwable) {
-                restore_error_handler();
-
-                return false;
-            }
-        }
-
-        return false;
+        return $this->resolve(DataPath::parse($key)->segments, true)[0];
     }
 
     public function get(string $key): mixed
     {
-        // Arrays: read from the mutable copy only
-        if (is_array($this->originalData)) {
-            return $this->data[$key] ?? null;
+        [$exists, $value] = $this->readDirect($key);
+
+        if ($exists || isset($this->masked[$key])) {
+            return $value;
         }
 
-        // Objects: if masked, treat as absent/null
-        if (isset($this->masked[$key])) {
-            return null;
-        }
-
-        // Objects: prefer current overrides
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
-        }
-
-        if (property_exists($this->originalData, $key)) {
-            return $this->originalData->{$key};
-        }
-
-        if (method_exists($this->originalData, '__get')) {
-            return $this->originalData->__get($key);
-        }
-
-        return $this->originalData->{$key} ?? null;
+        return $this->resolve(DataPath::parse($key)->segments, false)[1];
     }
 
     public function set(string $key, mixed $value): void
@@ -243,5 +186,184 @@ class Data
         }
 
         return array_values($vars);
+    }
+
+    /**
+     * @param  non-empty-list<array{key: string, wildcard: bool}>  $segments
+     * @return array{bool, mixed}
+     */
+    private function resolve(array $segments, bool $probe): array
+    {
+        $segment = array_shift($segments);
+
+        if ($segment['wildcard']) {
+            $items = $this->expandableItems();
+            $values = [];
+            $exists = false;
+
+            foreach ($items as $item) {
+                if ($segments === []) {
+                    $values[] = $item;
+                    $exists = true;
+
+                    continue;
+                }
+
+                if (! is_array($item) && ! is_object($item)) {
+                    $values[] = null;
+
+                    continue;
+                }
+
+                [$branchExists, $value] = self::wrap($item)->resolve($segments, $probe);
+                $exists = $exists || $branchExists;
+
+                if ($this->containsWildcard($segments) && is_array($value)) {
+                    array_push($values, ...$value);
+                } else {
+                    $values[] = $value;
+                }
+            }
+
+            return [$exists, $values];
+        }
+
+        if ($probe && $segments === []) {
+            return [$this->hasDirect($segment['key']), null];
+        }
+
+        [$exists, $value] = $this->readDirect($segment['key'], $probe);
+
+        if (! $exists) {
+            return [false, null];
+        }
+
+        if ($segments === []) {
+            return [true, $value];
+        }
+
+        if (! is_array($value) && ! is_object($value)) {
+            return [false, null];
+        }
+
+        return self::wrap($value)->resolve($segments, $probe);
+    }
+
+    /** @param list<array{key: string, wildcard: bool}> $segments */
+    private function containsWildcard(array $segments): bool
+    {
+        foreach ($segments as $segment) {
+            if ($segment['wildcard']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<mixed, mixed> */
+    private function expandableItems(): array
+    {
+        if ($this->originalData instanceof Traversable) {
+            return [];
+        }
+
+        return $this->toArray();
+    }
+
+    private function hasDirect(string $key): bool
+    {
+        // Arrays: consult only the mutable copy
+        if (is_array($this->originalData)) {
+            return array_key_exists($key, $this->data);
+        }
+
+        // Objects: if a key is masked (explicitly unset), it's considered absent
+        if (isset($this->masked[$key])) {
+            return false;
+        }
+
+        // Objects: check current overrides
+        if (array_key_exists($key, $this->data)) {
+            return true;
+        }
+
+        // Then check the original object
+        if (property_exists($this->originalData, $key)) {
+            return true;
+        }
+
+        if (method_exists($this->originalData, '__isset')) {
+            try {
+                if ($this->originalData->__isset($key)) {
+                    return true;
+                }
+            } catch (Throwable) {
+                // fall through
+            }
+        }
+
+        if (method_exists($this->originalData, '__get')) {
+            // ->__get() can return a warning, we want to make this an exception.
+            set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
+                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            });
+
+            try {
+                @$this->originalData->__get($key);
+                restore_error_handler();
+
+                return true;
+            } catch (Throwable) {
+                restore_error_handler();
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array{bool, mixed} */
+    private function readDirect(string $key, bool $tolerant = false): array
+    {
+        if (is_array($this->originalData)) {
+            return [array_key_exists($key, $this->data), $this->data[$key] ?? null];
+        }
+
+        if (isset($this->masked[$key])) {
+            return [false, null];
+        }
+
+        if (array_key_exists($key, $this->data)) {
+            return [true, $this->data[$key]];
+        }
+
+        if (property_exists($this->originalData, $key)) {
+            return [true, $this->originalData->{$key}];
+        }
+
+        if (! method_exists($this->originalData, '__get')) {
+            return [false, null];
+        }
+
+        if (! $tolerant) {
+            return [true, $this->originalData->__get($key)];
+        }
+
+        set_error_handler(static function ($errno, $errstr, $errfile, $errline): void {
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+        });
+
+        try {
+            $value = @$this->originalData->__get($key);
+            restore_error_handler();
+
+            return [true, $value];
+        } catch (Throwable) {
+            restore_error_handler();
+
+            return [false, null];
+        }
     }
 }

@@ -116,3 +116,18 @@ it('has will return false if __get is accessing undefined key', function (): voi
 
     expect($data->has('random'))->toBeFalse();
 });
+
+it('reads a stateful magic getter once and returns its first value', function (): void {
+    $obj = new class
+    {
+        public int $reads = 0;
+
+        public function __get(string $name): string
+        {
+            return $name . '-' . ++$this->reads;
+        }
+    };
+
+    expect(Data::wrap($obj)->get('value'))->toBe('value-1')
+        ->and($obj->reads)->toBe(1);
+});
